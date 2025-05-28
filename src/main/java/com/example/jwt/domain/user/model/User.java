@@ -55,6 +55,18 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private UserRole role;
+
+    @Column(name = "all_blocks", nullable = false)
+    private Integer allBlocks;
+
+    @Column(name = "temple_blocks", nullable = false)
+    private Integer templeBlocks;
+
+    @Column(name = "max_floor", nullable = false)
+    private Integer maxFloor;
+
+    @Column(name = "max_score", nullable = false)
+    private Integer maxScore;
 }
 
 

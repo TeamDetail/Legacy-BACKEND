@@ -1,7 +1,8 @@
 kakao:
   client-id: ${KAKAO_CLIENT_ID}
   client-secret: ${KAKAO_CLIENT_SECRET}
-  redirect-uri: ${KAKAO_REDIRECT_URL}
+  web-redirect-uri: ${KAKAO_WEB_REDIRECT_URL}
+  ios-redirect-uri: ${KAKAO_IOS_REDIRECT_URL}
 application:
   jwt:
     refresh-exp: ${REFRESH_EXP}

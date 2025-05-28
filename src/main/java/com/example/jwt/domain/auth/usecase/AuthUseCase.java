@@ -50,7 +50,7 @@ public class AuthUseCase {
                     .storeRestock(0)
                     .creditCollect(0)
                     .dropCount(0)
-                    .role(UserRole.USER)
+                    .role(UserRole.ADMIN)
                     .build();
             userService.save(user);
 
@@ -61,7 +61,7 @@ public class AuthUseCase {
             profileImageRepo.save(profileImage);
 
         }else {
-            throw new CustomException(UserError.EMAIL_DUPLICATED);
+            throw new CustomException(UserError.ID_DUPLICATED);
         }
     }
 

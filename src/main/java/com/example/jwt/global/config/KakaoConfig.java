@@ -11,5 +11,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class KakaoConfig {
     private String clientId;
     private String clientSecret;
-    private String redirectUri;
+    private String webRedirectUri;
+    private String iosRedirectUri;
 }

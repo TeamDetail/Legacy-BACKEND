@@ -19,6 +19,6 @@ public class ProfileImage {
     @JoinColumn( nullable = false)
     private User user;
 
-    @Column(length = 100)
+    @Column(length = 1000)
     private String imageFile;
 }

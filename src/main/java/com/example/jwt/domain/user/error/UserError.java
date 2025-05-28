@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum UserError implements CustomError {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."),
-    EMAIL_DUPLICATED(HttpStatus.BAD_REQUEST, "이미 사용중인 id 입니다.");
+    ID_DUPLICATED(HttpStatus.BAD_REQUEST, "이미 사용중인 id 입니다.");
 
     private final HttpStatus status;
     private final String message;

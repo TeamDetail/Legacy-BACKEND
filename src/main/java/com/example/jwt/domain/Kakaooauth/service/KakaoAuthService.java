@@ -1,7 +1,8 @@
 package com.example.jwt.domain.Kakaooauth.service;
 
+import com.example.jwt.domain.Kakaooauth.error.KaKaoAuthError;
+import com.example.jwt.domain.Kakaooauth.presentation.dto.response.KakaoInfo;
 import com.example.jwt.domain.Kakaooauth.presentation.dto.response.KakaoTokenRes;
-import com.example.jwt.domain.Kakaooauth.presentation.dto.request.KakaoUserReq;
 import com.example.jwt.domain.auth.presentation.dto.response.TokenRes;
 import com.example.jwt.domain.user.model.ProfileImage;
 import com.example.jwt.domain.user.model.User;
@@ -9,13 +10,18 @@ import com.example.jwt.domain.user.model.enums.UserRole;
 import com.example.jwt.domain.user.model.repo.ProfileImageJpaRepo;
 import com.example.jwt.domain.user.service.UserService;
 import com.example.jwt.global.config.KakaoConfig;
+import com.example.jwt.global.exception.CustomException;
 import com.example.jwt.global.security.jwt.JwtProvider;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+
+import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
@@ -28,11 +34,19 @@ public class KakaoAuthService {
     private final WebClient webClient = WebClient.create("https://kauth.kakao.com");
 
     @Transactional
-    public TokenRes loginWithKakao(String code) {
-        KakaoTokenRes token = getAccessToken(code);
-        KakaoUserReq userInfo = getUserInfo(token.access_token());
+    public TokenRes loginWithKakaoApp(TokenRes req) {
+        KakaoInfo userInfo = getUserInfo(req.accessToken());
         upsertUser(userInfo);
-        return jwtProvider.generateToken(userInfo.id().toString());
+        return jwtProvider.generateToken(userInfo.getId().toString());
+
+    }
+
+    @Transactional
+    public TokenRes loginWithKakao(String code){
+        KakaoTokenRes token = getAccessToken(code);
+        KakaoInfo userInfo = getUserInfo(token.access_token());
+        upsertUser(userInfo);
+        return jwtProvider.generateToken(userInfo.getId().toString());
     }
 
     private KakaoTokenRes getAccessToken(String code) {
@@ -42,57 +56,91 @@ public class KakaoAuthService {
                 .body(BodyInserters
                         .fromFormData("grant_type", "authorization_code")
                         .with("client_id", kakaoConfig.getClientId())
-                        .with("redirect_uri", kakaoConfig.getRedirectUri())
+                        .with("redirect_uri", kakaoConfig.getWebRedirectUri())
                         .with("code", code)
                         .with("client_secret", kakaoConfig.getClientSecret()))
                 .retrieve()
+                .onStatus(status -> status.isError(), clientResponse ->
+                        clientResponse.bodyToMono(String.class)
+                                .flatMap(errorBody -> {
+                                    System.out.println("카카오 토큰 요청 실패 - 상태코드: " + clientResponse.statusCode());
+                                    System.out.println("응답 본문: " + errorBody);
+                                    return Mono.error(new CustomException(KaKaoAuthError.TOKEN_REQUEST_FAILED, errorBody));
+                                })
+                )
                 .bodyToMono(KakaoTokenRes.class)
-                .block();
+                .block(Duration.ofSeconds(5));
     }
 
-    private KakaoUserReq getUserInfo(String accessToken) {
-        return webClient.get()
-                .uri("/v2/user/me")
-                .headers(headers -> headers.setBearerAuth(accessToken))
+    public KakaoInfo getUserInfo(String accessToken) {
+        JsonNode jsonNode = webClient
+                .post()
+                .uri("https://kapi.kakao.com/v2/user/me")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .header(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=utf-8")
                 .retrieve()
-                .bodyToMono(KakaoUserReq.class)
-                .block();
+                .onStatus(HttpStatusCode::isError, response ->
+                        response.bodyToMono(String.class)
+                                .flatMap(errorBody ->
+                                        Mono.error(new CustomException(KaKaoAuthError.IN_FO_REQUEST_FAILED, errorBody))
+                                )
+                )
+                .bodyToMono(JsonNode.class)
+                .block(Duration.ofSeconds(5));
+
+        if (jsonNode == null) {
+            throw new CustomException(KaKaoAuthError.KAKAO_RESPONSE_EMPTY);
+        }
+
+        long id = jsonNode.path("id").asLong();
+        String nickname = jsonNode.path("properties").path("nickname").asText(null);
+        String profileImage = jsonNode.path("properties").path("profile_image").asText(null);
+
+        if (nickname == null || profileImage == null) {
+            throw new CustomException(KaKaoAuthError.KAKAO_RESPONSE_EMPTY,jsonNode.toPrettyString());
+        }
+
+        return new KakaoInfo(id, nickname, profileImage);
     }
 
-    private void upsertUser(KakaoUserReq userInfo) {
-        if (userService.existsById(userInfo.id())){
+
+    private void upsertUser(KakaoInfo userInfo) {
+        if (userService.existsById(userInfo.getId())){
             updateUser(userInfo);
         }else {
             saveUser(userInfo);
         }
     }
 
-    private void saveUser(KakaoUserReq kakaoUser) {
+    private void saveUser(KakaoInfo kakaoUser) {
         User user = User.builder()
-                .userId(kakaoUser.id())
-                .nickname(kakaoUser.nickname())
+                .userId(kakaoUser.getId())
+                .nickname(kakaoUser.getNickname())
                 .level(1)
                 .exp(0)
                 .credit(0)
-                .snowflakeCapacity(0)
-                .storeRestock(0)//todo 이거 기본값 뭘로 설정?
-                .creditCollect(0)
-                .dropCount(0)
+                .snowflakeCapacity(5)
+                .storeRestock(1)
+                .creditCollect(3)
+                .dropCount(1)
                 .role(UserRole.USER)
+                .allBlocks(0)
+                .templeBlocks(0)
+                .maxFloor(0)
+                .maxScore(0)
                 .build();
         userService.save(user);
 
         ProfileImage profileImage = ProfileImage.builder().
                 user(user).
-                imageFile(kakaoUser.profileImage())//todo 이거 Url 이여야함
+                imageFile(kakaoUser.getProfileImage())
                 .build();
         ProfileImageRepo.save(profileImage);
 
     }
 
-    private void updateUser(KakaoUserReq kakaoUser) {
+    private void updateUser(KakaoInfo kakaoUser) {
 
-        //todo 업데이트 어떻게? 이미지만?
         //todo base time 엔티티 만들기
     }
 }
