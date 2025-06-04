@@ -24,7 +24,7 @@ public class SwaggerConfig {
                         .version("v0.0.?"))
                 .addSecurityItem(new SecurityRequirement().addList("Authorization"))
                 .servers(List.of(
-                        new Server().url("https://Legacyapi.com").description("Production Server"),
+                        new Server().url("http://43.203.228.170:8080").description("Production Server"),
                         new Server().url("http://localhost:8080").description("Development Server")
                 ))
                 .components(new Components()
