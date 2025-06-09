@@ -46,11 +46,15 @@ public class AuthUseCase {
                     .level(1)
                     .exp(0)
                     .credit(0)
-                    .snowflakeCapacity(0)
-                    .storeRestock(0)
-                    .creditCollect(0)
-                    .dropCount(0)
-                    .role(UserRole.ADMIN)
+                    .snowflakeCapacity(5)
+                    .storeRestock(1)
+                    .creditCollect(3)
+                    .dropCount(1)
+                    .role(UserRole.USER)
+                    .allBlocks(0)
+                    .templeBlocks(0)
+                    .maxFloor(0)
+                    .maxScore(0)
                     .build();
             userService.save(user);
 

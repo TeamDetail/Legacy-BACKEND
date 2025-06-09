@@ -21,7 +21,7 @@ public class KakaoAuthController {
     }
 
     @PostMapping("/accessToken")
-    public  ResponseEntity<BaseResponse<TokenRes>> kakaoCodeIos(@RequestBody TokenRes req) {//todo ios 리다이렉트 url 따로 분리
+    public  ResponseEntity<BaseResponse<TokenRes>> kakaoCodeIos(@RequestBody TokenRes req) {
         return BaseResponse.of(kakaoOAuthService.loginWithKakaoApp(req));
     }
 }

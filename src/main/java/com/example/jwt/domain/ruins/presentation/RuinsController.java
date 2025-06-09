@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/ruins")
+@RequestMapping("/ruins")
 @RequiredArgsConstructor
 public class RuinsController {
 
