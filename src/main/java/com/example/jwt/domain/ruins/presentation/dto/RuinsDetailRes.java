@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 @Getter
 @Builder
-public class RuinsRes {
+public class RuinsDetailRes {
 
     private Integer ruinsId;
     private String ruinsImage;
@@ -23,11 +23,9 @@ public class RuinsRes {
     private LocalDate specifiedDate;
     private String owner;
     private String manager;
-    private BigDecimal latitude;
-    private BigDecimal longitude;
 
-    public static RuinsRes from(Ruins ruins) {
-        return RuinsRes.builder()
+    public static RuinsDetailRes from(Ruins ruins) {
+        return RuinsDetailRes.builder()
                 .ruinsId(ruins.getRuinsId())
                 .ruinsImage(ruins.getRuinsImage())
                 .category(ruins.getCategory())
@@ -40,8 +38,6 @@ public class RuinsRes {
                 .specifiedDate(ruins.getSpecifiedDate())
                 .owner(ruins.getOwner())
                 .manager(ruins.getManager())
-                .latitude(ruins.getLatitude())
-                .longitude(ruins.getLongitude())
                 .build();
     }
 }
