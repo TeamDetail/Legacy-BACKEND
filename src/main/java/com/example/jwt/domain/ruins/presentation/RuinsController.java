@@ -1,12 +1,12 @@
 package com.example.jwt.domain.ruins.presentation;
 
-import com.example.jwt.domain.ruins.presentation.dto.RuinsRes;
+import com.example.jwt.domain.ruins.presentation.dto.RuinsDetailRes;
+import com.example.jwt.domain.ruins.presentation.dto.RuinsMapPointRes;
 import com.example.jwt.domain.ruins.service.RuinsService;
+import com.example.jwt.global.common.dto.BaseResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,10 +19,16 @@ public class RuinsController {
     private final RuinsService ruinsService;
 
     @GetMapping("/map")
-    public List<RuinsRes> getRuinsInMapBounds(@RequestParam BigDecimal minLat,
-                                           @RequestParam BigDecimal maxLat,
-                                           @RequestParam BigDecimal minLng,
-                                           @RequestParam BigDecimal maxLng) {
-        return ruinsService.getRuinsInMapBounds(minLat, maxLat, minLng, maxLng);
+    public ResponseEntity<BaseResponse<List<RuinsMapPointRes>>> getRuinsMapPoint(
+                                                                    @RequestParam BigDecimal minLat,
+                                                                    @RequestParam BigDecimal maxLat,
+                                                                    @RequestParam BigDecimal minLng,
+                                                                    @RequestParam BigDecimal maxLng){
+        return BaseResponse.of(ruinsService.getRuinsMapPoint(minLat, maxLat, minLng, maxLng));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BaseResponse<RuinsDetailRes>> getRuinsDetail(@PathVariable Integer ruinsid) {
+        return BaseResponse.of(ruinsService.getRuinsDetail(ruinsid));
     }
 }
