@@ -4,10 +4,8 @@ import com.example.jwt.domain.Kakaooauth.error.KaKaoAuthError;
 import com.example.jwt.domain.Kakaooauth.presentation.dto.response.KakaoInfo;
 import com.example.jwt.domain.Kakaooauth.presentation.dto.response.KakaoTokenRes;
 import com.example.jwt.domain.auth.presentation.dto.response.TokenRes;
-import com.example.jwt.domain.user.model.ProfileImage;
 import com.example.jwt.domain.user.model.User;
 import com.example.jwt.domain.user.model.enums.UserRole;
-import com.example.jwt.domain.user.model.repo.ProfileImageJpaRepo;
 import com.example.jwt.domain.user.service.UserService;
 import com.example.jwt.global.config.KakaoConfig;
 import com.example.jwt.global.exception.CustomException;
@@ -29,7 +27,6 @@ public class KakaoAuthService {
 
     private final KakaoConfig kakaoConfig;
     private final UserService userService;
-    private final ProfileImageJpaRepo ProfileImageRepo;
     private final JwtProvider jwtProvider;
     private final WebClient webClient = WebClient.create("https://kauth.kakao.com");
 
@@ -125,17 +122,12 @@ public class KakaoAuthService {
                 .dropCount(1)
                 .role(UserRole.USER)
                 .allBlocks(0)
-                .templeBlocks(0)
+                .ruinsBlocks(0)
                 .maxFloor(0)
                 .maxScore(0)
+                .imageUrl(kakaoUser.getProfileImage())
                 .build();
         userService.save(user);
-
-        ProfileImage profileImage = ProfileImage.builder().
-                user(user).
-                imageFile(kakaoUser.getProfileImage())
-                .build();
-        ProfileImageRepo.save(profileImage);
 
     }
 

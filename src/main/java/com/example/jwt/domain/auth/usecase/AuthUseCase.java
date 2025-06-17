@@ -6,10 +6,8 @@ import com.example.jwt.domain.auth.presentation.dto.request.RefreshReq;
 import com.example.jwt.domain.auth.presentation.dto.request.SingInReq;
 import com.example.jwt.domain.auth.presentation.dto.response.TokenRes;
 import com.example.jwt.domain.user.error.UserError;
-import com.example.jwt.domain.user.model.ProfileImage;
 import com.example.jwt.domain.user.model.User;
 import com.example.jwt.domain.user.model.enums.UserRole;
-import com.example.jwt.domain.user.model.repo.ProfileImageJpaRepo;
 import com.example.jwt.domain.user.service.UserService;
 import com.example.jwt.global.exception.CustomException;
 import com.example.jwt.global.security.jwt.JwtExtractor;
@@ -25,7 +23,6 @@ public class AuthUseCase {
 
     private final UserService userService;
     private final JwtProvider jwtProvider;
-    private final ProfileImageJpaRepo profileImageRepo;
     private final JwtExtractor jwtExtractor;
     private final RefreshTokenDao refreshTokenDao;
 
@@ -52,17 +49,12 @@ public class AuthUseCase {
                     .dropCount(1)
                     .role(UserRole.USER)
                     .allBlocks(0)
-                    .templeBlocks(0)
+                    .ruinsBlocks(0)
                     .maxFloor(0)
                     .maxScore(0)
+                    .imageUrl(req.profileImage())
                     .build();
             userService.save(user);
-
-            ProfileImage profileImage = ProfileImage.builder().
-                    user(user).
-                    imageFile(req.profileImage())
-                    .build();
-            profileImageRepo.save(profileImage);
 
         }else {
             throw new CustomException(UserError.ID_DUPLICATED);

@@ -21,4 +21,12 @@ public class Style {
 
     @Column(name = "style_name", length = 30, nullable = false)
     private String styleName;
+
+    @Column(name = "style_content", length = 100, nullable = false)
+    private String styleContent;
+
+    @Column(name = "is_equip", nullable = false)
+    private Boolean isEquip;
+
+    //todo 등급 enum
 }

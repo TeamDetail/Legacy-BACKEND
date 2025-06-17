@@ -1,13 +1,13 @@
 package com.example.jwt.domain.user.presentation;
 
-import com.example.jwt.domain.user.presentation.dto.UserRes;
+import com.example.jwt.domain.user.model.User;
+import com.example.jwt.domain.user.presentation.dto.request.ProfileImageReq;
+import com.example.jwt.domain.user.presentation.dto.response.UserRes;
 import com.example.jwt.domain.user.usecase.UserUseCase;
 import com.example.jwt.global.common.dto.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -17,7 +17,12 @@ public class UserController {
     private final UserUseCase userUseCase;
 
     @GetMapping("/me")
-    public ResponseEntity<BaseResponse<UserRes>> getMe(){//todo 뭐뭐 필요한지 확인
+    public ResponseEntity<BaseResponse<UserRes>> getMe(){
         return BaseResponse.of(userUseCase.getMe());
+    }
+
+    @PatchMapping("/image")
+    public  ResponseEntity<BaseResponse<User>> updateProfileImage(@RequestBody ProfileImageReq req){
+        return BaseResponse.of(userUseCase.updateProfileImage(req));
     }
 }

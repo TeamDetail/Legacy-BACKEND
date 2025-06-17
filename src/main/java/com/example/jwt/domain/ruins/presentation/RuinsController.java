@@ -28,7 +28,7 @@ public class RuinsController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BaseResponse<RuinsDetailRes>> getRuinsDetail(@PathVariable Integer ruinsid) {
-        return BaseResponse.of(ruinsService.getRuinsDetail(ruinsid));
+    public ResponseEntity<BaseResponse<RuinsDetailRes>> getRuinsDetail(@PathVariable Integer id) {
+        return BaseResponse.of(ruinsService.getRuinsDetail(id));
     }
 }
