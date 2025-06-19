@@ -6,10 +6,10 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
 @ConfigurationPropertiesScan
-public class JwtApplication {
+public class legacyApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(JwtApplication.class, args);
+        SpringApplication.run(legacyApplication.class, args);
     }
 
 }
