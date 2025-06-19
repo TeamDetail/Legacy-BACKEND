@@ -102,7 +102,7 @@ public class KakaoAuthService {
 
 
     private void upsertUser(KakaoInfo userInfo) {
-        if (userService.existsById(userInfo.getId())){
+        if (userService.existsByUserId(userInfo.getId())){
             updateUser(userInfo);
         }else {
             saveUser(userInfo);
@@ -127,7 +127,7 @@ public class KakaoAuthService {
                 .maxScore(0)
                 .imageUrl(kakaoUser.getProfileImage())
                 .build();
-        userService.save(user);
+        userService.saveUser(user);
 
     }
 
