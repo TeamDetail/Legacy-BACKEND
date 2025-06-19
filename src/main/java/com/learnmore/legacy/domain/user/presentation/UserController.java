@@ -3,6 +3,7 @@ package com.learnmore.legacy.domain.user.presentation;
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.presentation.dto.request.ProfileImageReq;
 import com.learnmore.legacy.domain.user.presentation.dto.request.StyleIdReq;
+import com.learnmore.legacy.domain.user.presentation.dto.request.UserStyleReq;
 import com.learnmore.legacy.domain.user.presentation.dto.response.UserRes;
 import com.learnmore.legacy.domain.user.presentation.dto.response.UserStyleRes;
 import com.learnmore.legacy.domain.user.usecase.UserUseCase;
@@ -44,5 +45,12 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse<UserRes>> getUserById(@PathVariable Long id) {
         return BaseResponse.of(userUseCase.getUser(id));
+    }
+
+    //todo 칭호 데이터 들고 있고 암호화 통신
+    @PostMapping("/title")
+    public ResponseEntity<BaseResponse<String>> addTitle(@RequestBody UserStyleReq req){
+        userUseCase.addStyle(req);
+        return BaseResponse.of("ok");
     }
 }
