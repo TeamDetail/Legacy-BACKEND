@@ -6,9 +6,12 @@ import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.model.repo.StyleJpaRepo;
 import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import com.learnmore.legacy.domain.user.error.UserError;
+import com.learnmore.legacy.domain.user.presentation.dto.response.UserStyleRes;
 import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +20,7 @@ public class UserService {
     private final UserJpaRepo userJpaRepo;
     private final StyleJpaRepo styleJpaRepo;
 
-    public User findById(Long userId) {
+    public User findByUserId(Long userId) {
         return userJpaRepo.findById(userId)
                 .orElseThrow(() -> new CustomException(UserError.USER_NOT_FOUND));
     }
@@ -39,5 +42,18 @@ public class UserService {
         return styleJpaRepo.findByUserAndIsEquipTrue(user)
                 .orElse(null);
 
+    }
+
+    public List<UserStyleRes> findAllStyles(User user) {
+        return styleJpaRepo.findAllStyleDtoByUser(user);
+    }
+
+    public boolean hasEquippedStyle(User user) {
+        return styleJpaRepo.existsByUserAndIsEquipTrue(user);
+    }
+
+    public Style findByUserAndStyleId(User user,Long styleId) {
+        return styleJpaRepo.findByUserAndStyleId(user,styleId)
+                .orElseThrow(() -> new CustomException(StyleError.STYLE_NOT_FOUND));
     }
 }

@@ -14,6 +14,6 @@ public class UserSessionHolder {
 
     public User get() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userService.findById(Long.valueOf(userId));
+        return userService.findByUserId(Long.valueOf(userId));
     }
 }

@@ -5,7 +5,7 @@ import com.learnmore.legacy.domain.user.model.Style;
 public record UserStyleRes(
         String name,
         String content,
-        Long StyleId
+        Long styleId
 ) {
     public static UserStyleRes from(Style style) {
         if (style == null) {

@@ -16,7 +16,7 @@ public class Style {
     private Long styleId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Column(name = "style_name", length = 30, nullable = false)
@@ -27,6 +27,10 @@ public class Style {
 
     @Column(name = "is_equip", nullable = false)
     private Boolean isEquip;
+
+    public void updateEquip(Boolean isEquip) {
+        this.isEquip = isEquip;
+    }
 
     //todo 등급 enum
 }

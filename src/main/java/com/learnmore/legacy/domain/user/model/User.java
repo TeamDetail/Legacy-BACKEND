@@ -7,6 +7,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -70,6 +72,9 @@ public class User {
 
     @Column(name = "image_url", length = 1000, nullable = false)
     private String imageUrl;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Style> styles = new ArrayList<>();
 
     public void updateImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
