@@ -73,9 +73,6 @@ public class User {
     @Column(name = "image_url", length = 1000, nullable = false)
     private String imageUrl;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Style> styles = new ArrayList<>();
-
     public void updateImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
