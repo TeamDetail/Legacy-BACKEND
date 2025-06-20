@@ -36,7 +36,7 @@ public class SecurityConfig {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.jwtExceptionFilter = jwtExceptionFilter;
     }
-
+    //todo 로그인시 400에러 403 에러
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
