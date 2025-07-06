@@ -2,8 +2,8 @@ package com.learnmore.legacy.domain.ruins.service;
 
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import com.learnmore.legacy.domain.ruins.model.repo.RuinsJpaRepo;
-import com.learnmore.legacy.domain.ruins.presentation.dto.RuinsDetailRes;
-import com.learnmore.legacy.domain.ruins.presentation.dto.RuinsMapPointRes;
+import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsDetailRes;
+import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsMapPointRes;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
 package com.learnmore.legacy.domain.ruins.presentation;
 
-import com.learnmore.legacy.domain.ruins.presentation.dto.RuinsDetailRes;
-import com.learnmore.legacy.domain.ruins.presentation.dto.RuinsMapPointRes;
+import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsDetailRes;
+import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsMapPointRes;
 import com.learnmore.legacy.domain.ruins.service.RuinsService;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
 import lombok.RequiredArgsConstructor;

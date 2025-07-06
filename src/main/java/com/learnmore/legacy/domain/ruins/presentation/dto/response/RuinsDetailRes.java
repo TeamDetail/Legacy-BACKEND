@@ -1,9 +1,10 @@
-package com.learnmore.legacy.domain.ruins.presentation.dto;
+package com.learnmore.legacy.domain.ruins.presentation.dto.response;
 
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Getter
@@ -22,6 +23,8 @@ public class RuinsDetailRes {
     private LocalDate specifiedDate;
     private String owner;
     private String manager;
+    private BigDecimal latitude;
+    private BigDecimal longitude;
 
     public static RuinsDetailRes from(Ruins ruins) {
         return RuinsDetailRes.builder()
@@ -37,6 +40,8 @@ public class RuinsDetailRes {
                 .specifiedDate(ruins.getSpecifiedDate())
                 .owner(ruins.getOwner())
                 .manager(ruins.getManager())
+                .latitude(ruins.getLatitude())
+                .longitude(ruins.getLongitude())
                 .build();
     }
 }
