@@ -36,7 +36,7 @@ public class SecurityConfig {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.jwtExceptionFilter = jwtExceptionFilter;
     }
-
+    //todo 로그인시 400에러 403 에러
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -61,6 +61,7 @@ public class SecurityConfig {
                     authorize
                             .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**", "/api-docs").permitAll()
                             .requestMatchers(HttpMethod.POST, "/auth/sign-in", "/auth/sign-up", "/auth/refresh").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/user/me").hasAnyRole( "USER")
 
                             .anyRequest().permitAll();
                 })
@@ -74,7 +75,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:8080","http://localhost:5173","https://7c50-221-168-22-205.ngrok-free.app"));
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:8080","http://localhost:9999","https://7c50-221-168-22-205.ngrok-free.app"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

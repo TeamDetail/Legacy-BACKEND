@@ -28,7 +28,7 @@ public class AuthUseCase {
 
     public TokenRes signIn(SingInReq req) {
         Long id =req.id();
-        if (userService.existsById(id)){
+        if (userService.existsByUserId(id)){
             return jwtProvider.generateToken(id.toString());
         }else {
             throw new CustomException(UserError.USER_NOT_FOUND);
@@ -36,7 +36,7 @@ public class AuthUseCase {
     }
 
     public void signup(KakaoUserReq req) {
-        if (!userService.existsById(req.id())){
+        if (!userService.existsByUserId(req.id())){
             User user = User.builder()
                     .userId(req.id())
                     .nickname(req.nickname())
@@ -54,7 +54,7 @@ public class AuthUseCase {
                     .maxScore(0)
                     .imageUrl(req.profileImage())
                     .build();
-            userService.save(user);
+            userService.saveUser(user);
 
         }else {
             throw new CustomException(UserError.ID_DUPLICATED);

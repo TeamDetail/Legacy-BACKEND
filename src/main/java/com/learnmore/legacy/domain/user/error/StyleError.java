@@ -8,7 +8,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum StyleError implements CustomError {
-    STYLE_NOT_FOUND(HttpStatus.NOT_FOUND, "칭호를 찾을 수 없습니다.");
+    STYLE_NOT_FOUND(HttpStatus.NOT_FOUND, "칭호를 찾을 수 없습니다."),
+    STYLE_DUPLICATED(HttpStatus.BAD_REQUEST, "이미 가지고 있는 칭호입니다");
 
     private final HttpStatus status;
     private final String message;

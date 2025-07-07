@@ -16,11 +16,13 @@ public interface StyleJpaRepo extends JpaRepository<Style, Long> {
 
     Optional<Style> findByUserAndIsEquipTrue(User user);
 
+    Optional<Style> findByUserAndStyleId(User user, Long styleId);
+
     @Query("SELECT new com.learnmore.legacy.domain.user.presentation.dto.response.UserStyleRes(s.styleName, s.styleContent, s.styleId) " +
             "FROM Style s WHERE s.user = :user")
     List<UserStyleRes> findAllStyleDtoByUser(@Param("user") User user);
 
     Boolean existsByUserAndIsEquipTrue(User user);
 
-    Optional<Style> findByUserAndStyleId(User user, Long styleId);
+    Boolean existsByUserAndStyleName(User user, String styleName);
 }

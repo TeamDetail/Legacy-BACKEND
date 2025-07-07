@@ -35,6 +35,7 @@ public class AuthController {
         return BaseResponse.of(authUseCase.signIn(req));
     }
 
+    @Operation(summary = "리프레쉬", description = "엑세스와 리프레쉬 토큰을 재발급 합니다")
     @PostMapping("/refresh")
     public ResponseEntity<BaseResponse<TokenRes>> refreshToken(@RequestBody RefreshReq req) {
         return BaseResponse.of(authUseCase.refresh(req));
