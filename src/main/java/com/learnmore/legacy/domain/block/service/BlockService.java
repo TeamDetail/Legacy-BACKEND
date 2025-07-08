@@ -21,7 +21,6 @@ public class BlockService {
     private final BlockHistoryJpaRepo blockHistoryJpaRepo;
 
     public BlockRes addBlock(BlockAddReq request) {
-        // 블록 생성
         Block block = Block.builder()
                 .blockType(request.getBlockType())
                 .latitude(request.getLatitude())
@@ -30,7 +29,6 @@ public class BlockService {
 
         Block savedBlock = blockJpaRepo.save(block);
 
-        // 블록 히스토리 생성
         BlockHistory blockHistory = BlockHistory.builder()
                 .userId(request.getUserId())
                 .block(savedBlock)
