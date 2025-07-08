@@ -18,14 +18,14 @@ public class BlockController {
     private final BlockService blockService;
 
     @PostMapping
-    public ResponseEntity<BlockRes> createBlock(@RequestBody BlockAddReq request) {
+    public ResponseEntity<BaseResponse<BlockRes>> createBlock(@RequestBody BlockAddReq request) {
         BlockRes response = blockService.addBlock(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return BaseResponse.of(response);
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<BlockRes>> getBlocksByUserId(@PathVariable Long userId) {
+    public ResponseEntity<BaseResponse<List<BlockRes>>> getBlocksByUserId(@PathVariable Long userId) {
         List<BlockRes> blocks = blockService.getBlocksByUserId(userId);
-        return ResponseEntity.ok(blocks);
+        return BaseResponse.of(blocks);
     }
 }
