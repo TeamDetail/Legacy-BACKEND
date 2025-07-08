@@ -5,7 +5,6 @@ import com.learnmore.legacy.domain.block.presentation.dto.response.BlockRes;
 import com.learnmore.legacy.domain.block.service.BlockService;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

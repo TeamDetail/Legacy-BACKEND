@@ -23,9 +23,6 @@ public class Block {
     @Column(name = "block_id")
     private Long blockId;
 
-    @Column(name = "block_name", nullable = false, length = 50)
-    private String blockName;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "block_type", nullable = false)
     private BlockType blockType;
