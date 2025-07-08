@@ -1,4 +1,4 @@
-package com.learnmore.legacy.domain.ruins.presentation.dto;
+package com.learnmore.legacy.domain.ruins.presentation.dto.response;
 
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import lombok.Builder;
