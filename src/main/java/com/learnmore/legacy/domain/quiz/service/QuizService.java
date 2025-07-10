@@ -4,6 +4,7 @@ import com.learnmore.legacy.domain.quiz.model.Quiz;
 import com.learnmore.legacy.domain.quiz.model.QuizOption;
 import com.learnmore.legacy.domain.quiz.model.repo.QuizJpaRepo;
 import com.learnmore.legacy.domain.quiz.model.repo.QuizOptionJpaRepo;
+import com.learnmore.legacy.domain.quiz.presentation.dto.QuizAnswerReq;
 import com.learnmore.legacy.domain.quiz.presentation.dto.QuizRes;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,13 @@ public class QuizService {
                 .collect(Collectors.toList());
 
         return QuizRes.from(quiz, optionContents);
+    }
+
+    public boolean checkAnswer(QuizAnswerReq request) {
+        Quiz quiz = quizJpaRepo.findById(request.quizId())
+                .orElseThrow(() -> new EntityNotFoundException("퀴즈를 찾을 수 없습니다."));
+
+        return quiz.getAnswerOption().equalsIgnoreCase(request.answerOption());
     }
     
 }
