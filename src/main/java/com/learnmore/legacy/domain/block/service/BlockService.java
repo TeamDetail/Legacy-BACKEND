@@ -20,7 +20,7 @@ public class BlockService {
     private final BlockJpaRepo blockJpaRepo;
     private final BlockHistoryJpaRepo blockHistoryJpaRepo;
 
-    public BlockRes addBlock(BlockAddReq request) {
+    public BlockRes addBlock(BlockAddReq request, Long userId) {
         Block block = Block.builder()
                 .blockType(request.getBlockType())
                 .latitude(request.getLatitude())
@@ -30,7 +30,7 @@ public class BlockService {
         Block savedBlock = blockJpaRepo.save(block);
 
         BlockHistory blockHistory = BlockHistory.builder()
-                .userId(request.getUserId())
+                .userId(userId)
                 .block(savedBlock)
                 .mobileOrWebsite(request.getMobileOrWebsite())
                 .build();

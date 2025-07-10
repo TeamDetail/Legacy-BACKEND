@@ -21,8 +21,9 @@ public class BlockController {
 
     @Operation(summary = "블록 추가", description = "블록을 추가합니다")
     @PostMapping
-    public ResponseEntity<BaseResponse<BlockRes>> addBlock(@RequestBody BlockAddReq request) {
-        BlockRes response = blockService.addBlock(request);
+    public ResponseEntity<BaseResponse<BlockRes>> addBlock(@RequestBody BlockAddReq request, @AuthenticationPrincipal AuthDetails authDetails) {
+        Long userId = authDetails.getId();
+        BlockRes response = blockService.addBlock(request, userId);
         return BaseResponse.of(response);
     }
 

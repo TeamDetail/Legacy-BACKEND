@@ -13,6 +13,5 @@ public class BlockAddReq {
     private BlockType blockType;
     private BigDecimal latitude;
     private BigDecimal longitude;
-    private Long userId;
     private PlatformType mobileOrWebsite;
 }
