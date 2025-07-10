@@ -4,11 +4,14 @@ import com.learnmore.legacy.domain.quiz.model.Quiz;
 import com.learnmore.legacy.domain.quiz.model.QuizOption;
 import com.learnmore.legacy.domain.quiz.model.repo.QuizJpaRepo;
 import com.learnmore.legacy.domain.quiz.model.repo.QuizOptionJpaRepo;
+import com.learnmore.legacy.domain.quiz.presentation.dto.QuizAddReq;
+import com.learnmore.legacy.domain.quiz.presentation.dto.QuizAddRes;
 import com.learnmore.legacy.domain.quiz.presentation.dto.QuizAnswerReq;
 import com.learnmore.legacy.domain.quiz.presentation.dto.QuizRes;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +22,29 @@ public class QuizService {
 
     private final QuizJpaRepo quizJpaRepo;
     private final QuizOptionJpaRepo quizOptionJpaRepo;
+
+    @Transactional
+    public QuizAddRes addQuiz(QuizAddReq req) {
+        Quiz quiz = Quiz.builder()
+                .ruinsId(req.ruinsId())
+                .quizProblem(req.quizProblem())
+                .answerOption(req.answerOption())
+                .hint(req.hint())
+                .build();
+
+        Quiz savedQuiz = quizJpaRepo.save(quiz);
+
+        List<QuizOption> options = req.optionValues().stream()
+                .map(opt -> QuizOption.builder()
+                        .quiz(savedQuiz)
+                        .optionValue(opt)
+                        .build())
+                .toList();
+
+        quizOptionJpaRepo.saveAll(options);
+
+        return QuizAddRes.from(savedQuiz, req.optionValues());
+    }
 
     public QuizRes getQuiz(Long quizId) {
         Quiz quiz = quizJpaRepo.findById(quizId)
