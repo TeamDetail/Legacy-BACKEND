@@ -1,7 +1,12 @@
 package com.learnmore.legacy.domain.quiz.service;
 
+import com.learnmore.legacy.domain.block.model.repo.BlockHistoryJpaRepo;
+import com.learnmore.legacy.domain.block.model.repo.BlockJpaRepo;
+import com.learnmore.legacy.domain.block.service.BlockService;
 import com.learnmore.legacy.domain.quiz.model.Quiz;
+import com.learnmore.legacy.domain.quiz.model.QuizHistory;
 import com.learnmore.legacy.domain.quiz.model.QuizOption;
+import com.learnmore.legacy.domain.quiz.model.repo.QuizHistoryJpaRepo;
 import com.learnmore.legacy.domain.quiz.model.repo.QuizJpaRepo;
 import com.learnmore.legacy.domain.quiz.model.repo.QuizOptionJpaRepo;
 import com.learnmore.legacy.domain.quiz.presentation.dto.QuizAddReq;
@@ -22,6 +27,9 @@ public class QuizService {
 
     private final QuizJpaRepo quizJpaRepo;
     private final QuizOptionJpaRepo quizOptionJpaRepo;
+    private final QuizHistoryJpaRepo quizHistoryJpaRepo;
+    private final BlockService blockService;
+    private final BlockHistoryJpaRepo blockHistoryJpaRepo;
 
     @Transactional
     public QuizAddRes addQuiz(QuizAddReq req) {
@@ -59,11 +67,32 @@ public class QuizService {
         return QuizRes.from(quiz, optionContents);
     }
 
-    public boolean checkAnswer(QuizAnswerReq request) {
+    @Transactional
+    public boolean checkAnswer(QuizAnswerReq request, Long userId) {
         Quiz quiz = quizJpaRepo.findById(request.quizId())
                 .orElseThrow(() -> new EntityNotFoundException("퀴즈를 찾을 수 없습니다."));
 
-        return quiz.getAnswerOption().equalsIgnoreCase(request.answerOption());
+        Long ruinsId = quiz.getRuinsId();
+        boolean isCorrect = quiz.getAnswerOption().equalsIgnoreCase(request.answerOption());
+
+        if (quizHistoryJpaRepo.existsByUserIdAndQuizId(userId, quiz.getQuizId())) {
+            throw new IllegalStateException("이미 푼 퀴즈입니다.");
+        }
+
+        if (isCorrect) {
+            quizHistoryJpaRepo.save(QuizHistory.builder()
+                    .userId(userId)
+                    .quizId(quiz.getQuizId())
+                    .build());
+
+            int correctCount = quizHistoryJpaRepo.countCorrectSolvesByUserIdAndRuinsId(userId, ruinsId);
+
+            if (correctCount == 3 && !blockHistoryJpaRepo.existsByUserIdAndBlock_RuinsId(userId, ruinsId)) {
+                blockService.createBlockWithHistory(ruinsId, userId);
+            }
+        }
+
+        return isCorrect;
     }
     
 }

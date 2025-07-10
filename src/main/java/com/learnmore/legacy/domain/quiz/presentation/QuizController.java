@@ -6,9 +6,11 @@ import com.learnmore.legacy.domain.quiz.presentation.dto.QuizAnswerReq;
 import com.learnmore.legacy.domain.quiz.presentation.dto.QuizRes;
 import com.learnmore.legacy.domain.quiz.service.QuizService;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
+import com.learnmore.legacy.global.security.auth.AuthDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -35,8 +37,9 @@ public class QuizController {
 
     @Operation(summary = "퀴즈 정답 확인", description = "사용자의 퀴즈 정답을 확인합니다.")
     @PostMapping("/check")
-    public ResponseEntity<BaseResponse<Boolean>> checkQuizAnswer(@RequestBody QuizAnswerReq request) {
-        boolean isCorrect = quizService.checkAnswer(request);
+    public ResponseEntity<BaseResponse<Boolean>> checkQuizAnswer(@RequestBody QuizAnswerReq request, @AuthenticationPrincipal AuthDetails authDetails) {
+        Long userId = authDetails.getId();
+        boolean isCorrect = quizService.checkAnswer(request, userId);
         return BaseResponse.of(isCorrect);
     }
 

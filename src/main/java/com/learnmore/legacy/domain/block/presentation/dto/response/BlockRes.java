@@ -1,6 +1,6 @@
 package com.learnmore.legacy.domain.block.presentation.dto.response;
 
-import com.learnmore.legacy.domain.block.model.enums.BlockType;
+import com.learnmore.legacy.domain.block.model.Block;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,8 +14,14 @@ import java.math.BigDecimal;
 @Builder
 public class BlockRes {
     private Long blockId;
-    private String blockName;
-    private BlockType blockType;
     private BigDecimal latitude;
     private BigDecimal longitude;
+
+    public static BlockRes from(Block block) {
+        return BlockRes.builder()
+                .blockId(block.getBlockId())
+                .latitude(block.getLatitude())
+                .longitude(block.getLongitude())
+                .build();
+    }
 }
