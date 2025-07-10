@@ -22,7 +22,7 @@ public class RuinsService {
                 .toList();
     }
 
-    public RuinsDetailRes getRuinsDetail(Integer ruinsId) {
+    public RuinsDetailRes getRuinsDetail(Long ruinsId) {
         Ruins ruins = ruinsJpaRepo.findById(ruinsId)
                 .orElseThrow(()-> new EntityNotFoundException("유적지를 찾을 수 없습니다."));
         return RuinsDetailRes.from(ruins);

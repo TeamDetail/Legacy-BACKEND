@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Data
 @Builder
 public class RuinsMapPointRes {
-    private Integer ruinsId;
+    private Long ruinsId;
     private BigDecimal latitude;
     private BigDecimal longitude;
 

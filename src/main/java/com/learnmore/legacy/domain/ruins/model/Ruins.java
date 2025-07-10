@@ -19,7 +19,7 @@ public class Ruins {
 
     @Id
     @Column(name = "ruins_id", nullable = false, unique = true)
-    private Integer ruinsId;
+    private Long ruinsId;
 
     @Column(name = "ruins_image", nullable = false)
     private String ruinsImage;

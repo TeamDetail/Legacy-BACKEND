@@ -18,6 +18,10 @@ public class AuthDetails implements UserDetails {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
     }
 
+    public Long getId() {
+        return user.getUserId();
+    }
+
     @Override
     public String getPassword() {
         return "";

@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Builder
 public class RuinsDetailRes {
 
-    private Integer ruinsId;
+    private Long ruinsId;
     private String ruinsImage;
     private String category;
     private String name;
