@@ -7,16 +7,15 @@ import com.learnmore.legacy.domain.block.model.repo.BlockHistoryJpaRepo;
 import com.learnmore.legacy.domain.block.model.repo.BlockJpaRepo;
 import com.learnmore.legacy.domain.block.presentation.dto.request.BlockAddReq;
 import com.learnmore.legacy.domain.block.presentation.dto.response.BlockRes;
-import com.learnmore.legacy.domain.ruins.model.Ruins;
 import com.learnmore.legacy.domain.ruins.model.repo.RuinsJpaRepo;
-import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,10 +24,15 @@ import java.util.stream.Collectors;
 public class BlockService {
     private final BlockJpaRepo blockJpaRepo;
     private final BlockHistoryJpaRepo blockHistoryJpaRepo;
-    private final RuinsJpaRepo ruinsJpaRepo;
-    private final UserJpaRepo userJpaRepo;
 
     public BlockRes addBlock(BlockAddReq request, Long userId) {
+        List<Block> existingBlocks = blockJpaRepo.findAllByLatitudeAndLongitude(
+                request.getLatitude(), request.getLongitude()
+        );
+        if (!existingBlocks.isEmpty()) {
+            throw new IllegalStateException("해당 위치에 이미 블록이 존재합니다.");
+        }
+
         Block block = Block.builder()
                 .blockType(BlockType.NORMAL)
                 .latitude(request.getLatitude())
@@ -54,6 +58,7 @@ public class BlockService {
         return blocks.stream()
                 .map(block -> BlockRes.builder()
                         .blockId(block.getBlockId())
+                        .blockType(block.getBlockType())
                         .latitude(block.getLatitude())
                         .longitude(block.getLongitude())
                         .build())
@@ -61,17 +66,14 @@ public class BlockService {
     }
 
     @Transactional
-    public void createBlockWithHistory(Long ruinsId, Long userId) {
-        boolean alreadyReceived = blockHistoryJpaRepo.existsByUserIdAndBlock_RuinsId(userId, ruinsId);
+    public void createBlockWithHistory(Long ruinsId, Long userId, BigDecimal latitude, BigDecimal longitude) {
+        boolean alreadyReceived = blockHistoryJpaRepo.existsByUserIdAndBlock_BlockId(userId, ruinsId);
         if (alreadyReceived) return;
-
-        Ruins ruins = ruinsJpaRepo.findById(ruinsId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 유적지를 찾을 수 없습니다."));
 
         Block block = Block.builder()
                 .blockType(BlockType.RUINS)
-                .latitude(ruins.getLatitude())
-                .longitude(ruins.getLongitude())
+                .latitude(latitude)
+                .longitude(longitude)
                 .build();
 
         BlockHistory history = BlockHistory.builder()
@@ -79,9 +81,8 @@ public class BlockService {
                 .block(block)
                 .build();
 
-        block.getBlockHistories().add(history);
-
         blockJpaRepo.save(block);
+        blockHistoryJpaRepo.save(history);
     }
 
 }

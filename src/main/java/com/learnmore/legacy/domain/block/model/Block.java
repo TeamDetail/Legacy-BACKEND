@@ -32,7 +32,4 @@ public class Block {
 
     @Column(name = "longitude", nullable = false)
     private BigDecimal longitude;
-
-    @OneToMany(mappedBy = "block", cascade = CascadeType.ALL)
-    private List<BlockHistory> blockHistories = new ArrayList<>();
 }

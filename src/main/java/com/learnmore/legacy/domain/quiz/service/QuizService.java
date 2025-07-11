@@ -1,7 +1,6 @@
 package com.learnmore.legacy.domain.quiz.service;
 
 import com.learnmore.legacy.domain.block.model.repo.BlockHistoryJpaRepo;
-import com.learnmore.legacy.domain.block.model.repo.BlockJpaRepo;
 import com.learnmore.legacy.domain.block.service.BlockService;
 import com.learnmore.legacy.domain.quiz.model.Quiz;
 import com.learnmore.legacy.domain.quiz.model.QuizHistory;
@@ -13,11 +12,14 @@ import com.learnmore.legacy.domain.quiz.presentation.dto.QuizAddReq;
 import com.learnmore.legacy.domain.quiz.presentation.dto.QuizAddRes;
 import com.learnmore.legacy.domain.quiz.presentation.dto.QuizAnswerReq;
 import com.learnmore.legacy.domain.quiz.presentation.dto.QuizRes;
+import com.learnmore.legacy.domain.ruins.model.Ruins;
+import com.learnmore.legacy.domain.ruins.model.repo.RuinsJpaRepo;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +32,7 @@ public class QuizService {
     private final QuizHistoryJpaRepo quizHistoryJpaRepo;
     private final BlockService blockService;
     private final BlockHistoryJpaRepo blockHistoryJpaRepo;
+    private final RuinsJpaRepo ruinsJpaRepo;
 
     @Transactional
     public QuizAddRes addQuiz(QuizAddReq req) {
@@ -54,11 +57,11 @@ public class QuizService {
         return QuizAddRes.from(savedQuiz, req.optionValues());
     }
 
-    public QuizRes getQuiz(Long quizId) {
-        Quiz quiz = quizJpaRepo.findById(quizId)
+    public QuizRes getQuiz(Long ruinsId) {
+        Quiz quiz = quizJpaRepo.findByRuinsId(ruinsId)
                 .orElseThrow(() -> new EntityNotFoundException("퀴즈를 찾을 수 없습니다."));
 
-        List<QuizOption> options = quizOptionJpaRepo.findByQuiz_QuizId(quizId);
+        List<QuizOption> options = quizOptionJpaRepo.findByQuiz_QuizId(ruinsId);
 
         List<String> optionContents = options.stream()
                 .map(QuizOption::getOptionValue)
@@ -87,8 +90,14 @@ public class QuizService {
 
             int correctCount = quizHistoryJpaRepo.countCorrectSolvesByUserIdAndRuinsId(userId, ruinsId);
 
-            if (correctCount == 3 && !blockHistoryJpaRepo.existsByUserIdAndBlock_RuinsId(userId, ruinsId)) {
-                blockService.createBlockWithHistory(ruinsId, userId);
+            if (correctCount == 3 && !blockHistoryJpaRepo.existsByUserIdAndBlock_BlockId(userId, ruinsId)) {
+                Ruins ruins = ruinsJpaRepo.findById(ruinsId)
+                        .orElseThrow(() -> new EntityNotFoundException("해당 유적지를 찾을 수 없습니다."));
+
+                BigDecimal latitude = ruins.getLatitude();
+                BigDecimal longitude = ruins.getLongitude();
+
+                blockService.createBlockWithHistory(ruinsId, userId, latitude, longitude);
             }
         }
 

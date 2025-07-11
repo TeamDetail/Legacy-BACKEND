@@ -2,7 +2,6 @@ package com.learnmore.legacy.domain.quiz.presentation.dto;
 
 import com.learnmore.legacy.domain.quiz.model.Quiz;
 
-import java.util.Collections;
 import java.util.List;
 
 public record QuizAddRes(

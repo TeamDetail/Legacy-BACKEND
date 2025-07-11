@@ -29,9 +29,9 @@ public class QuizController {
     }
 
     @Operation(summary = "퀴즈 조회", description = "퀴즈를 조회합니다")
-    @GetMapping("/{quizId}")
-    public ResponseEntity<BaseResponse<QuizRes>> getQuiz(@PathVariable Long quizId) {
-        QuizRes respose = quizService.getQuiz(quizId);
+    @GetMapping("/{ruinsId}")
+    public ResponseEntity<BaseResponse<QuizRes>> getQuiz(@PathVariable Long ruinsId) {
+        QuizRes respose = quizService.getQuiz(ruinsId);
         return BaseResponse.of(respose);
     }
 

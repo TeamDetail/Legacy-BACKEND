@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BlockHistoryJpaRepo extends JpaRepository<BlockHistory, Long> {
-    boolean existsByUserIdAndBlock_RuinsId(Long userId, Long ruinsId);
+    boolean existsByUserIdAndBlock_BlockId(Long userId, Long blockId);
 }
