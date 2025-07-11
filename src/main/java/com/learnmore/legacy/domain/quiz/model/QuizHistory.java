@@ -1,4 +1,4 @@
-package com.learnmore.legacy.domain.block.model;
+package com.learnmore.legacy.domain.quiz.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,17 +11,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "block_history")
-public class BlockHistory {
+@Table(name = "quiz_history")
+public class QuizHistory {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "block_explore_id")
-    private Long blockExploreId;
+    private Long quizHistoryId;
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "block_id", nullable = false)
-    private Block block;
+    @Column(name = "quiz_id", nullable = false)
+    private Long quizId;
 }

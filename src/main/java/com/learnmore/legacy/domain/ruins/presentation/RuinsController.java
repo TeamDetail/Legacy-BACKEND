@@ -31,7 +31,7 @@ public class RuinsController {
 
     @Operation(summary = "유적지 상세 조회", description = "유적지 상세 정보를 조회합니다")
     @GetMapping("/{id}")
-    public ResponseEntity<BaseResponse<RuinsDetailRes>> getRuinsDetail(@PathVariable Integer id) {
+    public ResponseEntity<BaseResponse<RuinsDetailRes>> getRuinsDetail(@PathVariable Long id) {
         return BaseResponse.of(ruinsService.getRuinsDetail(id));
     }
 }

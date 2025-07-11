@@ -2,15 +2,20 @@ package com.learnmore.legacy.domain.block.service;
 
 import com.learnmore.legacy.domain.block.model.Block;
 import com.learnmore.legacy.domain.block.model.BlockHistory;
+import com.learnmore.legacy.domain.block.model.enums.BlockType;
 import com.learnmore.legacy.domain.block.model.repo.BlockHistoryJpaRepo;
 import com.learnmore.legacy.domain.block.model.repo.BlockJpaRepo;
 import com.learnmore.legacy.domain.block.presentation.dto.request.BlockAddReq;
 import com.learnmore.legacy.domain.block.presentation.dto.response.BlockRes;
+import com.learnmore.legacy.domain.ruins.model.repo.RuinsJpaRepo;
+import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,9 +25,16 @@ public class BlockService {
     private final BlockJpaRepo blockJpaRepo;
     private final BlockHistoryJpaRepo blockHistoryJpaRepo;
 
-    public BlockRes addBlock(BlockAddReq request) {
+    public BlockRes addBlock(BlockAddReq request, Long userId) {
+        List<Block> existingBlocks = blockJpaRepo.findAllByLatitudeAndLongitude(
+                request.getLatitude(), request.getLongitude()
+        );
+        if (!existingBlocks.isEmpty()) {
+            throw new IllegalStateException("해당 위치에 이미 블록이 존재합니다.");
+        }
+
         Block block = Block.builder()
-                .blockType(request.getBlockType())
+                .blockType(BlockType.NORMAL)
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .build();
@@ -30,19 +42,13 @@ public class BlockService {
         Block savedBlock = blockJpaRepo.save(block);
 
         BlockHistory blockHistory = BlockHistory.builder()
-                .userId(request.getUserId())
+                .userId(userId)
                 .block(savedBlock)
-                .mobileOrWebsite(request.getMobileOrWebsite())
                 .build();
 
         blockHistoryJpaRepo.save(blockHistory);
 
-        return BlockRes.builder()
-                .blockId(savedBlock.getBlockId())
-                .blockType(savedBlock.getBlockType())
-                .latitude(savedBlock.getLatitude())
-                .longitude(savedBlock.getLongitude())
-                .build();
+        return BlockRes.from(savedBlock);
     }
 
     @Transactional(readOnly = true)
@@ -57,6 +63,26 @@ public class BlockService {
                         .longitude(block.getLongitude())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void createBlockWithHistory(Long ruinsId, Long userId, BigDecimal latitude, BigDecimal longitude) {
+        boolean alreadyReceived = blockHistoryJpaRepo.existsByUserIdAndBlock_BlockId(userId, ruinsId);
+        if (alreadyReceived) return;
+
+        Block block = Block.builder()
+                .blockType(BlockType.RUINS)
+                .latitude(latitude)
+                .longitude(longitude)
+                .build();
+
+        BlockHistory history = BlockHistory.builder()
+                .userId(userId)
+                .block(block)
+                .build();
+
+        blockJpaRepo.save(block);
+        blockHistoryJpaRepo.save(history);
     }
 
 }
