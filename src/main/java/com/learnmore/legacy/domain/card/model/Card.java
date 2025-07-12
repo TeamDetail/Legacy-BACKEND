@@ -31,9 +31,9 @@ public class Card {
     @JoinColumn(name = "region_attribute_id", nullable = false)
     private RegionAttribute regionAttribute;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "quiz_history_id", nullable = false)
-//    private QuizHistory quizHistory;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "quiz_history_id", nullable = false)
+    private QuizHistory quizHistory;
 
     @Column(name = "card_name", nullable = false)
     private String cardName;
