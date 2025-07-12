@@ -31,6 +31,7 @@ public class Card {
     @JoinColumn(name = "region_attribute_id", nullable = false)
     private RegionAttribute regionAttribute;
 
+    // quiz 추가 시 추가하기
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "quiz_history_id", nullable = false)
 //    private QuizHistory quizHistory;

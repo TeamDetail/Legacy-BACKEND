@@ -21,14 +21,14 @@ public class Deck {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "deck_id")
-    private Long id;
+    private Long deckId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "deck_name", nullable = false)
-    private String deckName;
+    @Column(name = "deck_number")
+    private int deckNumber;
 
     @CreationTimestamp
     @Column(name = "create_at", nullable = false, updatable = false)
