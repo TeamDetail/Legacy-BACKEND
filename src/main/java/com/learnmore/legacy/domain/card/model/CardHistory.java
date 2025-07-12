@@ -28,7 +28,7 @@ public class CardHistory {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "deck_id", nullable = false)
+    @JoinColumn(name = "deck_id", nullable = true)
     private Deck deck;
 
     @Enumerated(EnumType.STRING)
