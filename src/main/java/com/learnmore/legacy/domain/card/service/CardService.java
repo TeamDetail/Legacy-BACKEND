@@ -10,6 +10,8 @@ import com.learnmore.legacy.domain.card.presentation.dto.response.CardRes;
 import com.learnmore.legacy.domain.card.presentation.dto.response.LineAttributeRes;
 import com.learnmore.legacy.domain.card.presentation.dto.response.NationAttributeRes;
 import com.learnmore.legacy.domain.card.presentation.dto.response.RegionAttributeRes;
+import com.learnmore.legacy.domain.quiz.model.QuizHistory;
+import com.learnmore.legacy.domain.quiz.model.repo.QuizHistoryJpaRepo;
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import jakarta.persistence.EntityNotFoundException;
@@ -30,6 +32,7 @@ public class CardService {
     private final LineAttributeJpaRepo lineAttributeJpaRepo;
     private final RegionAttributeJpaRepo regionAttributeJpaRepo;
     private final UserJpaRepo userJpaRepo;
+    private final QuizHistoryJpaRepo quizHistoryJpaRepo;
 
     public List<CardRes> getCardByCardId(Long userId) {
         List<CardHistory> histories = cardHistoryJpaRepo.findAllByUser_UserId(userId);
@@ -63,9 +66,13 @@ public class CardService {
         RegionAttribute region = regionAttributeJpaRepo.findByAttributeName(cardReq.getRegionAttributeName())
                 .orElseThrow(() -> new EntityNotFoundException("지역 속성을 찾을 수 없습니다."));
 
+        QuizHistory quizHistory = quizHistoryJpaRepo.findById(cardReq.getQuizHistoryId())
+                .orElseThrow(() -> new EntityNotFoundException("퀴즈 내역을 찾을 수 없습니다."));
+
         Card card = Card.builder()
                 .cardName(cardReq.getCardName())
                 .cardImageUrl(cardReq.getCardImageUrl())
+                .quizHistory(quizHistory)
                 .nationAttribute(nation)
                 .lineAttribute(line)
                 .regionAttribute(region)
