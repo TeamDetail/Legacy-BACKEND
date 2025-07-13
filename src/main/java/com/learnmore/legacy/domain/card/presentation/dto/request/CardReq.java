@@ -9,6 +9,7 @@ import lombok.Data;
 public class CardReq {
     private Long userId;
     private Long deckId;
+    private Long quizHistoryId;
     private String cardName;
     private String cardImageUrl;
     private CardType cardType;
