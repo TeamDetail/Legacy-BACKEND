@@ -31,7 +31,6 @@ public class CardService {
     private final RegionAttributeJpaRepo regionAttributeJpaRepo;
     private final UserJpaRepo userJpaRepo;
 
-
     public List<CardRes> getCardByCardId(Long userId) {
         List<CardHistory> histories = cardHistoryJpaRepo.findAllByUser_UserId(userId);
         return histories.stream()
