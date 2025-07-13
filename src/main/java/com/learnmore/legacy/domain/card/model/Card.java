@@ -39,8 +39,8 @@ public class Card {
     @Column(name = "card_name", nullable = false)
     private String cardName;
 
-    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
-    private List<CardHistory> cardHistory;
+//    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
+//    private List<CardHistory> cardHistory;
 
     @Column(name = "card_image_url", nullable = false)
     private String cardImageUrl;
