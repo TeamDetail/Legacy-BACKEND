@@ -67,13 +67,13 @@ public class CardService {
                 .orElseThrow(() -> new EntityNotFoundException("지역 속성을 찾을 수 없습니다."));
 
         QuizHistory quizHistory = quizHistoryJpaRepo.findById(cardReq.getQuizHistoryId())
-                .orElseThrow(() -> new EntityNotFoundException("퀴즈 내역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("퀴즈 내역을 찾을 없습니다."));
 
         Card card = Card.builder()
                 .cardName(cardReq.getCardName())
                 .cardImageUrl(cardReq.getCardImageUrl())
-                .quizHistory(quizHistory)
                 .nationAttribute(nation)
+                .quizHistory(quizHistory)
                 .lineAttribute(line)
                 .regionAttribute(region)
                 .build();
