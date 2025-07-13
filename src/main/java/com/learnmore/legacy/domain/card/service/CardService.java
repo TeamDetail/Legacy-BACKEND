@@ -1,6 +1,7 @@
 package com.learnmore.legacy.domain.card.service;
 
 import com.learnmore.legacy.domain.card.model.*;
+import com.learnmore.legacy.domain.card.model.enums.CardType;
 import com.learnmore.legacy.domain.card.model.repo.*;
 import com.learnmore.legacy.domain.card.presentation.dto.request.CardReq;
 import com.learnmore.legacy.domain.card.presentation.dto.request.LineAttributeReq;
@@ -39,6 +40,16 @@ public class CardService {
         return histories.stream()
                 .map(history -> CardRes.from(history.getCard(), history))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public long countCardByUserId(Long userId) {
+        return cardHistoryJpaRepo.countByUser_UserId(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public long countShiningCardByUserId(Long userId) {
+        return cardHistoryJpaRepo.countByUser_UserIdAndCardType(userId, CardType.SHINING_CARD);
     }
 
     public List<CardRes> getCardsByRegion(String region) {

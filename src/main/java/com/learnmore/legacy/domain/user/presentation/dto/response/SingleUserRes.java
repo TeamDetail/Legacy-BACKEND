@@ -3,27 +3,21 @@ package com.learnmore.legacy.domain.user.presentation.dto.response;
 import com.learnmore.legacy.domain.user.model.Style;
 import com.learnmore.legacy.domain.user.model.User;
 
-public record UserRes(
+public record SingleUserRes(
         Long userId,
         String nickname,
         Integer level,
-        Integer exp,
-        Integer credit,
-        UserStatsRes stats,
-        UserRecordRes record,
         String imageUrl,
+        UserRecordRes record,
         UserStyleRes title
 ) {
-    public static UserRes from(User user, Style style,long countCard,long countShiningCard) {
-        return new UserRes(
+    public static SingleUserRes from(User user, Style style, long countCard, long countShiningCard) {
+        return new SingleUserRes(
                 user.getUserId(),
                 user.getNickname(),
                 user.getLevel(),
-                user.getExp(),
-                user.getCredit(),
-                UserStatsRes.from(user),
-                UserRecordRes.from(user, countCard, countShiningCard),
                 user.getImageUrl(),
+                UserRecordRes.from(user, countCard, countShiningCard),
                 UserStyleRes.from(style)
         );
     }

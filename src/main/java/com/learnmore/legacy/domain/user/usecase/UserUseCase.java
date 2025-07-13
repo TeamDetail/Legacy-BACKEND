@@ -1,11 +1,13 @@
 package com.learnmore.legacy.domain.user.usecase;
 
+import com.learnmore.legacy.domain.card.service.CardService;
 import com.learnmore.legacy.domain.user.error.StyleError;
 import com.learnmore.legacy.domain.user.model.Style;
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.presentation.dto.request.ProfileImageReq;
 import com.learnmore.legacy.domain.user.presentation.dto.request.StyleIdReq;
 import com.learnmore.legacy.domain.user.presentation.dto.request.UserStyleReq;
+import com.learnmore.legacy.domain.user.presentation.dto.response.SingleUserRes;
 import com.learnmore.legacy.domain.user.presentation.dto.response.UserRes;
 import com.learnmore.legacy.domain.user.presentation.dto.response.UserStyleRes;
 import com.learnmore.legacy.domain.user.service.UserService;
@@ -22,13 +24,15 @@ import java.util.List;
 public class UserUseCase {
     private final UserSessionHolder userSessionHolder;
     private final UserService userService;
+    private final CardService cardService;
 
     @Transactional(readOnly = true)
     public UserRes getMe(){
         User user = userSessionHolder.get();
         Style style = userService.findEquipStyle(user);
-
-        return UserRes.from(user, style);
+        long countCard=cardService.countCardByUserId(user.getUserId());
+        long countShiningCard=cardService.countShiningCardByUserId(user.getUserId());
+        return UserRes.from(user, style,countCard,countShiningCard);
     }
 
     @Transactional
@@ -61,10 +65,12 @@ public class UserUseCase {
     }
 
     @Transactional(readOnly = true)
-    public UserRes getUser(Long userId) {
+    public SingleUserRes getUser(Long userId) {
         User user=userService.findByUserId(userId);
         Style style = userService.findEquipStyle(user);
-        return UserRes.from(user, style);
+        long countCard=cardService.countCardByUserId(user.getUserId());
+        long countShiningCard=cardService.countShiningCardByUserId(user.getUserId());
+        return SingleUserRes.from(user, style,countCard,countShiningCard);
     }
 
     @Transactional

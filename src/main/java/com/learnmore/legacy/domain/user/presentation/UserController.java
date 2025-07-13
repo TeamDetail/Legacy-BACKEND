@@ -4,6 +4,7 @@ import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.presentation.dto.request.ProfileImageReq;
 import com.learnmore.legacy.domain.user.presentation.dto.request.StyleIdReq;
 import com.learnmore.legacy.domain.user.presentation.dto.request.UserStyleReq;
+import com.learnmore.legacy.domain.user.presentation.dto.response.SingleUserRes;
 import com.learnmore.legacy.domain.user.presentation.dto.response.UserRes;
 import com.learnmore.legacy.domain.user.presentation.dto.response.UserStyleRes;
 import com.learnmore.legacy.domain.user.usecase.UserUseCase;
@@ -24,7 +25,7 @@ public class UserController {
 
     @Operation(summary = "유저 단일 정보 조회", description = "유저 id 로 유저 정보 조회 (로그인 불필요)")
     @GetMapping("/{id}")
-    public ResponseEntity<BaseResponse<UserRes>> getUserById(@PathVariable Long id) {
+    public ResponseEntity<BaseResponse<SingleUserRes>> getUserById(@PathVariable Long id) {
         return BaseResponse.of(userUseCase.getUser(id));
     }
 
