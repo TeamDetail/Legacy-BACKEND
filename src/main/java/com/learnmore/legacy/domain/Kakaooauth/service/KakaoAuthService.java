@@ -47,6 +47,7 @@ public class KakaoAuthService {
     }
 
     private KakaoTokenRes getAccessToken(String code) {
+        System.out.println(kakaoConfig.getWebRedirectUri());
         return webClient.post()
                 .uri("/oauth/token")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
