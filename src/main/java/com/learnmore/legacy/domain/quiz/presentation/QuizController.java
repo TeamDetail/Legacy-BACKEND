@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -24,23 +26,26 @@ public class QuizController {
     @Operation(summary = "더미 퀴즈 추가", description = "새로운 퀴즈를 생성합니다.")
     @PostMapping
     public ResponseEntity<BaseResponse<QuizAddRes>> addQuiz(@RequestBody QuizAddReq request) {
-        QuizAddRes result = quizService.addQuiz(request);
-        return BaseResponse.of(result);
+        return BaseResponse.of(quizService.addQuiz(request));
     }
 
-    @Operation(summary = "퀴즈 조회", description = "퀴즈를 조회합니다")
+    @Operation(summary = "퀴즈 조회", description = "퀴즈를 조회합니다.")
     @GetMapping("/{ruinsId}")
-    public ResponseEntity<BaseResponse<QuizRes>> getQuiz(@PathVariable Long ruinsId) {
-        QuizRes respose = quizService.getQuiz(ruinsId);
-        return BaseResponse.of(respose);
+    public ResponseEntity<BaseResponse<List<QuizRes>>> getQuiz(@PathVariable Long ruinsId) {
+        return BaseResponse.of(quizService.getQuiz(ruinsId));
+    }
+
+    @Operation(summary = "힌트 조회", description = "힌트를 조회합니다.")
+    @GetMapping("/hint/{quizId}")
+    public ResponseEntity<BaseResponse<String>> getHint(@PathVariable Long quizId) {
+        return BaseResponse.of(quizService.gethint(quizId));
     }
 
     @Operation(summary = "퀴즈 정답 확인", description = "사용자의 퀴즈 정답을 확인합니다.")
     @PostMapping("/check")
     public ResponseEntity<BaseResponse<Boolean>> checkQuizAnswer(@RequestBody QuizAnswerReq request, @AuthenticationPrincipal AuthDetails authDetails) {
         Long userId = authDetails.getId();
-        boolean isCorrect = quizService.checkAnswer(request, userId);
-        return BaseResponse.of(isCorrect);
+        return BaseResponse.of(quizService.checkAnswer(request, userId));
     }
 
 }

@@ -52,22 +52,38 @@ public class QuizService {
                         .build())
                 .toList();
 
-        quizOptionJpaRepo.saveAll(options);
+        List<QuizOption> savedOptions = quizOptionJpaRepo.saveAll(options);
 
-        return QuizAddRes.from(savedQuiz, req.optionValues());
+        List<String> optionValues = savedOptions.stream()
+                .map(QuizOption::getOptionValue)
+                .toList();
+
+        return QuizAddRes.from(savedQuiz, optionValues);
     }
 
-    public QuizRes getQuiz(Long ruinsId) {
-        Quiz quiz = quizJpaRepo.findByRuinsId(ruinsId)
+    public List<QuizRes> getQuiz(Long ruinsId) {
+        Ruins ruins = ruinsJpaRepo.findById(ruinsId)
+                .orElseThrow(() -> new EntityNotFoundException("유적지를 찾을 수 없습니다."));
+
+        List<Quiz> quizzes = quizJpaRepo.findAllByRuinsId(ruinsId);
+
+        return quizzes.stream()
+                .map(quiz -> {
+                    List<QuizOption> options = quizOptionJpaRepo.findByQuiz_QuizId(quiz.getQuizId());
+
+                    List<String> optionContents = options.stream()
+                            .map(QuizOption::getOptionValue)
+                            .collect(Collectors.toList());
+
+                    return QuizRes.from(quiz, ruins, optionContents);
+                }).toList();
+    }
+
+    public String gethint(Long quizId){
+        Quiz quiz = quizJpaRepo.findById(quizId)
                 .orElseThrow(() -> new EntityNotFoundException("퀴즈를 찾을 수 없습니다."));
 
-        List<QuizOption> options = quizOptionJpaRepo.findByQuiz_QuizId(ruinsId);
-
-        List<String> optionContents = options.stream()
-                .map(QuizOption::getOptionValue)
-                .collect(Collectors.toList());
-
-        return QuizRes.from(quiz, optionContents);
+        return quiz.getHint();
     }
 
     @Transactional
