@@ -27,8 +27,8 @@ public class Deck {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "deck_number")
-    private int deckNumber;
+    @Column(name = "deck_number", nullable = false)
+    private Integer deckNumber;
 
     @CreationTimestamp
     @Column(name = "create_at", nullable = false, updatable = false)
