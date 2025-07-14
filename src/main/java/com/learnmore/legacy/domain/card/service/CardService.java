@@ -1,5 +1,6 @@
 package com.learnmore.legacy.domain.card.service;
 
+import com.learnmore.legacy.domain.card.error.*;
 import com.learnmore.legacy.domain.card.model.*;
 import com.learnmore.legacy.domain.card.model.enums.CardType;
 import com.learnmore.legacy.domain.card.model.repo.*;
@@ -7,10 +8,7 @@ import com.learnmore.legacy.domain.card.presentation.dto.request.CardReq;
 import com.learnmore.legacy.domain.card.presentation.dto.request.LineAttributeReq;
 import com.learnmore.legacy.domain.card.presentation.dto.request.NationAttributeReq;
 import com.learnmore.legacy.domain.card.presentation.dto.request.RegionAttributeReq;
-import com.learnmore.legacy.domain.card.presentation.dto.response.CardRes;
-import com.learnmore.legacy.domain.card.presentation.dto.response.LineAttributeRes;
-import com.learnmore.legacy.domain.card.presentation.dto.response.NationAttributeRes;
-import com.learnmore.legacy.domain.card.presentation.dto.response.RegionAttributeRes;
+import com.learnmore.legacy.domain.card.presentation.dto.response.*;
 import com.learnmore.legacy.domain.quiz.model.QuizHistory;
 import com.learnmore.legacy.domain.quiz.model.repo.QuizHistoryJpaRepo;
 import com.learnmore.legacy.domain.user.model.User;
@@ -52,30 +50,35 @@ public class CardService {
         return cardHistoryJpaRepo.countByUser_UserIdAndCardType(userId, CardType.SHINING_CARD);
     }
 
-    public List<CardRes> getCardsByRegion(String region) {
+    public CardsRes getCardsByRegion(String region) {
         List<Card> cards = cardJpaRepo.findAllByRegionAttribute_AttributeName(region);
 
-        return cards.stream()
+        List<CardRes> cardResList = cards.stream()
                 .map(card -> {
                     CardHistory cardType = cardHistoryJpaRepo
                             .findTopByCard_CardIdOrderByHistoryIdDesc(card.getCardId())
-                            .orElse(null);
+                            .orElseThrow(() -> new EntityNotFoundException(CardHistoryError.CARD_HISTORY_ERROR.getMessage()));
 
                     return CardRes.from(card, cardType);
                 })
                 .toList();
+
+        return CardsRes.builder()
+                .maxCount((long) cards.size())
+                .cards(cardResList)
+                .build();
     }
 
     @Transactional
     public CardRes addCard(CardReq cardReq) {
         NationAttribute nation = nationAttributeJpaRepo.findByAttributeName(cardReq.getNationAttributeName())
-                .orElseThrow(() -> new EntityNotFoundException("국가 속성을 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException(NationAttributeError.NATION_ATTRIBUTE_NOT_FOUND.getMessage()));
 
         LineAttribute line = lineAttributeJpaRepo.findByAttributeName(cardReq.getLineAttributeName())
-                .orElseThrow(() -> new EntityNotFoundException("개열 속성을 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException(LineAttributeError.LINE_ATTRIBUTE_ERROR.getMessage()));
 
         RegionAttribute region = regionAttributeJpaRepo.findByAttributeName(cardReq.getRegionAttributeName())
-                .orElseThrow(() -> new EntityNotFoundException("지역 속성을 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException(RegionAttributeError.REGION_ATTRIBUTE_ERROR.getMessage()));
 
         QuizHistory quizHistory = quizHistoryJpaRepo.findById(cardReq.getQuizHistoryId())
                 .orElseThrow(() -> new EntityNotFoundException("퀴즈 내역을 찾을 없습니다."));
@@ -93,7 +96,7 @@ public class CardService {
         User user = userJpaRepo.findByUserId(cardReq.getUserId());
 
         Deck deck = deckJpaRepo.findById(cardReq.getDeckId())
-                .orElseThrow(() -> new EntityNotFoundException(""));
+                .orElseThrow(() -> new EntityNotFoundException(DeckError.DECK_ERROR.getMessage()));
 
         CardHistory cardHistory = CardHistory.builder()
                 .card(card)
