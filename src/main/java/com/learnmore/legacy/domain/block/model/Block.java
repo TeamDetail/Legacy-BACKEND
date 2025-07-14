@@ -8,8 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Data
@@ -27,9 +25,9 @@ public class Block {
     @Column(name = "block_type", nullable = false)
     private BlockType blockType;
 
-    @Column(name = "latitude", nullable = false)
+    @Column(name = "latitude", nullable = false, precision = 10, scale = 8)
     private BigDecimal latitude;
 
-    @Column(name = "longitude", nullable = false)
+    @Column(name = "longitude", nullable = false, precision = 11, scale = 8)
     private BigDecimal longitude;
 }

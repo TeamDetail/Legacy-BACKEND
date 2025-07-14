@@ -17,21 +17,20 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/block")
 public class BlockController {
+
     private final BlockService blockService;
 
     @Operation(summary = "블록 추가", description = "블록을 추가합니다")
     @PostMapping
     public ResponseEntity<BaseResponse<BlockRes>> addBlock(@RequestBody BlockAddReq request, @AuthenticationPrincipal AuthDetails authDetails) {
         Long userId = authDetails.getId();
-        BlockRes response = blockService.addBlock(request, userId);
-        return BaseResponse.of(response);
+        return BaseResponse.of(blockService.addBlock(request, userId));
     }
 
     @Operation(summary = "내 블록 조회", description = "내 블록을 조회합니다")
     @GetMapping("/user/me")
     public ResponseEntity<BaseResponse<List<BlockRes>>> getMyBlocks(@AuthenticationPrincipal AuthDetails userDetails) {
         Long userId = userDetails.getId();
-        List<BlockRes> blocks = blockService.getBlocksByUserId(userId);
-        return BaseResponse.of(blocks);
+        return BaseResponse.of(blockService.getBlocksByUserId(userId));
     }
 }
