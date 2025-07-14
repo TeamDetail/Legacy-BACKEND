@@ -57,7 +57,7 @@ public class CardService {
                 .map(card -> {
                     CardHistory cardType = cardHistoryJpaRepo
                             .findTopByCard_CardIdOrderByHistoryIdDesc(card.getCardId())
-                            .orElseThrow(() -> new EntityNotFoundException(CardHistoryError.CARD_HISTORY_ERROR.getMessage()));
+                            .orElseThrow(() -> new EntityNotFoundException(CardError.CARD_HISTORY_ERROR.getMessage()));
 
                     return CardRes.from(card, cardType);
                 })
@@ -72,13 +72,13 @@ public class CardService {
     @Transactional
     public CardRes addCard(CardReq cardReq) {
         NationAttribute nation = nationAttributeJpaRepo.findByAttributeName(cardReq.getNationAttributeName())
-                .orElseThrow(() -> new EntityNotFoundException(NationAttributeError.NATION_ATTRIBUTE_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new EntityNotFoundException(CardError.NATION_ATTRIBUTE_NOT_FOUND.getMessage()));
 
         LineAttribute line = lineAttributeJpaRepo.findByAttributeName(cardReq.getLineAttributeName())
-                .orElseThrow(() -> new EntityNotFoundException(LineAttributeError.LINE_ATTRIBUTE_ERROR.getMessage()));
+                .orElseThrow(() -> new EntityNotFoundException(CardError.LINE_ATTRIBUTE_ERROR.getMessage()));
 
         RegionAttribute region = regionAttributeJpaRepo.findByAttributeName(cardReq.getRegionAttributeName())
-                .orElseThrow(() -> new EntityNotFoundException(RegionAttributeError.REGION_ATTRIBUTE_ERROR.getMessage()));
+                .orElseThrow(() -> new EntityNotFoundException(CardError.REGION_ATTRIBUTE_ERROR.getMessage()));
 
         QuizHistory quizHistory = quizHistoryJpaRepo.findById(cardReq.getQuizHistoryId())
                 .orElseThrow(() -> new EntityNotFoundException("퀴즈 내역을 찾을 없습니다."));
@@ -96,7 +96,7 @@ public class CardService {
         User user = userJpaRepo.findByUserId(cardReq.getUserId());
 
         Deck deck = deckJpaRepo.findById(cardReq.getDeckId())
-                .orElseThrow(() -> new EntityNotFoundException(DeckError.DECK_ERROR.getMessage()));
+                .orElseThrow(() -> new EntityNotFoundException(CardError.DECK_ERROR.getMessage()));
 
         CardHistory cardHistory = CardHistory.builder()
                 .card(card)
