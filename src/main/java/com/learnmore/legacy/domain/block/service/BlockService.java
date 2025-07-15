@@ -1,5 +1,6 @@
 package com.learnmore.legacy.domain.block.service;
 
+import com.learnmore.legacy.domain.block.error.BlockError;
 import com.learnmore.legacy.domain.block.model.Block;
 import com.learnmore.legacy.domain.block.model.BlockHistory;
 import com.learnmore.legacy.domain.block.model.enums.BlockType;
@@ -7,15 +8,13 @@ import com.learnmore.legacy.domain.block.model.repo.BlockHistoryJpaRepo;
 import com.learnmore.legacy.domain.block.model.repo.BlockJpaRepo;
 import com.learnmore.legacy.domain.block.presentation.dto.request.BlockAddReq;
 import com.learnmore.legacy.domain.block.presentation.dto.response.BlockRes;
-import com.learnmore.legacy.domain.ruins.model.repo.RuinsJpaRepo;
-import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
+import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +29,7 @@ public class BlockService {
                 request.getLatitude(), request.getLongitude()
         );
         if (!existingBlocks.isEmpty()) {
-            throw new IllegalStateException("해당 위치에 이미 블록이 존재합니다.");
+            throw new CustomException(BlockError.BLOCK_ALREADY_EXISTS);
         }
 
         Block block = Block.builder()
