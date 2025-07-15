@@ -9,7 +9,7 @@ public record UserStyleRes(
 ) {
     public static UserStyleRes from(Style style) {
         if (style == null) {
-            return new UserStyleRes( "칭호가 없습니다", "",0L);
+            return new UserStyleRes( "", "",0L);
         }
         return new UserStyleRes(
                 style.getStyleName(),
