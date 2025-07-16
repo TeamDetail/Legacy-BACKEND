@@ -7,11 +7,9 @@ import com.learnmore.legacy.domain.quiz.presentation.dto.QuizRes;
 import com.learnmore.legacy.domain.quiz.service.QuizService;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
-import com.learnmore.legacy.global.security.auth.AuthDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +21,7 @@ import java.util.List;
 public class QuizController {
 
     private final QuizService quizService;
+    private final UserSessionHolder userSessionHolder;
 
     @Operation(summary = "더미 퀴즈 추가", description = "새로운 퀴즈를 생성합니다.")
     @PostMapping
@@ -44,7 +43,7 @@ public class QuizController {
 
     @Operation(summary = "퀴즈 정답 확인", description = "사용자의 퀴즈 정답을 확인합니다.")
     @PostMapping("/check")
-    public ResponseEntity<BaseResponse<Boolean>> checkQuizAnswer(@RequestBody QuizAnswerReq request, @AuthenticationPrincipal UserSessionHolder userSessionHolder) {
+    public ResponseEntity<BaseResponse<Boolean>> checkQuizAnswer(@RequestBody QuizAnswerReq request) {
         Long userId = userSessionHolder.get().getUserId();
         return BaseResponse.of(quizService.checkAnswer(request, userId));
     }
