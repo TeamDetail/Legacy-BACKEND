@@ -1,9 +1,10 @@
 package com.learnmore.legacy.domain.quiz.presentation;
 
-import com.learnmore.legacy.domain.quiz.presentation.dto.QuizAddReq;
-import com.learnmore.legacy.domain.quiz.presentation.dto.QuizAddRes;
-import com.learnmore.legacy.domain.quiz.presentation.dto.QuizAnswerReq;
-import com.learnmore.legacy.domain.quiz.presentation.dto.QuizRes;
+import com.learnmore.legacy.domain.quiz.presentation.dto.request.QuizAddReq;
+import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizAddRes;
+import com.learnmore.legacy.domain.quiz.presentation.dto.request.QuizAnswerReq;
+import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizAnswerRes;
+import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizRes;
 import com.learnmore.legacy.domain.quiz.service.QuizService;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
@@ -43,9 +44,9 @@ public class QuizController {
 
     @Operation(summary = "퀴즈 정답 확인", description = "사용자의 퀴즈 정답을 확인합니다.")
     @PostMapping("/check")
-    public ResponseEntity<BaseResponse<Boolean>> checkQuizAnswer(@RequestBody QuizAnswerReq request) {
+    public ResponseEntity<BaseResponse<QuizAnswerRes>> checkQuizAnswers(@RequestBody List<QuizAnswerReq> requests) {
         Long userId = userSessionHolder.get().getUserId();
-        return BaseResponse.of(quizService.checkAnswer(request, userId));
+        return BaseResponse.of(quizService.checkAnswers(requests, userId));
     }
 
 }

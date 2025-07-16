@@ -10,7 +10,8 @@ import org.springframework.http.HttpStatus;
 public enum QuizError implements CustomError {
 
     QUIZ_NOT_FOUND(HttpStatus.NOT_FOUND, "퀴즈를 찾을 수 없습니다."),
-    QUIZ_ALREADY_SOLVED(HttpStatus.CONFLICT, "이미 푼 퀴즈입니다.");
+    QUIZ_ALREADY_SOLVED(HttpStatus.CONFLICT, "이미 푼 퀴즈입니다."),
+    NOT_ENOUGH_QUIZ_ANSWERS(HttpStatus.BAD_REQUEST, "퀴즈 정답은 최소 3개 이상 제출해야 합니다.");
 
     private final HttpStatus status;
     private final String message;
