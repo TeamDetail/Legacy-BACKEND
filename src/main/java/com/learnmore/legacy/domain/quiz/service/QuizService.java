@@ -9,21 +9,22 @@ import com.learnmore.legacy.domain.quiz.model.QuizOption;
 import com.learnmore.legacy.domain.quiz.model.repo.QuizHistoryJpaRepo;
 import com.learnmore.legacy.domain.quiz.model.repo.QuizJpaRepo;
 import com.learnmore.legacy.domain.quiz.model.repo.QuizOptionJpaRepo;
-import com.learnmore.legacy.domain.quiz.presentation.dto.QuizAddReq;
-import com.learnmore.legacy.domain.quiz.presentation.dto.QuizAddRes;
-import com.learnmore.legacy.domain.quiz.presentation.dto.QuizAnswerReq;
-import com.learnmore.legacy.domain.quiz.presentation.dto.QuizRes;
+import com.learnmore.legacy.domain.quiz.presentation.dto.request.QuizAddReq;
+import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizAddRes;
+import com.learnmore.legacy.domain.quiz.presentation.dto.request.QuizAnswerReq;
+import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizAnswerRes;
+import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizAnswerResult;
+import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizRes;
 import com.learnmore.legacy.domain.ruins.error.RuinsError;
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import com.learnmore.legacy.domain.ruins.model.repo.RuinsJpaRepo;
-import com.learnmore.legacy.global.exception.CustomError;
 import com.learnmore.legacy.global.exception.CustomException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,37 +92,55 @@ public class QuizService {
     }
 
     @Transactional
-    public boolean checkAnswer(QuizAnswerReq request, Long userId) {
-        Quiz quiz = quizJpaRepo.findById(request.quizId())
-                .orElseThrow(() -> new CustomException(QuizError.QUIZ_NOT_FOUND));
-
-        Long ruinsId = quiz.getRuinsId();
-        boolean isCorrect = quiz.getAnswerOption().equalsIgnoreCase(request.answerOption());
-
-        if (quizHistoryJpaRepo.existsByUserIdAndQuizId(userId, quiz.getQuizId())) {
-            throw new CustomException(QuizError.QUIZ_ALREADY_SOLVED);
+    public QuizAnswerRes checkAnswers(List<QuizAnswerReq> requests, Long userId) {
+        if (requests.size() < 3) {
+            throw new CustomException(QuizError.NOT_ENOUGH_QUIZ_ANSWERS);
         }
 
-        if (isCorrect) {
-            quizHistoryJpaRepo.save(QuizHistory.builder()
-                    .userId(userId)
-                    .quizId(quiz.getQuizId())
-                    .build());
+        List<QuizAnswerResult> results = new ArrayList<>();
+        int correctCount = 0;
+        Long ruinsId = null;
 
-            int correctCount = quizHistoryJpaRepo.countCorrectSolvesByUserIdAndRuinsId(userId, ruinsId);
+        for (QuizAnswerReq request : requests) {
+            Quiz quiz = quizJpaRepo.findById(request.quizId())
+                    .orElseThrow(() -> new CustomException(QuizError.QUIZ_NOT_FOUND));
 
-            if (correctCount == 3 && !blockHistoryJpaRepo.existsByUserIdAndBlock_BlockId(userId, ruinsId)) {
-                Ruins ruins = ruinsJpaRepo.findById(ruinsId)
-                        .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
+            if (quizHistoryJpaRepo.existsByUserIdAndQuizId(userId, quiz.getQuizId())) {
+                throw new CustomException(QuizError.QUIZ_ALREADY_SOLVED);
+            }
 
-                BigDecimal latitude = ruins.getLatitude();
-                BigDecimal longitude = ruins.getLongitude();
+            boolean isCorrect = quiz.getAnswerOption().equalsIgnoreCase(request.answerOption());
+            results.add(new QuizAnswerResult(quiz.getQuizId(), isCorrect));
 
-                blockService.createBlockWithHistory(ruinsId, userId, latitude, longitude);
+            if (isCorrect) {
+                quizHistoryJpaRepo.save(QuizHistory.builder()
+                        .userId(userId)
+                        .quizId(quiz.getQuizId())
+                        .build());
+                correctCount++;
+            }
+
+            if (ruinsId == null) {
+                ruinsId = quiz.getRuinsId();
             }
         }
 
-        return isCorrect;
+        boolean blockGiven = false;
+
+        if (correctCount >= 3 && !blockHistoryJpaRepo.existsByUserIdAndBlock_BlockId(userId, ruinsId)) {
+            Ruins ruins = ruinsJpaRepo.findById(ruinsId)
+                    .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
+
+            blockService.createBlockWithHistory(
+                    ruinsId,
+                    userId,
+                    ruins.getLatitude(),
+                    ruins.getLongitude()
+            );
+            blockGiven = true;
+        }
+
+        return new QuizAnswerRes(blockGiven, results);
     }
     
 }
