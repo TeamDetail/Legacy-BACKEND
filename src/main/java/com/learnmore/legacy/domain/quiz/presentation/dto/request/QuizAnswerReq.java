@@ -1,4 +1,4 @@
-package com.learnmore.legacy.domain.quiz.presentation.dto;
+package com.learnmore.legacy.domain.quiz.presentation.dto.request;
 
 public record QuizAnswerReq(
         Long quizId,
