@@ -1,5 +1,6 @@
 package com.learnmore.legacy.domain.quiz.presentation;
 
+import com.learnmore.legacy.domain.quiz.model.repo.QuizHistoryJpaRepo;
 import com.learnmore.legacy.domain.quiz.presentation.dto.request.QuizAddReq;
 import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizAddRes;
 import com.learnmore.legacy.domain.quiz.presentation.dto.request.QuizAnswerReq;
@@ -47,6 +48,13 @@ public class QuizController {
     public ResponseEntity<BaseResponse<QuizAnswerRes>> checkQuizAnswers(@RequestBody List<QuizAnswerReq> requests) {
         Long userId = userSessionHolder.get().getUserId();
         return BaseResponse.of(quizService.checkAnswers(requests, userId));
+    }
+
+    @Operation(summary = "퀴즈 리셋", description = "사용자의 퀴즈를 리셋합니다.")
+    @DeleteMapping("/quiz-history/reset/{userId}")
+    public ResponseEntity<Void> resetQuizHistory(@PathVariable Long userId) {
+        quizService.resetQuizHistory(userId);
+        return ResponseEntity.noContent().build();
     }
 
 }

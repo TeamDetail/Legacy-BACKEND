@@ -19,7 +19,6 @@ import com.learnmore.legacy.domain.ruins.error.RuinsError;
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import com.learnmore.legacy.domain.ruins.model.repo.RuinsJpaRepo;
 import com.learnmore.legacy.global.exception.CustomException;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,7 +67,7 @@ public class QuizService {
 
     public List<QuizRes> getQuiz(Long ruinsId) {
         Ruins ruins = ruinsJpaRepo.findById(ruinsId)
-                .orElseThrow(() -> new EntityNotFoundException("유적지를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
         List<Quiz> quizzes = quizJpaRepo.findAllByRuinsId(ruinsId);
 
@@ -86,7 +85,7 @@ public class QuizService {
 
     public String gethint(Long quizId){
         Quiz quiz = quizJpaRepo.findById(quizId)
-                .orElseThrow(() -> new EntityNotFoundException("퀴즈를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(QuizError.QUIZ_NOT_FOUND));
 
         return quiz.getHint();
     }
@@ -141,6 +140,11 @@ public class QuizService {
         }
 
         return new QuizAnswerRes(blockGiven, results);
+    }
+
+    @Transactional
+    public void resetQuizHistory(Long userId) {
+        quizHistoryJpaRepo.deleteAllByUserId(userId);
     }
     
 }
