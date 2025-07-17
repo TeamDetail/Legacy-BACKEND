@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface CardJpaRepo extends JpaRepository<Card, Long> {
     List<Card> findAllByRegionAttribute_AttributeName(String region);
+
+    List<Card> findAllByRuins_RuinsId(Long ruinsId);
 }
