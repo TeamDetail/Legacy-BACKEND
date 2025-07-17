@@ -20,6 +20,7 @@ import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import com.learnmore.legacy.global.exception.CustomException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CardService {
     private final CardJpaRepo cardJpaRepo;
     private final CardHistoryJpaRepo cardHistoryJpaRepo;
@@ -63,14 +65,14 @@ public class CardService {
                 .map(card -> {
                     CardHistory cardType = cardHistoryJpaRepo
                             .findTopByCard_CardIdOrderByHistoryIdDesc(card.getCardId())
-                            .orElseThrow(() -> new EntityNotFoundException(CardError.CARD_HISTORY_ERROR.getMessage()));
+                            .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
 
                     return CardRes.from(card, cardType);
                 })
                 .toList();
 
         return CardsRes.builder()
-                .maxCount((long) cards.size())
+                .maxCount((long) cardResList.size())
                 .cards(cardResList)
                 .build();
     }
