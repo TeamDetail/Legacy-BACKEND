@@ -25,4 +25,6 @@ public interface StyleJpaRepo extends JpaRepository<Style, Long> {
     Boolean existsByUserAndIsEquipTrue(User user);
 
     Boolean existsByUserAndStyleName(User user, String styleName);
+
+    List<Style> findAllByUserInAndIsEquipTrue(List<User> users);
 }
