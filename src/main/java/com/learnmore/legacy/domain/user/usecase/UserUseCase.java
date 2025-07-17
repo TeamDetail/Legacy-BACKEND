@@ -10,6 +10,7 @@ import com.learnmore.legacy.domain.user.presentation.dto.request.UserStyleReq;
 import com.learnmore.legacy.domain.user.presentation.dto.response.SingleUserRes;
 import com.learnmore.legacy.domain.user.presentation.dto.response.UserRes;
 import com.learnmore.legacy.domain.user.presentation.dto.response.UserStyleRes;
+import com.learnmore.legacy.domain.user.service.StyleService;
 import com.learnmore.legacy.domain.user.service.UserService;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import com.learnmore.legacy.global.exception.CustomException;
@@ -24,12 +25,13 @@ import java.util.List;
 public class UserUseCase {
     private final UserSessionHolder userSessionHolder;
     private final UserService userService;
+    private final StyleService styleService;
     private final CardService cardService;
 
     @Transactional(readOnly = true)
     public UserRes getMe(){
         User user = userSessionHolder.get();
-        Style style = userService.findEquipStyle(user);
+        Style style = styleService.findEquipStyle(user);
         long countCard=cardService.countCardByUserId(user.getUserId());
         long countShiningCard=cardService.countShiningCardByUserId(user.getUserId());
         return UserRes.from(user, style,countCard,countShiningCard);
@@ -46,7 +48,7 @@ public class UserUseCase {
     @Transactional(readOnly = true)
     public List<UserStyleRes> getUserStyles() {
         User user = userSessionHolder.get();
-        return userService.findAllStyles(user);
+        return styleService.findAllStyles(user);
     }
 
     @Transactional
@@ -54,20 +56,20 @@ public class UserUseCase {
         User user = userSessionHolder.get();
 
         //칭호 빼기
-        if (userService.existsEquippedStyle(user)) {
-            Style currentlyEquippedStyle = userService.findEquipStyle(user);
+        if (styleService.existsEquippedStyle(user)) {
+            Style currentlyEquippedStyle = styleService.findEquipStyle(user);
             currentlyEquippedStyle.updateEquip(false);
         }
 
         // 칭호 장착
-        Style styleToEquip = userService.findByUserAndStyleId(user, req.styleId());
+        Style styleToEquip = styleService.findByUserAndStyleId(user, req.styleId());
         styleToEquip.updateEquip(true);
     }
 
     @Transactional(readOnly = true)
     public SingleUserRes getUser(Long userId) {
         User user=userService.findByUserId(userId);
-        Style style = userService.findEquipStyle(user);
+        Style style = styleService.findEquipStyle(user);
         long countCard=cardService.countCardByUserId(user.getUserId());
         long countShiningCard=cardService.countShiningCardByUserId(user.getUserId());
         return SingleUserRes.from(user, style,countCard,countShiningCard);
@@ -76,7 +78,7 @@ public class UserUseCase {
     @Transactional
     public void addStyle(UserStyleReq req) {
         User user = userSessionHolder.get();
-        if (userService.existsStyleByUserAndName(user, req.name())) {
+        if (styleService.existsStyleByUserAndName(user, req.name())) {
             throw new CustomException(StyleError.STYLE_DUPLICATED);
         }else {
             Style newStyle = Style.builder()
@@ -85,7 +87,7 @@ public class UserUseCase {
                     .styleContent(req.content())
                     .isEquip(false)
                     .build();
-            userService.saveStyle(newStyle);
+            styleService.saveStyle(newStyle);
         }
     }
 
