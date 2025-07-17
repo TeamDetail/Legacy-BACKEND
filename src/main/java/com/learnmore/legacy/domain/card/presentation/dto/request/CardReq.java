@@ -10,6 +10,7 @@ public class CardReq {
     private Long userId;
     private Long deckId;
     private Long quizHistoryId;
+    private Long ruinsId;
     private String cardName;
     private String cardImageUrl;
     private CardType cardType;
