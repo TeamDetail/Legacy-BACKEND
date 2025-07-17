@@ -33,6 +33,7 @@ public class BlockService {
         }
 
         Block block = Block.builder()
+                .ruinsId(null)
                 .blockType(BlockType.NORMAL)
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
@@ -57,6 +58,7 @@ public class BlockService {
         return blocks.stream()
                 .map(block -> BlockRes.builder()
                         .blockId(block.getBlockId())
+                        .ruinsId(block.getRuinsId())
                         .blockType(block.getBlockType())
                         .latitude(block.getLatitude())
                         .longitude(block.getLongitude())
@@ -66,10 +68,8 @@ public class BlockService {
 
     @Transactional
     public void createBlockWithHistory(Long ruinsId, Long userId, BigDecimal latitude, BigDecimal longitude) {
-        boolean alreadyReceived = blockHistoryJpaRepo.existsByUserIdAndBlock_BlockId(userId, ruinsId);
-        if (alreadyReceived) return;
-
         Block block = Block.builder()
+                .ruinsId(ruinsId)
                 .blockType(BlockType.RUINS)
                 .latitude(latitude)
                 .longitude(longitude)
