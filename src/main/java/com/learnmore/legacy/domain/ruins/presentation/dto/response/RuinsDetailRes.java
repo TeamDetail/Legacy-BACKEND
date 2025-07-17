@@ -1,11 +1,14 @@
 package com.learnmore.legacy.domain.ruins.presentation.dto.response;
 
+import com.learnmore.legacy.domain.card.model.Card;
+import com.learnmore.legacy.domain.card.presentation.dto.response.CardRes;
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Builder
@@ -26,7 +29,9 @@ public class RuinsDetailRes {
     private BigDecimal latitude;
     private BigDecimal longitude;
 
-    public static RuinsDetailRes from(Ruins ruins) {
+    private List<CardRes> cards;
+
+    public static RuinsDetailRes from(Ruins ruins, List<CardRes> cards) {
         return RuinsDetailRes.builder()
                 .ruinsId(ruins.getRuinsId())
                 .ruinsImage(ruins.getRuinsImage())
@@ -42,6 +47,7 @@ public class RuinsDetailRes {
                 .manager(ruins.getManager())
                 .latitude(ruins.getLatitude())
                 .longitude(ruins.getLongitude())
+                .cards(cards)
                 .build();
     }
 }
