@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class RegionAttribute {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "line_attribute_id", nullable = false)
+    @Column(name = "region_attribute_id", nullable = false)
     private Long regionAttributeId;
 
     @Column(name = "attribute_name", nullable = false)
