@@ -1,6 +1,7 @@
 package com.learnmore.legacy.domain.block.model;
 
 import com.learnmore.legacy.domain.block.model.enums.BlockType;
+import com.learnmore.legacy.domain.ruins.model.Ruins;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,9 @@ public class Block {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "block_id")
     private Long blockId;
+
+    @Column(name = "ruins_id", nullable = false)
+    private Long ruinsId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "block_type", nullable = false)

@@ -126,7 +126,7 @@ public class QuizService {
 
         boolean blockGiven = false;
 
-        if (correctCount >= 3 && !blockHistoryJpaRepo.existsByUserIdAndBlock_BlockId(userId, ruinsId)) {
+        if (correctCount >= 3) {
             Ruins ruins = ruinsJpaRepo.findById(ruinsId)
                     .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
