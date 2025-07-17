@@ -1,6 +1,7 @@
 package com.learnmore.legacy.domain.card.model;
 
 import com.learnmore.legacy.domain.quiz.model.QuizHistory;
+import com.learnmore.legacy.domain.ruins.model.Ruins;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,6 +34,10 @@ public class Card {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_history_id", nullable = false)
     private QuizHistory quizHistory;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ruins_id")
+    private Ruins ruins;
 
     @Column(name = "card_name", nullable = false)
     private String cardName;

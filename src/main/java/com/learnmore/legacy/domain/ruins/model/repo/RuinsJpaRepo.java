@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface RuinsJpaRepo extends JpaRepository<Ruins, Long> {
     @Query("SELECT r FROM Ruins r WHERE r.latitude BETWEEN :minLat AND :maxLat AND r.longitude BETWEEN :minLng AND :maxLng")
@@ -15,4 +16,7 @@ public interface RuinsJpaRepo extends JpaRepository<Ruins, Long> {
                              @Param("minLng") BigDecimal minLng,
                              @Param("maxLng") BigDecimal maxLng
     );
+
+
+    Optional<Ruins> findByName(String name);
 }
