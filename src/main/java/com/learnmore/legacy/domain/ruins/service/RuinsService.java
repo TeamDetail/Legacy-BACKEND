@@ -1,15 +1,17 @@
 package com.learnmore.legacy.domain.ruins.service;
 
+import com.learnmore.legacy.domain.card.error.CardError;
 import com.learnmore.legacy.domain.card.model.Card;
 import com.learnmore.legacy.domain.card.model.CardHistory;
 import com.learnmore.legacy.domain.card.model.repo.CardHistoryJpaRepo;
 import com.learnmore.legacy.domain.card.model.repo.CardJpaRepo;
 import com.learnmore.legacy.domain.card.presentation.dto.response.CardRes;
+import com.learnmore.legacy.domain.ruins.error.RuinsError;
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import com.learnmore.legacy.domain.ruins.model.repo.RuinsJpaRepo;
 import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsDetailRes;
 import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsMapPointRes;
-import jakarta.persistence.EntityNotFoundException;
+import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,14 +33,14 @@ public class RuinsService {
 
     public RuinsDetailRes getRuinsDetail(Long ruinsId) {
         Ruins ruins = ruinsJpaRepo.findById(ruinsId)
-                .orElseThrow(() -> new EntityNotFoundException("유적지를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
         List<Card> cards = cardJpaRepo.findAllByRuins_RuinsId(ruinsId);
 
         List<CardRes> cardResList = cards.stream()
                 .map(card -> {
                     CardHistory history = cardHistoryJpaRepo.findTopByCard_CardId(card.getCardId())
-                            .orElseThrow(() -> new EntityNotFoundException("카드 기록을 찾을 수 없습니다."));
+                            .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
                     return CardRes.from(card, history);
                 })
                 .toList();
