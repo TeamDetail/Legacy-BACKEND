@@ -22,7 +22,7 @@ public class Block {
     @Column(name = "block_id")
     private Long blockId;
 
-    @Column(name = "ruins_id", nullable = false)
+    @Column(name = "ruins_id")
     private Long ruinsId;
 
     @Enumerated(EnumType.STRING)
