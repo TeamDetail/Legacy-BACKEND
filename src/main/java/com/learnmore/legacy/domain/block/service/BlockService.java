@@ -28,7 +28,7 @@ public class BlockService {
         List<Block> existingBlocks = blockJpaRepo.findAllByLatitudeAndLongitude(
                 request.getLatitude(), request.getLongitude()
         );
-        if (!existingBlocks.isEmpty()) {
+        if (existingBlocks.isEmpty()) { //이거 조건문이 반대로 되어있어야 예외 처리함 (이상해..)
             throw new CustomException(BlockError.BLOCK_ALREADY_EXISTS);
         }
 
