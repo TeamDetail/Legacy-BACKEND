@@ -2,12 +2,10 @@ package com.learnmore.legacy.domain.block.presentation.dto.response;
 
 import com.learnmore.legacy.domain.block.model.Block;
 import com.learnmore.legacy.domain.block.model.enums.BlockType;
-import com.learnmore.legacy.domain.ruins.model.Ruins;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 
