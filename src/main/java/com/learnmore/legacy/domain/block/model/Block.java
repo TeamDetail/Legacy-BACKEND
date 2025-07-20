@@ -1,7 +1,6 @@
 package com.learnmore.legacy.domain.block.model;
 
 import com.learnmore.legacy.domain.block.model.enums.BlockType;
-import com.learnmore.legacy.domain.ruins.model.Ruins;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
