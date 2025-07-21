@@ -1,9 +1,6 @@
 package com.learnmore.legacy.domain.ruins.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -18,6 +15,7 @@ import java.time.LocalDate;
 public class Ruins {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ruins_id", nullable = false, unique = true)
     private Long ruinsId;
 
@@ -54,9 +52,13 @@ public class Ruins {
     @Column(name = "manager", nullable = false)
     private String manager;
 
-    @Column(precision = 10, scale = 8)
+    @Column(precision = 15, scale = 10)
     private BigDecimal latitude;
 
-    @Column(precision = 11, scale = 8)
+    @Column(precision = 15, scale = 10)
     private BigDecimal longitude;
+
+    @Lob
+    @Column(name = "description", columnDefinition = "LONGTEXT")
+    private String description;
 }
