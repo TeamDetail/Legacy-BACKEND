@@ -28,9 +28,9 @@ public class Block {
     @Column(name = "block_type", nullable = false)
     private BlockType blockType;
 
-    @Column(name = "latitude", nullable = false, precision = 10, scale = 8)
+    @Column(name = "latitude", nullable = false, precision = 15, scale = 10)
     private BigDecimal latitude;
 
-    @Column(name = "longitude", nullable = false, precision = 11, scale = 8)
+    @Column(name = "longitude", nullable = false, precision = 15, scale = 10)
     private BigDecimal longitude;
 }
