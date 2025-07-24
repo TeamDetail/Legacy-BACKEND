@@ -22,7 +22,7 @@ spring:
     password: ${MY_SQL_PW}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: false
     properties:
       hibernate:
