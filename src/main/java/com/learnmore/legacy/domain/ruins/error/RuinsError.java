@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum RuinsError implements CustomError {
 
-    RUINS_NOT_FOUND(HttpStatus.NOT_FOUND, "유적지를 찾을 수 없습니다.");
+    RUINS_NOT_FOUND(HttpStatus.NOT_FOUND, "유적지를 찾을 수 없습니다."),
+    RUINSNAME_NOT_FOUND(HttpStatus.NOT_FOUND, "유적지 이름을 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final String message;

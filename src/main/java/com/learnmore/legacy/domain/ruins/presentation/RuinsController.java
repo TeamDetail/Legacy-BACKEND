@@ -34,4 +34,10 @@ public class RuinsController {
     public ResponseEntity<BaseResponse<RuinsDetailRes>> getRuinsDetail(@PathVariable Long id) {
         return BaseResponse.of(ruinsService.getRuinsDetail(id));
     }
+
+    @Operation(summary = "유적지 이름으로 검색", description = "유적지 이름으로 검색합니다.")
+    @GetMapping("/search/{ruinsName}")
+    public ResponseEntity<BaseResponse<RuinsDetailRes>> getRuinsDetailByName(@RequestParam String ruinsName){
+        return BaseResponse.of(ruinsService.getRuinsDetailByRuinsName(ruinsName));
+    }
 }
