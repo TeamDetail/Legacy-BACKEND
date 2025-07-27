@@ -47,4 +47,9 @@ public class RuinsService {
 
         return RuinsDetailRes.from(ruins, cardResList);
     }
+
+    public Ruins findNearestRuins (BigDecimal lat, BigDecimal lng) {
+        return ruinsJpaRepo.findNearestRuins(lat,lng)
+                .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
+    }
 }
