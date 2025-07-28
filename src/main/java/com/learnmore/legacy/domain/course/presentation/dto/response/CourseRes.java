@@ -18,7 +18,7 @@ public class CourseRes {
     private String description;
     private Integer heartCount;
     private Integer clearCount;
-    private boolean isEventCourse;
+    private Integer eventId;
     private boolean isClear;
     private boolean isHeart;
     private String thumbnail;
@@ -43,7 +43,7 @@ public class CourseRes {
                 .description(course.getCourseDescription())
                 .heartCount(course.getHeartCount())
                 .clearCount(course.getClearCount())
-                .isEventCourse(course.getIsEventCourse())
+                .eventId(course.getEventId())
                 .isClear(isClear)
                 .clearRuins(clearRuinsNames)
                 .isHeart(isHeart)

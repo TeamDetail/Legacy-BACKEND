@@ -12,5 +12,5 @@ public interface CourseJpaRepo extends JpaRepository<Course, Long> {
 
     List<Course> findTop10ByOrderByCreateAtDesc();
 
-    List<Course> findTop10ByIsEventCourseTrueOrderByCreateAtDesc();
+    List<Course> findTop10ByEventIdNotNullOrderByCreateAtDesc();
 }
