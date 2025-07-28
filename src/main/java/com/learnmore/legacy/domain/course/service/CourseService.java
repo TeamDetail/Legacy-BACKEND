@@ -61,6 +61,10 @@ public class CourseService {
                                     .collect(Collectors.toList());
 
                     boolean isHeart = courseHeartJpaRepo.existsByCourseAndUser(course, course.getUser());
+                    Ruins ruins = ruinsJpaRepo.findById(ruinsIds.getFirst())
+                            .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
+
+                    String thumbnail = ruins.getRuinsImage();
 
                     return CourseRes.from(
                             course,
@@ -68,7 +72,8 @@ public class CourseService {
                             ruinsIds,
                             isClear,
                             clearRuinsNames,
-                            isHeart
+                            isHeart,
+                            thumbnail
                     );
                 })
                 .collect(Collectors.toList());
@@ -98,6 +103,10 @@ public class CourseService {
                                     .collect(Collectors.toList());
 
                     boolean isHeart = courseHeartJpaRepo.existsByCourseAndUser(course, course.getUser());
+                    Ruins ruins = ruinsJpaRepo.findById(ruinsIds.getFirst())
+                            .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
+
+                    String thumbnail = ruins.getRuinsImage();
 
                     return CourseRes.from(
                             course,
@@ -105,7 +114,8 @@ public class CourseService {
                             ruinsIds,
                             isClear,
                             clearRuinsNames,
-                            isHeart
+                            isHeart,
+                            thumbnail
                     );
                 })
                 .collect(Collectors.toList());
@@ -136,13 +146,19 @@ public class CourseService {
 
                     boolean isHeart = courseHeartJpaRepo.existsByCourseAndUser(course, course.getUser());
 
+                    Ruins ruins = ruinsJpaRepo.findById(ruinsIds.getFirst())
+                            .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
+
+                    String thumbnail = ruins.getRuinsImage();
+
                     return CourseRes.from(
                             course,
                             tagNames,
                             ruinsIds,
                             isClear,
                             clearRuinsNames,
-                            isHeart
+                            isHeart,
+                            thumbnail
                     );
                 })
                 .collect(Collectors.toList());
@@ -172,8 +188,12 @@ public class CourseService {
                             .collect(Collectors.toList());
 
                     boolean isHeart = courseHeartJpaRepo.existsByCourseAndUser(course, course.getUser());
+                    Ruins ruins = ruinsJpaRepo.findById(ruinsIds.getFirst())
+                            .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
-                    return CourseRes.from(course, tagNames, ruinsIds, isClear, clearRuinsNames, isHeart);
+                    String thumbnail = ruins.getRuinsImage();
+
+                    return CourseRes.from(course, tagNames, ruinsIds, isClear, clearRuinsNames, isHeart, thumbnail);
                 })
                 .collect(Collectors.toList());
     }
@@ -245,6 +265,11 @@ public class CourseService {
         }
         courseRuinsJpaRepo.saveAll(courseRuinsList);
 
-        return CourseRes.from(course, courseReq.getTag(), courseReq.getRuinsId(), false,  Collections.emptyList(), false);
+        Ruins ruins = ruinsJpaRepo.findById(courseReq.getRuinsId().getFirst())
+                .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
+
+        String thumbnail = ruins.getRuinsImage();
+
+        return CourseRes.from(course, courseReq.getTag(), courseReq.getRuinsId(), false,  Collections.emptyList(), false, thumbnail);
     }
 }
