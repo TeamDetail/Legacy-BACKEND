@@ -32,8 +32,8 @@ public class Course {
     @Column(name = "course_description", nullable = false)
     private String courseDescription;
 
-    @Column(name = "is_event_course", nullable = false)
-    private Boolean isEventCourse;
+    @Column(name = "event_id")
+    private Integer eventId;
 
     @Column(name = "heart_count", nullable = false)
     private Integer heartCount;

@@ -165,7 +165,7 @@ public class CourseService {
     }
 
     public List<CourseRes> getAllEventCourse(Long userId) {
-        return courseJpaRepo.findTop10ByIsEventCourseTrueOrderByCreateAtDesc().stream()
+        return courseJpaRepo.findTop10ByEventIdNotNullOrderByCreateAtDesc().stream()
                 .map(course -> {
                     Long courseId = course.getCourseId();
 
@@ -232,7 +232,7 @@ public class CourseService {
         Course course = Course.builder()
                 .courseName(courseReq.getName())
                 .courseDescription(courseReq.getDescription())
-                .isEventCourse(false)
+                .eventId(null)
                 .heartCount(0)
                 .clearCount(0)
                 .user(user)
