@@ -11,4 +11,6 @@ import java.util.Optional;
 @Repository
 public interface CourseHeartJpaRepo extends JpaRepository<CourseHeart, Long> {
     Optional<CourseHeart> findByCourseAndUser(Course course, User user);
+
+    boolean existsByCourseAndUser(Course course, User user);
 }
