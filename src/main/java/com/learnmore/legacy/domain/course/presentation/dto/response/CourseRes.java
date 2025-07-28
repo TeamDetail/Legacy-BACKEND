@@ -20,6 +20,7 @@ public class CourseRes {
     private Integer clearCount;
     private boolean isEventCourse;
     private boolean isClear;
+    private boolean isHeart;
     private List<String> clearRuins;
 
 
@@ -28,7 +29,8 @@ public class CourseRes {
             List<String> tagNames,
             List<Long> ruinsIds,
             boolean isClear,
-            List<String> clearRuinsNames
+            List<String> clearRuinsNames,
+            boolean isHeart
     ) {
         return CourseRes.builder()
                 .courseId(course.getCourseId())
@@ -42,6 +44,7 @@ public class CourseRes {
                 .isEventCourse(course.getIsEventCourse())
                 .isClear(isClear)
                 .clearRuins(clearRuinsNames)
+                .isHeart(isHeart)
                 .build();
     }
 }
