@@ -21,6 +21,7 @@ public class CourseRes {
     private boolean isEventCourse;
     private boolean isClear;
     private boolean isHeart;
+    private String thumbnail;
     private List<String> clearRuins;
 
 
@@ -30,7 +31,8 @@ public class CourseRes {
             List<Long> ruinsIds,
             boolean isClear,
             List<String> clearRuinsNames,
-            boolean isHeart
+            boolean isHeart,
+            String thumbnail
     ) {
         return CourseRes.builder()
                 .courseId(course.getCourseId())
@@ -45,6 +47,7 @@ public class CourseRes {
                 .isClear(isClear)
                 .clearRuins(clearRuinsNames)
                 .isHeart(isHeart)
+                .thumbnail(thumbnail)
                 .build();
     }
 }
