@@ -45,9 +45,9 @@ public class CourseController {
     }
 
     @Operation(summary = "코스 좋아요 토글", description = "코스 좋아요를 취소하거나 등록합니다.")
-    @PatchMapping("/{userId}")
-    public ResponseEntity<BaseResponse<String>> toggleHeart(@RequestBody CourseIdReq courseIdReq, @PathVariable Long userId) {
-//        Long userId = userSessionHolder.get().getUserId();
+    @PatchMapping
+    public ResponseEntity<BaseResponse<String>> toggleHeart(@RequestBody CourseIdReq courseIdReq) {
+        Long userId = userSessionHolder.get().getUserId();
         courseService.toggleHeart(courseIdReq, userId);
         return BaseResponse.of("ok");
     }
