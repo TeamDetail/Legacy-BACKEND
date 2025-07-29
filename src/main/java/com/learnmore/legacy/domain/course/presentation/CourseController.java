@@ -3,6 +3,7 @@ package com.learnmore.legacy.domain.course.presentation;
 import com.learnmore.legacy.domain.course.presentation.dto.request.CourseIdReq;
 import com.learnmore.legacy.domain.course.presentation.dto.request.CourseReq;
 import com.learnmore.legacy.domain.course.presentation.dto.response.CourseRes;
+import com.learnmore.legacy.domain.course.presentation.dto.response.CourseRuinsRes;
 import com.learnmore.legacy.domain.course.service.CourseService;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
@@ -62,4 +63,12 @@ public class CourseController {
         Long userId = userSessionHolder.get().getUserId();
         return BaseResponse.of(courseService.addCourse(courseReq, userId));
     }
+
+    @Operation(summary = "코스에 포함된 유적지, 탐험한 유적지 찾기", description = "코스에 포함된 유적지, 탐험한 유적지를 찾습니다.")
+    @GetMapping("/{courseId}")
+    public ResponseEntity<BaseResponse<CourseRuinsRes>> getCourse(@PathVariable Long courseId) {
+        Long userId = userSessionHolder.get().getUserId();
+        return BaseResponse.of(courseService.getRuinsAndClearRuins(courseId, userId));
+    }
+
 }
