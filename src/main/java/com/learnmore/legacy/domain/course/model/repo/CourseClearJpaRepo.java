@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CourseClearJpaRepo extends JpaRepository<CourseClear, Long> {
-    boolean existsByCourse_CourseIdAndUser_UserId(Long courseId, Long userId);
 }

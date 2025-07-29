@@ -1,6 +1,7 @@
 package com.learnmore.legacy.domain.course.model;
 
 import com.learnmore.legacy.domain.ruins.model.Ruins;
+import com.learnmore.legacy.domain.user.model.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,6 +29,10 @@ public class CourseClearHistory {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ruins_id", nullable = false)
     private Ruins ruins;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @CreationTimestamp
     @Column(name = "create_at", nullable = false)

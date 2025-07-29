@@ -14,7 +14,6 @@ public class CourseRes {
     private String courseName;
     private String creator;
     private List<String> tag;
-    private List<Long> ruinsId;
     private String description;
     private Integer heartCount;
     private Integer clearCount;
@@ -22,32 +21,30 @@ public class CourseRes {
     private boolean isClear;
     private boolean isHeart;
     private String thumbnail;
-    private List<String> clearRuins;
+    private Long clearRuinsCount;
 
 
     public static CourseRes from(
             Course course,
             List<String> tagNames,
-            List<Long> ruinsIds,
             boolean isClear,
-            List<String> clearRuinsNames,
             boolean isHeart,
-            String thumbnail
+            String thumbnail,
+            Long clearRuinsCount
     ) {
         return CourseRes.builder()
                 .courseId(course.getCourseId())
                 .courseName(course.getCourseName())
                 .creator(course.getUser().getNickname())
                 .tag(tagNames)
-                .ruinsId(ruinsIds)
                 .description(course.getCourseDescription())
                 .heartCount(course.getHeartCount())
                 .clearCount(course.getClearCount())
                 .eventId(course.getEventId())
                 .isClear(isClear)
-                .clearRuins(clearRuinsNames)
                 .isHeart(isHeart)
                 .thumbnail(thumbnail)
+                .clearRuinsCount(clearRuinsCount)
                 .build();
     }
 }
