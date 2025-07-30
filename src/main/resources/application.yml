@@ -17,16 +17,21 @@ spring:
       port: 6379
   datasource:
     url: ${MY_SQL_URL}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
     username: ${MY_SQL_USER}
     password: ${MY_SQL_PW}
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: update
     show-sql: false
     properties:
       hibernate:
         format_sql: true
+  security:
+    user:
+      name: none
+      password: none
 springdoc:
   api-docs:
     enabled: true
