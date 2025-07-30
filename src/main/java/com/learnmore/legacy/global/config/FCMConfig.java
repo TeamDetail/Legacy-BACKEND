@@ -18,7 +18,7 @@ import java.io.IOException;
 @Configuration
 @ConfigurationProperties(prefix = "fcm")
 public class FCMConfig {
-    private String serviceAccountFilePath;
+    private String serviceAccountFile;
 
     private String projectId;
 
@@ -27,7 +27,7 @@ public class FCMConfig {
         if (FirebaseApp.getApps().isEmpty()) {
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(
-                            new ClassPathResource(serviceAccountFilePath).getInputStream()))
+                            new ClassPathResource(serviceAccountFile).getInputStream()))
                     .setProjectId(projectId)
                     .build();
 
