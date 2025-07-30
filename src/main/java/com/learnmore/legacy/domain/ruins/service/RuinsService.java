@@ -52,4 +52,22 @@ public class RuinsService {
         return ruinsJpaRepo.findNearestRuins(lat,lng)
                 .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
     }
+
+    public RuinsDetailRes getRuinsDetailByRuinsName(String ruinsName) {
+        Ruins ruins = ruinsJpaRepo.findByName(ruinsName)
+                .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
+        System.out.println(ruins);
+
+        List<Card> cards = cardJpaRepo.findAllByRuins_RuinsId(ruins.getRuinsId());
+
+        List<CardRes> cardResList = cards.stream()
+                .map(card -> {
+                    CardHistory history = cardHistoryJpaRepo.findTopByCard_CardId(card.getCardId())
+                            .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
+                    return CardRes.from(card, history);
+                })
+                .toList();
+
+        return RuinsDetailRes.from(ruins, cardResList);
+    }
 }
