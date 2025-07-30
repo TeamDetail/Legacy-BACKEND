@@ -1,0 +1,37 @@
+package com.learnmore.legacy.global.config;
+
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+
+
+@Getter
+@Setter
+@Configuration
+@ConfigurationProperties(prefix = "fcm")
+public class FCMConfig {
+    private String serviceAccountFilePath;
+
+    private String projectId;
+
+    @PostConstruct
+    public void initializeFirebase() throws IOException {
+        if (FirebaseApp.getApps().isEmpty()) {
+            FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.fromStream(
+                            new ClassPathResource(serviceAccountFilePath).getInputStream()))
+                    .setProjectId(projectId)
+                    .build();
+
+            FirebaseApp.initializeApp(options);
+        }
+    }
+}

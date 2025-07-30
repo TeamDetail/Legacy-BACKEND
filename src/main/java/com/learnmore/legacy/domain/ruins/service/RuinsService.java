@@ -48,6 +48,11 @@ public class RuinsService {
         return RuinsDetailRes.from(ruins, cardResList);
     }
 
+    public Ruins findNearestRuins (BigDecimal lat, BigDecimal lng) {
+        return ruinsJpaRepo.findNearestRuins(lat,lng)
+                .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
+    }
+
     public RuinsDetailRes getRuinsDetailByRuinsName(String ruinsName) {
         Ruins ruins = ruinsJpaRepo.findByName(ruinsName)
                 .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));

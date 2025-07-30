@@ -3,6 +3,10 @@ kakao:
   client-secret: ${KAKAO_CLIENT_SECRET}
   web-redirect-uri: ${KAKAO_WEB_REDIRECT_URL}
   ios-redirect-uri: ${KAKAO_IOS_REDIRECT_URL}
+fcm:
+  service-account-file: ${KEY_PATH}
+  topic-name: ${TOPIC}
+  project-id: ${PROJECT_ID}
 application:
   jwt:
     refresh-exp: ${REFRESH_EXP}
