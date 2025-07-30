@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
+import java.io.FileInputStream;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -26,8 +26,7 @@ public class FCMConfig {
     public void initializeFirebase() throws IOException {
         if (FirebaseApp.getApps().isEmpty()) {
             FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(
-                            new ClassPathResource(serviceAccountFile).getInputStream()))
+                    .setCredentials(GoogleCredentials.fromStream(new FileInputStream(serviceAccountFile)))
                     .setProjectId(projectId)
                     .build();
 
