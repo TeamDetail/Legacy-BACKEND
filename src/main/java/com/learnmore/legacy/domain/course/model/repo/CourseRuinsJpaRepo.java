@@ -13,4 +13,6 @@ import java.util.List;
 public interface CourseRuinsJpaRepo extends JpaRepository<CourseRuins, Long> {
     @Query("select cr.ruins from CourseRuins cr where cr.course.courseId = :courseId order by cr.orderIdx")
     List<Ruins> findRuinsByCourse_CourseId(@Param("courseId") Long courseId);
+
+    Long countByCourse_CourseId(Long courseId);
 }

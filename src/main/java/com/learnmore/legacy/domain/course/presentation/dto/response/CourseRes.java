@@ -22,6 +22,7 @@ public class CourseRes {
     private boolean isHeart;
     private String thumbnail;
     private Long clearRuinsCount;
+    private Long maxRuinsCount;
 
 
     public static CourseRes from(
@@ -30,7 +31,8 @@ public class CourseRes {
             boolean isClear,
             boolean isHeart,
             String thumbnail,
-            Long clearRuinsCount
+            Long clearRuinsCount,
+            Long maxRuinsCount
     ) {
         return CourseRes.builder()
                 .courseId(course.getCourseId())
@@ -45,6 +47,7 @@ public class CourseRes {
                 .isHeart(isHeart)
                 .thumbnail(thumbnail)
                 .clearRuinsCount(clearRuinsCount)
+                .maxRuinsCount(maxRuinsCount)
                 .build();
     }
 }
