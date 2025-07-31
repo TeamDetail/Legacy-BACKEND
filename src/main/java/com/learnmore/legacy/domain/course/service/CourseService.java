@@ -61,13 +61,17 @@ public class CourseService {
 
                     String thumbnail = ruins.getRuinsImage();
 
+                    Long maxRuinsCount = courseRuinsJpaRepo.countByCourse_CourseId(courseId);
+
+
                     return CourseRes.from(
                             course,
                             tagNames,
                             isClear,
                             isHeart,
                             thumbnail,
-                            clearRuinsCount
+                            clearRuinsCount,
+                            maxRuinsCount
                     );
                 })
                 .collect(Collectors.toList());
@@ -98,13 +102,16 @@ public class CourseService {
 
                     String thumbnail = ruins.getRuinsImage();
 
+                    Long maxRuinsCount = courseRuinsJpaRepo.countByCourse_CourseId(courseId);
+
                     return CourseRes.from(
                             course,
                             tagNames,
                             isClear,
                             isHeart,
                             thumbnail,
-                            clearRuinsCount
+                            clearRuinsCount,
+                            maxRuinsCount
                     );
                 })
                 .collect(Collectors.toList());
@@ -136,13 +143,16 @@ public class CourseService {
 
                     String thumbnail = ruins.getRuinsImage();
 
+                    Long maxRuinsCount = courseRuinsJpaRepo.countByCourse_CourseId(courseId);
+
                     return CourseRes.from(
                             course,
                             tagNames,
                             isClear,
                             isHeart,
                             thumbnail,
-                            clearRuinsCount
+                            clearRuinsCount,
+                            maxRuinsCount
                     );
                 })
                 .collect(Collectors.toList());
@@ -170,7 +180,9 @@ public class CourseService {
 
                     String thumbnail = ruins.getRuinsImage();
 
-                    return CourseRes.from(course, tagNames,  isClear,  isHeart, thumbnail, clearRuinsCount);
+                    Long maxRuinsCount = courseRuinsJpaRepo.countByCourse_CourseId(courseId);
+
+                    return CourseRes.from(course, tagNames,  isClear,  isHeart, thumbnail, clearRuinsCount, maxRuinsCount);
                 })
                 .collect(Collectors.toList());
     }
@@ -246,7 +258,7 @@ public class CourseService {
 
         String thumbnail = ruins.getRuinsImage();
 
-        return CourseRes.from(course, courseReq.getTag(), false,  false, thumbnail, 0L);
+        return CourseRes.from(course, courseReq.getTag(), false,  false, thumbnail, 0L, 0L);
     }
 
     public CourseRuinsRes getRuinsAndClearRuins(Long courseId, Long userId) {
