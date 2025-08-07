@@ -13,5 +13,4 @@ public interface CardJpaRepo extends JpaRepository<Card, Long> {
 
     Card findByRuins_RuinsId(Long ruinsId);
     List<Card> findAllByRuins_RuinsId(Long ruinsId);
-    Card findByRuinsId(Long ruinsId);
 }
