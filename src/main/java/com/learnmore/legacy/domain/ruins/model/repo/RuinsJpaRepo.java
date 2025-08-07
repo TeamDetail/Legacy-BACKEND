@@ -16,7 +16,20 @@ public interface RuinsJpaRepo extends JpaRepository<Ruins, Long> {
                              @Param("minLng") BigDecimal minLng,
                              @Param("maxLng") BigDecimal maxLng
     );
-
+    @Query(value = """
+    SELECT *, (
+        6371 * ACOS(
+            COS(RADIANS(:userLat)) * COS(RADIANS(r.latitude)) *
+            COS(RADIANS(r.longitude) - RADIANS(:userLng)) +
+            SIN(RADIANS(:userLat)) * SIN(RADIANS(r.latitude))
+        )
+    ) AS distance
+    FROM ruins r
+    ORDER BY distance ASC
+    LIMIT 1
+    """, nativeQuery = true)
+    Optional<Ruins> findNearestRuins(@Param("userLat") BigDecimal userLat, @Param("userLng") BigDecimal userLng);
+    // todo QueryDSL 사용해보기
 
     Optional<Ruins> findByName(String name);
 }
