@@ -31,22 +31,30 @@ public class RuinsService {
                 .toList();
     }
 
+    // 카드 리스트 형식에서 단일 카드로 변경
     public RuinsDetailRes getRuinsDetail(Long ruinsId) {
         Ruins ruins = ruinsJpaRepo.findById(ruinsId)
                 .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
-        List<Card> cards = cardJpaRepo.findAllByRuins_RuinsId(ruinsId);
+        Card card = cardJpaRepo.findByRuins_RuinsId(ruinsId);
 
-        List<CardRes> cardResList = cards.stream()
-                .map(card -> {
-                    CardHistory history = cardHistoryJpaRepo.findTopByCard_CardId(card.getCardId())
-                            .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
-                    return CardRes.from(card, history);
-                })
-                .toList();
+        CardHistory history = cardHistoryJpaRepo.findTopByCard_CardId(card.getCardId())
+                .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
 
-        return RuinsDetailRes.from(ruins, cardResList);
+//        List<Card> cards = cardJpaRepo.findAllByRuins_RuinsId(ruinsId);
+
+//        List<CardRes> cardResList = cards.stream()
+//                .map(card -> {
+//                    CardHistory history = cardHistoryJpaRepo.findTopByCard_CardId(card.getCardId())
+//                            .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
+//                    return CardRes.from(card, history);
+//                })
+//                .toList();
+
+        return RuinsDetailRes.from(ruins, CardRes.from(card, history));
     }
+
+    // 카드 리스트 형식에서 단일 카드로 변경
 
     public Ruins findNearestRuins (BigDecimal lat, BigDecimal lng) {
         return ruinsJpaRepo.findNearestRuins(lat,lng)
@@ -56,18 +64,22 @@ public class RuinsService {
     public RuinsDetailRes getRuinsDetailByRuinsName(String ruinsName) {
         Ruins ruins = ruinsJpaRepo.findByName(ruinsName)
                 .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
-        System.out.println(ruins);
 
-        List<Card> cards = cardJpaRepo.findAllByRuins_RuinsId(ruins.getRuinsId());
+        Card card = cardJpaRepo.findByRuins_RuinsId(ruins.getRuinsId());
 
-        List<CardRes> cardResList = cards.stream()
-                .map(card -> {
-                    CardHistory history = cardHistoryJpaRepo.findTopByCard_CardId(card.getCardId())
-                            .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
-                    return CardRes.from(card, history);
-                })
-                .toList();
+        CardHistory history = cardHistoryJpaRepo.findTopByCard_CardId(card.getCardId())
+                .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
 
-        return RuinsDetailRes.from(ruins, cardResList);
+//        List<Card> cards = cardJpaRepo.findAllByRuins_RuinsId(ruins.getRuinsId());
+//
+//        List<CardRes> cardResList = cards.stream()
+//                .map(card -> {
+//                    CardHistory history = cardHistoryJpaRepo.findTopByCard_CardId(card.getCardId())
+//                            .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
+//                    return CardRes.from(card, history);
+//                })
+//                .toList();
+
+        return RuinsDetailRes.from(ruins, CardRes.from(card, history));
     }
 }

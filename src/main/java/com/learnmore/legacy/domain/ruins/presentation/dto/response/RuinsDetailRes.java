@@ -29,9 +29,11 @@ public class RuinsDetailRes {
     private BigDecimal latitude;
     private BigDecimal longitude;
 
-    private List<CardRes> cards;
+//    private List<CardRes> cards;
 
-    public static RuinsDetailRes from(Ruins ruins, List<CardRes> cards) {
+    private CardRes card;
+
+    public static RuinsDetailRes from(Ruins ruins, CardRes card) {
         return RuinsDetailRes.builder()
                 .ruinsId(ruins.getRuinsId())
                 .ruinsImage(ruins.getRuinsImage())
@@ -47,7 +49,7 @@ public class RuinsDetailRes {
                 .manager(ruins.getManager())
                 .latitude(ruins.getLatitude())
                 .longitude(ruins.getLongitude())
-                .cards(cards)
+                .card(card)
                 .build();
     }
 }
