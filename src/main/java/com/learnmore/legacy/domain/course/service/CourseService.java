@@ -1,5 +1,6 @@
 package com.learnmore.legacy.domain.course.service;
 
+import com.learnmore.legacy.domain.card.presentation.dto.response.CardRes;
 import com.learnmore.legacy.domain.course.error.CourseError;
 import com.learnmore.legacy.domain.course.model.*;
 import com.learnmore.legacy.domain.course.model.repo.*;
@@ -267,11 +268,11 @@ public class CourseService {
         List<Ruins> clearRuinsList = courseClearHistoryJpaRepo.findRuinsByCourseIdAndUserId(courseId, userId);
 
         List<RuinsDetailRes> ruinsResList = ruinsList.stream()
-                .map(r -> RuinsDetailRes.from(r, Collections.emptyList()))
+                .map(r -> RuinsDetailRes.from(r, (CardRes) Collections.emptyList()))
                 .collect(Collectors.toList());
 
         List<RuinsDetailRes> clearRuinsResList = clearRuinsList.stream()
-                .map(r -> RuinsDetailRes.from(r, Collections.emptyList()))
+                .map(r -> RuinsDetailRes.from(r, (CardRes) Collections.emptyList()))
                 .collect(Collectors.toList());
 
         return CourseRuinsRes.builder()
