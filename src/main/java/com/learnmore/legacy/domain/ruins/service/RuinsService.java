@@ -54,7 +54,15 @@ public class RuinsService {
         return RuinsDetailRes.from(ruins, CardRes.from(card, history));
     }
 
+ features/fix-ruins
     // 카드 리스트 형식에서 단일 카드로 변경
+
+    public Ruins findNearestRuins (BigDecimal lat, BigDecimal lng) {
+        return ruinsJpaRepo.findNearestRuins(lat,lng)
+                .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
+    }
+
+ master
     public RuinsDetailRes getRuinsDetailByRuinsName(String ruinsName) {
         Ruins ruins = ruinsJpaRepo.findByName(ruinsName)
                 .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
