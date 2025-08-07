@@ -1,6 +1,5 @@
 package com.learnmore.legacy.domain.course.model;
 
-import com.learnmore.legacy.domain.user.model.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
