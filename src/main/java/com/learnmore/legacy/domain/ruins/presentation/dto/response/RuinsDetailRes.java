@@ -1,6 +1,5 @@
 package com.learnmore.legacy.domain.ruins.presentation.dto.response;
 
-import com.learnmore.legacy.domain.card.model.Card;
 import com.learnmore.legacy.domain.card.presentation.dto.response.CardRes;
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import lombok.Builder;
@@ -8,7 +7,6 @@ import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @Builder

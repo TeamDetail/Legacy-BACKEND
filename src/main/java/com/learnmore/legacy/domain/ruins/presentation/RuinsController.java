@@ -1,5 +1,7 @@
 package com.learnmore.legacy.domain.ruins.presentation;
 
+import com.learnmore.legacy.domain.ruins.presentation.dto.request.RuinsCommentReq;
+import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsCommentRes;
 import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsDetailRes;
 import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsMapPointRes;
 import com.learnmore.legacy.domain.ruins.service.RuinsService;
@@ -39,5 +41,17 @@ public class RuinsController {
     @GetMapping("/search/{ruinsName}")
     public ResponseEntity<BaseResponse<RuinsDetailRes>> getRuinsDetailByName(@RequestParam String ruinsName){
         return BaseResponse.of(ruinsService.getRuinsDetailByRuinsName(ruinsName));
+    }
+
+    @Operation(summary = "유적지 한줄평 추가", description = "한줄평을 추가합니다.")
+    @PostMapping("/comment")
+    public ResponseEntity<BaseResponse<RuinsCommentRes>> addRuinsComment(@RequestBody RuinsCommentReq ruinsCommentReq){
+        return BaseResponse.of(ruinsService.addRuinsComment(ruinsCommentReq));
+    }
+
+    @Operation(summary = "유적지 한줄평 조회", description = "한줄평을 조회합니다.")
+    @GetMapping("/commen/{id}")
+    public ResponseEntity<BaseResponse<List<RuinsCommentRes>>> getRuinsComment(@PathVariable Long id){
+        return BaseResponse.of(ruinsService.getRuinsComment(id));
     }
 }
