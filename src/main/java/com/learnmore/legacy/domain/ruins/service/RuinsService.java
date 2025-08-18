@@ -8,7 +8,11 @@ import com.learnmore.legacy.domain.card.model.repo.CardJpaRepo;
 import com.learnmore.legacy.domain.card.presentation.dto.response.CardRes;
 import com.learnmore.legacy.domain.ruins.error.RuinsError;
 import com.learnmore.legacy.domain.ruins.model.Ruins;
+import com.learnmore.legacy.domain.ruins.model.RuinsComment;
+import com.learnmore.legacy.domain.ruins.model.repo.RuinsCommentJpaRepo;
 import com.learnmore.legacy.domain.ruins.model.repo.RuinsJpaRepo;
+import com.learnmore.legacy.domain.ruins.presentation.dto.request.RuinsCommentReq;
+import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsCommentRes;
 import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsDetailRes;
 import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsMapPointRes;
 import com.learnmore.legacy.global.exception.CustomException;
@@ -24,6 +28,7 @@ public class RuinsService {
     private final RuinsJpaRepo ruinsJpaRepo;
     private final CardJpaRepo cardJpaRepo;
     private final CardHistoryJpaRepo cardHistoryJpaRepo;
+    private final RuinsCommentJpaRepo ruinsCommentJpaRepo;
 
     public List<RuinsMapPointRes> getRuinsMapPoint(BigDecimal minLat, BigDecimal maxLat, BigDecimal minLng, BigDecimal maxLng) {
         return ruinsJpaRepo.findInBounds(minLat, maxLat, minLng, maxLng).stream()
@@ -36,7 +41,8 @@ public class RuinsService {
         Ruins ruins = ruinsJpaRepo.findById(ruinsId)
                 .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
-        Card card = cardJpaRepo.findByRuins_RuinsId(ruinsId);
+        Card card = cardJpaRepo.findByRuins_RuinsId(ruinsId)
+                .orElseThrow(() -> new CustomException(CardError.CARD_NOT_FOUND));
 
         CardHistory history = cardHistoryJpaRepo.findTopByCard_CardId(card.getCardId())
                 .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
@@ -62,10 +68,11 @@ public class RuinsService {
     }
 
     public RuinsDetailRes getRuinsDetailByRuinsName(String ruinsName) {
-        Ruins ruins = ruinsJpaRepo.findByName(ruinsName)
+        Ruins ruins = ruinsJpaRepo.findByNameContaining(ruinsName)
                 .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
-        Card card = cardJpaRepo.findByRuins_RuinsId(ruins.getRuinsId());
+        Card card = cardJpaRepo.findByRuins_RuinsId(ruins.getRuinsId())
+                .orElseThrow(() -> new CustomException(CardError.CARD_NOT_FOUND));
 
         CardHistory history = cardHistoryJpaRepo.findTopByCard_CardId(card.getCardId())
                 .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
@@ -81,5 +88,29 @@ public class RuinsService {
 //                .toList();
 
         return RuinsDetailRes.from(ruins, CardRes.from(card, history));
+    }
+
+    public RuinsCommentRes addRuinsComment(RuinsCommentReq ruinsCommentReq) {
+        Ruins ruins = ruinsJpaRepo.findById(ruinsCommentReq.ruinsId())
+                .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
+
+        RuinsComment comment = RuinsComment.builder()
+                .ruins(ruins)
+                .comment(ruinsCommentReq.comment())
+                .build();
+        ruinsCommentJpaRepo.save(comment);
+
+        return RuinsCommentRes.from(comment);
+    }
+
+    public List<RuinsCommentRes> getRuinsComment(Long ruinsId) {
+        Ruins ruins = ruinsJpaRepo.findById(ruinsId)
+                .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
+
+        List<RuinsComment> comments = ruinsCommentJpaRepo.findAllByRuins(ruins);
+
+        return comments.stream()
+                .map(RuinsCommentRes::from)
+                .toList();
     }
 }
