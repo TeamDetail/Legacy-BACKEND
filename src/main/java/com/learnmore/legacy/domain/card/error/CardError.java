@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum CardError implements CustomError {
+    CARD_NOT_FOUND(HttpStatus.NOT_FOUND, "카드를 찾을 수 없습니다."),
     CARD_HISTORY_ERROR(HttpStatus.NOT_FOUND, "카드 내역을 찾을 수 없습니다."),
     DECK_ERROR(HttpStatus.NOT_FOUND, "덱 아이디를 찾을 수 없습니다."),
     LINE_ATTRIBUTE_ERROR(HttpStatus.NOT_FOUND, "개열 속성을 찾을 수 없습니다."),

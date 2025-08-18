@@ -61,4 +61,7 @@ public class Ruins {
     @Lob
     @Column(name = "description", columnDefinition = "LONGTEXT")
     private String description;
+
+    @Column(name = "comment")
+    private String comment;
 }

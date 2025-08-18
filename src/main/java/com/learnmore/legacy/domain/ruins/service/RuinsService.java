@@ -36,7 +36,8 @@ public class RuinsService {
         Ruins ruins = ruinsJpaRepo.findById(ruinsId)
                 .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
-        Card card = cardJpaRepo.findByRuins_RuinsId(ruinsId);
+        Card card = cardJpaRepo.findByRuins_RuinsId(ruinsId)
+                .orElseThrow(() -> new CustomException(CardError.CARD_NOT_FOUND));
 
         CardHistory history = cardHistoryJpaRepo.findTopByCard_CardId(card.getCardId())
                 .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
@@ -62,10 +63,11 @@ public class RuinsService {
     }
 
     public RuinsDetailRes getRuinsDetailByRuinsName(String ruinsName) {
-        Ruins ruins = ruinsJpaRepo.findByName(ruinsName)
+        Ruins ruins = ruinsJpaRepo.findByNameContaining(ruinsName)
                 .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
-        Card card = cardJpaRepo.findByRuins_RuinsId(ruins.getRuinsId());
+        Card card = cardJpaRepo.findByRuins_RuinsId(ruins.getRuinsId())
+                .orElseThrow(() -> new CustomException(CardError.CARD_NOT_FOUND));
 
         CardHistory history = cardHistoryJpaRepo.findTopByCard_CardId(card.getCardId())
                 .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
