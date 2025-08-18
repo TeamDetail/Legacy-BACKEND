@@ -1,10 +1,12 @@
 package com.learnmore.legacy.domain.ruins.model;
 
+import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsCommentRes;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "ruins")
