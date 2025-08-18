@@ -2,11 +2,11 @@ package com.learnmore.legacy.domain.ruins.presentation.dto.response;
 
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 
-@Data
+@Getter
 @Builder
 public class RuinsMapPointRes {
     private Long ruinsId;
