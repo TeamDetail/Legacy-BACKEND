@@ -77,6 +77,12 @@ public class User {
         this.imageUrl = imageUrl;
     }
 
+    public void useCredit(int price) {
+        if (this.credit < price) {
+            throw new IllegalStateException("크레딧이 부족합니다.");
+        }
+        this.credit -= price;
+    }
 }
 
 

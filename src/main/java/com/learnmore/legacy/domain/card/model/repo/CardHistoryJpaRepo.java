@@ -19,4 +19,6 @@ public interface CardHistoryJpaRepo extends JpaRepository<CardHistory, Long> {
     long countByUser_UserIdAndCardType(Long userId, CardType cardType);
 
     Optional<CardHistory> findTopByCard_CardId(Long cardId);
+
+    boolean existsByUser_UserIdAndCard_CardId(Long userId, Long cardId);
 }
