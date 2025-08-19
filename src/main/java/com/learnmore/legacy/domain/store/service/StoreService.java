@@ -1,0 +1,113 @@
+package com.learnmore.legacy.domain.store.service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.learnmore.legacy.domain.inventory.model.Inventory;
+import com.learnmore.legacy.domain.inventory.model.InventoryHistory;
+import com.learnmore.legacy.domain.inventory.model.enums.ItemType;
+import com.learnmore.legacy.domain.inventory.model.repo.InventoryHistoryJpaRepo;
+import com.learnmore.legacy.domain.inventory.model.repo.InventoryJpaRepo;
+import com.learnmore.legacy.domain.store.model.Store;
+import com.learnmore.legacy.domain.store.model.StoreHistory;
+import com.learnmore.legacy.domain.store.model.enums.StoreError;
+import com.learnmore.legacy.domain.store.model.repo.StoreHistoryJpaRepo;
+import com.learnmore.legacy.domain.store.model.repo.StoreJpaRepo;
+import com.learnmore.legacy.domain.store.presentation.dto.response.CardPackRes;
+import com.learnmore.legacy.domain.user.model.User;
+import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
+import com.learnmore.legacy.global.exception.CustomException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class StoreService {
+    private final StoreJpaRepo storeJpaRepo;
+    private final StoreHistoryJpaRepo storeHistoryJpaRepo;
+    private final InventoryHistoryJpaRepo inventoryHistoryJpaRepo;
+    private final UserJpaRepo userJpaRepo;
+    private final InventoryJpaRepo inventoryJpaRepo;
+
+    @Transactional(readOnly = true)
+    public CardPackRes getCardPack(Long userId) {
+        User user = userJpaRepo.findByUserId(userId);
+
+        List<Store> cardpacks = storeJpaRepo.findAll(); // 카드팩 리스트 가져오기
+        int todayBuyCount = storeHistoryJpaRepo.getTodayBuyCount(user);
+
+        return CardPackRes.from(cardpacks, todayBuyCount);
+    }
+
+    @Transactional
+    public Integer buyCardPack(Long userId, Long storeId) {
+        User user = userJpaRepo.findByUserId(userId);
+
+        Store store = storeJpaRepo.findById(storeId)
+                .orElseThrow(() -> new CustomException(StoreError.STORE_ERROR));
+
+        if (user.getCredit() < store.getPrice()) {
+            throw new CustomException(StoreError.CREDIT_ERROR);
+        }
+        user.useCredit(store.getPrice());
+
+        // itemData 생성
+        String itemData = storeToJson(store);
+
+        // 같은 itemData를 가진 Inventory 존재 여부 확인
+        Optional<Inventory> optionalInventory =
+                inventoryJpaRepo.findByItemTypeAndItemData(ItemType.CARD_PACK, itemData);
+
+        Inventory inventory;
+        if (optionalInventory.isPresent()) {
+            // 이미 인벤토리에 존재 → 새로 추가하지 않음
+            inventory = optionalInventory.get();
+        } else {
+            // 없는 경우 → 새 인벤토리 추가
+            inventory = Inventory.builder()
+                    .itemType(ItemType.CARD_PACK)
+                    .itemData(itemData)
+                    .build();
+            inventoryJpaRepo.save(inventory);
+        }
+
+        // 인벤토리 히스토리 추가
+        InventoryHistory inventoryHistory = InventoryHistory.builder()
+                .user(user)
+                .inventory(inventory)
+                .store(store)
+                .itemCount(1)
+                .build();
+        inventoryHistoryJpaRepo.save(inventoryHistory);
+
+        // 상점 기록 추가
+        StoreHistory history = StoreHistory.create(user, store, 1);
+        storeHistoryJpaRepo.save(history);
+
+        // 유저 크레딧 업데이트
+        userJpaRepo.save(user);
+
+        return store.getPrice();
+    }
+
+
+    private String storeToJson(Store store) {
+        try {
+            return new ObjectMapper().writeValueAsString(
+                    Map.of(
+                            "cardpackName", store.getStoreName(),
+                            "cardpackContent", store.getStoreContent(),
+                            "price", store.getPrice(),
+                            "storeType", store.getStoreType(),
+                            "cardpackId", store.getStoreId()
+                    )
+            );
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to convert store to JSON", e);
+        }
+    }
+}
