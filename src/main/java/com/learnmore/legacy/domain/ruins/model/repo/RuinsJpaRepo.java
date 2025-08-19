@@ -31,7 +31,5 @@ public interface RuinsJpaRepo extends JpaRepository<Ruins, Long> {
     Optional<Ruins> findNearestRuins(@Param("userLat") BigDecimal userLat, @Param("userLng") BigDecimal userLng);
     // todo QueryDSL 사용해보기
 
-    Optional<Ruins> findByName(String name);
-
     Optional<Ruins> findByNameContaining(String name);
 }
