@@ -91,7 +91,7 @@ public class CardService {
         QuizHistory quizHistory = quizHistoryJpaRepo.findById(cardReq.getQuizHistoryId())
                 .orElseThrow(() -> new CustomException(QuizError.QUIZ_NOT_FOUND));
 
-        Ruins ruins = ruinsJpaRepo.findByName(cardReq.getCardName())
+        Ruins ruins = ruinsJpaRepo.findByNameContaining(cardReq.getCardName())
                 .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
         Card card = Card.builder()

@@ -13,6 +13,7 @@ public interface CardJpaRepo extends JpaRepository<Card, Long> {
 
     Optional<Card> findByRuins_RuinsId(Long ruinsId);
 
+
     List<Card> findByNationAttribute_NationAttributeId(Long nationId);
     List<Card> findByNationAttribute_NationAttributeIdIn(List<Long> nationIds);
     List<Card> findByLineAttribute_LineAttributeId(Long lineId);
