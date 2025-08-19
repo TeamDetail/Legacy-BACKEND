@@ -1,6 +1,5 @@
 package com.learnmore.legacy.domain.course.service;
 
-import com.learnmore.legacy.domain.card.presentation.dto.response.CardRes;
 import com.learnmore.legacy.domain.course.error.CourseError;
 import com.learnmore.legacy.domain.course.model.*;
 import com.learnmore.legacy.domain.course.model.repo.*;
@@ -20,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
