@@ -32,6 +32,6 @@ public class CardHistory {
     private Deck deck;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "card_type")
+    @Column(name = "card_type", nullable = false)
     private CardType cardType;
 }
