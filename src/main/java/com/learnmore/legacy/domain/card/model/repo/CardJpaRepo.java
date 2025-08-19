@@ -13,7 +13,6 @@ public interface CardJpaRepo extends JpaRepository<Card, Long> {
     List<Card> findAllByRegionAttribute_AttributeName(String region);
 
     Optional<Card> findByRuins_RuinsId(Long ruinsId);
-//    List<Card> findAllByRuins_RuinsId(Long ruinsId);
 
     List<Card> findByNationAttribute_NationAttributeId(Long nationId);
     List<Card> findByNationAttribute_NationAttributeIdIn(List<Long> nationIds);
@@ -21,6 +20,4 @@ public interface CardJpaRepo extends JpaRepository<Card, Long> {
     List<Card> findByLineAttribute_LineAttributeIdIn(List<Long> lineIds);
     List<Card> findByRegionAttribute_RegionAttributeId(Long regionId);
     List<Card> findByRegionAttribute_RegionAttributeIdIn(List<Long> regionIds);
-
-
 }
