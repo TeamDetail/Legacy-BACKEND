@@ -5,6 +5,7 @@ import com.learnmore.legacy.domain.inventory.presentation.dto.requset.CardpackRe
 import com.learnmore.legacy.domain.inventory.presentation.dto.response.InventoryRes;
 import com.learnmore.legacy.domain.inventory.service.InventoryService;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
+import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,19 +18,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InventoryController {
     private final InventoryService inventoryService;
+    private final UserSessionHolder userSessionHolder;
 
-    @GetMapping("/{userId}")
+    @GetMapping
     @Operation(summary = "인벤토리 조회", description = "인벤토리를 조회합니다.")
-    public ResponseEntity<BaseResponse<List<InventoryRes>>> getInventory(@PathVariable Long userId) {
+    public ResponseEntity<BaseResponse<List<InventoryRes>>> getInventory() {
+        Long userId = userSessionHolder.get().getUserId();
         return BaseResponse.of(inventoryService.getInventory(userId));
     }
 
-    @PostMapping("/cardpack/{userId}")
+    @PostMapping("/cardpack")
     @Operation(summary = "카드팩 오픈", description = "특성에 맞는 카드 중 3개를 저장합니다.(중복 X)")
-    public ResponseEntity<BaseResponse<List<List<CardRes>>>> openCardPack(
-            @RequestBody CardpackReq request,
-            @PathVariable Long userId
-    ) {
+    public ResponseEntity<BaseResponse<List<List<CardRes>>>> openCardPack(@RequestBody CardpackReq request) {
+        Long userId = userSessionHolder.get().getUserId();
         return BaseResponse.of(inventoryService.openCardpack(userId, request));
     }
 
