@@ -17,6 +17,7 @@ import com.learnmore.legacy.domain.inventory.presentation.dto.requset.CardpackRe
 import com.learnmore.legacy.domain.inventory.presentation.dto.response.InventoryItemRes;
 import com.learnmore.legacy.domain.inventory.presentation.dto.response.InventoryRes;
 import com.learnmore.legacy.domain.store.model.Store;
+import com.learnmore.legacy.domain.store.model.enums.StoreError;
 import com.learnmore.legacy.domain.store.model.repo.StoreJpaRepo;
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
@@ -64,7 +65,7 @@ public class InventoryService {
     public List<List<CardRes>> openCardpack(Long userId, CardpackReq cardpackReq) {
         User user = userJpaRepo.findByUserId(userId);
         Store store = storeJpaRepo.findById(cardpackReq.getCardpackId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카드팩입니다."));
+                .orElseThrow(() -> new CustomException(StoreError.STORE_ERROR));
 
         Deck deck = deckJpaRepo.findByUser_UserId(userId)
                 .orElseThrow(() -> new CustomException(CardError.DECK_ERROR));
@@ -123,7 +124,7 @@ public class InventoryService {
         for (int i = 0; i < packCount; i++) {
             List<Card> cards = getCardPoolByPackId(store.getStoreId());
             if (cards.isEmpty()) {
-                throw new IllegalStateException("해당 카드팩에 속한 카드가 없습니다.");
+                throw new CustomException(StoreError.STORE_ERROR);
             }
 
             Collections.shuffle(cards);
@@ -160,14 +161,14 @@ public class InventoryService {
                     cardJpaRepo.findByNationAttribute_NationAttributeIdIn(Arrays.asList(7L, 6L, 8L));
             case 2 -> // 국가 (고려)
                     cardJpaRepo.findByNationAttribute_NationAttributeId(4L);
-            case 3 -> // 국가 (조선)
-                    cardJpaRepo.findByNationAttribute_NationAttributeId(3L);
+            case 3 -> // 국가 (조선, 대한제국)
+                    cardJpaRepo.findByNationAttribute_NationAttributeIdIn(Arrays.asList(2L, 3L));
             case 4 -> // 국가 (대한민국)
                     cardJpaRepo.findByNationAttribute_NationAttributeId(1L);
             case 5 -> // 개열 (역사, 학문)
                     cardJpaRepo.findByLineAttribute_LineAttributeIdIn(Arrays.asList(1L, 3L));
-            case 6 -> // 개열 (기술)
-                    cardJpaRepo.findByLineAttribute_LineAttributeId(7L);
+            case 6 -> // 개열 (기술, 신앙)
+                    cardJpaRepo.findByLineAttribute_LineAttributeIdIn(Arrays.asList(2L, 7L));
             case 7 -> // 개열 (신앙, 체제)
                     cardJpaRepo.findByLineAttribute_LineAttributeIdIn(Arrays.asList(2L, 8L));
             case 8 -> // 개열 (놀이, 의식주)
