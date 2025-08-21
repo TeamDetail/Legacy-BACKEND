@@ -7,7 +7,7 @@ import com.learnmore.legacy.domain.auth.presentation.dto.response.TokenRes;
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.model.enums.UserRole;
 import com.learnmore.legacy.domain.user.service.UserService;
-import com.learnmore.legacy.global.config.KakaoConfig;
+import com.learnmore.legacy.global.properties.KakaoProperties;
 import com.learnmore.legacy.global.exception.CustomException;
 import com.learnmore.legacy.global.security.jwt.JwtProvider;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -25,7 +25,7 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class KakaoAuthService {
 
-    private final KakaoConfig kakaoConfig;
+    private final KakaoProperties kakaoProperties;
     private final UserService userService;
     private final JwtProvider jwtProvider;
     private final WebClient webClient = WebClient.create("https://kauth.kakao.com");
@@ -47,16 +47,16 @@ public class KakaoAuthService {
     }
 
     private KakaoTokenRes getAccessToken(String code) {
-        System.out.println(kakaoConfig.getWebRedirectUri());
+        System.out.println(kakaoProperties.getWebRedirectUri());
         return webClient.post()
                 .uri("/oauth/token")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters
                         .fromFormData("grant_type", "authorization_code")
-                        .with("client_id", kakaoConfig.getClientId())
-                        .with("redirect_uri", kakaoConfig.getWebRedirectUri())
+                        .with("client_id", kakaoProperties.getClientId())
+                        .with("redirect_uri", kakaoProperties.getWebRedirectUri())
                         .with("code", code)
-                        .with("client_secret", kakaoConfig.getClientSecret()))
+                        .with("client_secret", kakaoProperties.getClientSecret()))
                 .retrieve()
                 .onStatus(status -> status.isError(), clientResponse ->
                         clientResponse.bodyToMono(String.class)
