@@ -39,3 +39,11 @@ springdoc:
   swagger-ui:
     operationsSorter: method
     path: /swagger-ui.html
+cloud:
+  aws:
+    s3:
+      bucket: ${BUCKET_NAME}
+    region:
+      static: AP_NORTHEAST_2 # 서울 리전
+    stack:
+      auto: false

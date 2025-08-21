@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -41,9 +42,15 @@ public class UserController {
         return BaseResponse.of(userUseCase.getUserStyles());
     }
 
+    @Operation(summary = "프로필 이미지 업로드 url 발급",description = "파일 이름 (확장자 포함)과 일치하는 사진파일을 올릴수 있는 url을 반환합니다")
+    @GetMapping("/uploadUrl")
+    public ResponseEntity<BaseResponse<String>> uploadUrl(@RequestParam("fileName") String fileName){
+        return BaseResponse.of(userUseCase.uploadUrl(fileName));
+    }
+
     @Operation(summary = "프로필 사진 변경", description = "로그인된 유저의 프로필 사진을 변경합니다")
     @PatchMapping("/image")
-    public  ResponseEntity<BaseResponse<User>> updateProfileImage(@RequestBody ProfileImageReq req){
+    public ResponseEntity<BaseResponse<User>> updateProfileImage(@RequestBody ProfileImageReq req){
         return BaseResponse.of(userUseCase.updateProfileImage(req));
     }
 

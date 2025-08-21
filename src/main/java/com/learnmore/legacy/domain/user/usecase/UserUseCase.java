@@ -1,5 +1,6 @@
 package com.learnmore.legacy.domain.user.usecase;
 
+import com.learnmore.legacy.domain.aws.service.S3Service;
 import com.learnmore.legacy.domain.card.service.CardService;
 import com.learnmore.legacy.domain.user.error.StyleError;
 import com.learnmore.legacy.domain.user.model.Style;
@@ -27,6 +28,7 @@ public class UserUseCase {
     private final UserService userService;
     private final StyleService styleService;
     private final CardService cardService;
+    private final S3Service s3Service;
 
     @Transactional(readOnly = true)
     public UserRes getMe(){
@@ -89,6 +91,12 @@ public class UserUseCase {
                     .build();
             styleService.saveStyle(newStyle);
         }
+    }
+
+    @Transactional
+    public String uploadUrl(String fileName) {
+        String key = "profileImage/"+fileName;
+        return s3Service.generateUploadUrl(key);
     }
 
 }
