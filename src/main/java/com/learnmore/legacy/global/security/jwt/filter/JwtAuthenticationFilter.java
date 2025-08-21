@@ -26,10 +26,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+
+        // 이미 인증되어 있으면 스킵
+        if (SecurityContextHolder.getContext().getAuthentication() != null &&
+                SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = jwtExtractor.extractToken(request);
 
         if (token != null) {
-            SecurityContextHolder.getContext().setAuthentication(jwtExtractor.getAuthentication(token));
+            try {
+                // JWT가 있으면 인증 처리
+                SecurityContextHolder.getContext().setAuthentication(jwtExtractor.getAuthentication(token));
+            } catch (Exception e) {
+                // permitAll 경로라면 예외 무시하고 통과
+                // 인증이 필요한 경로면 JwtExceptionFilter에서 처리됨
+            }
         }
 
         filterChain.doFilter(request, response);
