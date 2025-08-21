@@ -54,7 +54,7 @@ public class CourseService {
 
                     Long clearRuinsCount = courseClearHistoryJpaRepo.countClearedRuinsByCourseAndUser(courseId, userId);
 
-                    boolean isHeart = courseHeartJpaRepo.existsByCourseAndUser(course, course.getUser());
+                    boolean isHeart = courseHeartJpaRepo.existsByCourseAndUser_UserId(course, userId);
                     Ruins ruins = ruinsJpaRepo.findById(ruinsIds.getFirst())
                             .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
@@ -95,7 +95,7 @@ public class CourseService {
 
                     Long clearRuinsCount = courseClearHistoryJpaRepo.countClearedRuinsByCourseAndUser(courseId, userId);
 
-                    boolean isHeart = courseHeartJpaRepo.existsByCourseAndUser(course, course.getUser());
+                    boolean isHeart = courseHeartJpaRepo.existsByCourseAndUser_UserId(course, userId);
                     Ruins ruins = ruinsJpaRepo.findById(ruinsIds.getFirst())
                             .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
@@ -135,7 +135,7 @@ public class CourseService {
 
                     Long clearRuinsCount = courseClearHistoryJpaRepo.countClearedRuinsByCourseAndUser(courseId, userId);
 
-                    boolean isHeart = courseHeartJpaRepo.existsByCourseAndUser(course, course.getUser());
+                    boolean isHeart = courseHeartJpaRepo.existsByCourseAndUser_UserId(course, userId);
 
                     Ruins ruins = ruinsJpaRepo.findById(ruinsIds.getFirst())
                             .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
@@ -173,7 +173,7 @@ public class CourseService {
 
                     Long clearRuinsCount = courseClearHistoryJpaRepo.countClearedRuinsByCourseAndUser(courseId, userId);
 
-                    boolean isHeart = courseHeartJpaRepo.existsByCourseAndUser(course, course.getUser());
+                    boolean isHeart = courseHeartJpaRepo.existsByCourseAndUser_UserId(course, userId);
                     Ruins ruins = ruinsJpaRepo.findById(ruinsIds.getFirst())
                             .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
@@ -209,7 +209,6 @@ public class CourseService {
             courseHeartJpaRepo.save(newHeart);
             course.setHeartCount(course.getHeartCount() + 1);
         }
-
         courseJpaRepo.save(course);
     }
 
