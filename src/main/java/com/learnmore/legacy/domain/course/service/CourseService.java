@@ -6,6 +6,7 @@ import com.learnmore.legacy.domain.course.model.repo.*;
 import com.learnmore.legacy.domain.course.presentation.dto.request.CourseIdReq;
 import com.learnmore.legacy.domain.course.presentation.dto.request.CourseReq;
 import com.learnmore.legacy.domain.course.presentation.dto.response.CourseRes;
+import com.learnmore.legacy.domain.course.presentation.dto.response.CourseRuinsRes;
 import com.learnmore.legacy.domain.ruins.error.RuinsError;
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import com.learnmore.legacy.domain.ruins.model.repo.RuinsJpaRepo;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -257,7 +259,7 @@ public class CourseService {
         return CourseRes.from(course, courseReq.getTag(), false,  false, thumbnail, 0L, 0L);
     }
 
-    public CourseRes getRuinsAndClearRuins(Long courseId, Long userId) {
+    public CourseRuinsRes getRuinsAndClearRuins(Long courseId, Long userId) {
         Course course = courseJpaRepo.findById(courseId)
                 .orElseThrow(() -> new CustomException(CourseError.COURSE_ERROR));
 
@@ -284,14 +286,33 @@ public class CourseService {
 
         Long maxRuinsCount = courseRuinsJpaRepo.countByCourse_CourseId(courseId);
 
-        return CourseRes.from(
-                course,
-                tagNames,
-                isClear,
-                isHeart,
-                thumbnail,
-                clearRuinsCount,
-                maxRuinsCount
-        );
+        List<Ruins> ruinsList = courseRuinsJpaRepo.findRuinsByCourse_CourseId(courseId);
+        List<Ruins> clearRuinsList = courseClearHistoryJpaRepo.findRuinsByCourseIdAndUserId(courseId, userId);
+
+        List<RuinsDetailRes> ruinsResList = ruinsList.stream()
+                .map(r -> RuinsDetailRes.from(r, null))
+                .collect(Collectors.toList());
+
+        List<RuinsDetailRes> clearRuinsResList = clearRuinsList.stream()
+                .map(r -> RuinsDetailRes.from(r, null))
+                .collect(Collectors.toList());
+
+        return CourseRuinsRes.builder()
+                .courseId(course.getCourseId())
+                .courseName(course.getCourseName())
+                .creator(course.getUser().getNickname())
+                .tag(tagNames)
+                .description(course.getCourseDescription())
+                .heartCount(course.getHeartCount())
+                .clearCount(course.getClearCount())
+                .eventId(course.getEventId())
+                .isClear(isClear)
+                .isHeart(isHeart)
+                .thumbnail(thumbnail)
+                .clearRuinsCount(clearRuinsCount)
+                .maxRuinsCount(maxRuinsCount)
+                .ruins(ruinsResList)
+                .clearRuins(clearRuinsResList)
+                .build();
     }
 }
