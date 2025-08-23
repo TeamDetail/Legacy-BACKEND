@@ -1,6 +1,5 @@
 package com.learnmore.legacy.domain.course.presentation;
 
-import com.learnmore.legacy.domain.course.model.CourseRuins;
 import com.learnmore.legacy.domain.course.presentation.dto.request.CourseIdReq;
 import com.learnmore.legacy.domain.course.presentation.dto.request.CourseReq;
 import com.learnmore.legacy.domain.course.presentation.dto.response.CourseRes;
@@ -66,9 +65,9 @@ public class CourseController {
     }
 
     @Operation(summary = "코스 상세 조회", description = "코스를 자세히 봅니다.")
-    @GetMapping("/{courseId}/{userId}")
-    public ResponseEntity<BaseResponse<CourseRuinsRes>> getCourse(@PathVariable Long courseId, @PathVariable Long userId) {
-//        Long userId = userSessionHolder.get().getUserId();
+    @GetMapping("/{courseId}")
+    public ResponseEntity<BaseResponse<CourseRuinsRes>> getCourse(@PathVariable Long courseId) {
+        Long userId = userSessionHolder.get().getUserId();
         return BaseResponse.of(courseService.getRuinsAndClearRuins(courseId, userId));
     }
 
