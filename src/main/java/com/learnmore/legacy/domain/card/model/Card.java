@@ -33,10 +33,6 @@ public class Card {
     private RegionAttribute regionAttribute;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "quiz_history_id", nullable = false)
-    private QuizHistory quizHistory;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 

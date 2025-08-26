@@ -88,9 +88,6 @@ public class CardService {
         RegionAttribute region = regionAttributeJpaRepo.findByAttributeName(cardReq.getRegionAttributeName())
                 .orElseThrow(() -> new CustomException(CardError.REGION_ATTRIBUTE_ERROR));
 
-        QuizHistory quizHistory = quizHistoryJpaRepo.findById(cardReq.getQuizHistoryId())
-                .orElseThrow(() -> new CustomException(QuizError.QUIZ_NOT_FOUND));
-
         Ruins ruins = ruinsJpaRepo.findByNameContaining(cardReq.getCardName())
                 .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
@@ -99,7 +96,6 @@ public class CardService {
                 .cardImageUrl(cardReq.getCardImageUrl())
                 .ruins(ruins)
                 .nationAttribute(nation)
-                .quizHistory(quizHistory)
                 .lineAttribute(line)
                 .regionAttribute(region)
                 .build();
