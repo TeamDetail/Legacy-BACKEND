@@ -21,6 +21,9 @@ public class RuinsComment {
     @JoinColumn(name = "ruins_id", nullable = false)
     private Ruins ruins;
 
+    @Column(name = "rating")
+    private Long rating;
+
     @Column(name = "comment")
     private String comment;
 }
