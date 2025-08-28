@@ -1,6 +1,6 @@
 package com.learnmore.legacy.domain.course.presentation.dto.response;
 
-import com.learnmore.legacy.domain.card.presentation.dto.response.CardRes;
+import com.learnmore.legacy.domain.card.presentation.dto.response.CardRuinsRes;
 import com.learnmore.legacy.domain.course.model.Course;
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsDetailRes;
@@ -45,11 +45,11 @@ public class CourseRuinsRes {
             List<Ruins> clearRuins) {
 
         List<RuinsDetailRes> ruinsRes = ruins.stream()
-                .map(r -> RuinsDetailRes.from(r, (CardRes) List.of()))
+                .map(r -> RuinsDetailRes.from(r, (CardRuinsRes) List.of()))
                 .collect(Collectors.toList());
 
         List<RuinsDetailRes> clearRuinsRes = clearRuins.stream()
-                .map(r -> RuinsDetailRes.from(r, (CardRes) List.of()))
+                .map(r -> RuinsDetailRes.from(r, (CardRuinsRes) List.of()))
                 .collect(Collectors.toList());
 
         return CourseRuinsRes.builder()

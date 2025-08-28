@@ -2,10 +2,9 @@ package com.learnmore.legacy.domain.ruins.service;
 
 import com.learnmore.legacy.domain.card.error.CardError;
 import com.learnmore.legacy.domain.card.model.Card;
-import com.learnmore.legacy.domain.card.model.CardHistory;
 import com.learnmore.legacy.domain.card.model.repo.CardHistoryJpaRepo;
 import com.learnmore.legacy.domain.card.model.repo.CardJpaRepo;
-import com.learnmore.legacy.domain.card.presentation.dto.response.CardRes;
+import com.learnmore.legacy.domain.card.presentation.dto.response.CardRuinsRes;
 import com.learnmore.legacy.domain.ruins.error.RuinsError;
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import com.learnmore.legacy.domain.ruins.model.RuinsComment;
@@ -44,8 +43,8 @@ public class RuinsService {
         Card card = cardJpaRepo.findByRuins_RuinsId(ruinsId)
                 .orElseThrow(() -> new CustomException(CardError.CARD_NOT_FOUND));
 
-        CardHistory history = cardHistoryJpaRepo.findTopByCard_CardId(card.getCardId())
-                .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
+//        CardHistory history = cardHistoryJpaRepo.findTopByCard_CardId(card.getCardId())
+//                .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
 
 //        List<Card> cards = cardJpaRepo.findAllByRuins_RuinsId(ruinsId);
 
@@ -57,7 +56,7 @@ public class RuinsService {
 //                })
 //                .toList();
 
-        return RuinsDetailRes.from(ruins, CardRes.from(card, history));
+        return RuinsDetailRes.from(ruins, CardRuinsRes.from(card));
     }
 
     // 카드 리스트 형식에서 단일 카드로 변경
@@ -74,8 +73,8 @@ public class RuinsService {
         Card card = cardJpaRepo.findByRuins_RuinsId(ruins.getRuinsId())
                 .orElseThrow(() -> new CustomException(CardError.CARD_NOT_FOUND));
 
-        CardHistory history = cardHistoryJpaRepo.findTopByCard_CardId(card.getCardId())
-                .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
+//        CardHistory history = cardHistoryJpaRepo.findTopByCard_CardId(card.getCardId())
+//                .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
 
 //        List<Card> cards = cardJpaRepo.findAllByRuins_RuinsId(ruins.getRuinsId());
 //
@@ -87,7 +86,7 @@ public class RuinsService {
 //                })
 //                .toList();
 
-        return RuinsDetailRes.from(ruins, CardRes.from(card, history));
+        return RuinsDetailRes.from(ruins, CardRuinsRes.from(card));
     }
 
     public RuinsCommentRes addRuinsComment(RuinsCommentReq ruinsCommentReq) {

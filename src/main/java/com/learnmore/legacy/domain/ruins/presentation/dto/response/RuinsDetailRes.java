@@ -1,6 +1,6 @@
 package com.learnmore.legacy.domain.ruins.presentation.dto.response;
 
-import com.learnmore.legacy.domain.card.presentation.dto.response.CardRes;
+import com.learnmore.legacy.domain.card.presentation.dto.response.CardRuinsRes;
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,9 +29,9 @@ public class RuinsDetailRes {
 
 //    private List<CardRes> cards;
 
-    private CardRes card;
+    private CardRuinsRes card;
 
-    public static RuinsDetailRes from(Ruins ruins, CardRes card) {
+    public static RuinsDetailRes from(Ruins ruins, CardRuinsRes card) {
         return RuinsDetailRes.builder()
                 .ruinsId(ruins.getRuinsId())
                 .ruinsImage(ruins.getRuinsImage())
