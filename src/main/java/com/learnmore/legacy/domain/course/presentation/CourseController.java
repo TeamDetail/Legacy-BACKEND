@@ -71,4 +71,10 @@ public class CourseController {
         return BaseResponse.of(courseService.getRuinsAndClearRuins(courseId, userId));
     }
 
+    @Operation(summary = "코스 이름으로 검색", description = "코스 이름으로 검색합니다.")
+    @GetMapping("/search/{userId}")
+    public ResponseEntity<BaseResponse<List<CourseRes>>> getRuinsDetailByName(@RequestParam String courseName, @PathVariable Long userId) {
+        return BaseResponse.of(courseService.getCourseByCourseName(courseName, userId));
+    }
+
 }
