@@ -1,7 +1,5 @@
 package com.learnmore.legacy.domain.store.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.learnmore.legacy.domain.inventory.model.Inventory;
 import com.learnmore.legacy.domain.inventory.model.InventoryHistory;
 import com.learnmore.legacy.domain.inventory.model.enums.ItemType;
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -55,12 +52,9 @@ public class StoreService {
         }
         user.useCredit(store.getPrice());
 
-        // itemData 생성
-        String itemData = storeToJson(store);
-
         // 같은 itemData를 가진 Inventory 존재 여부 확인
         Optional<Inventory> optionalInventory =
-                inventoryJpaRepo.findByItemTypeAndItemData(ItemType.CARD_PACK, itemData);
+                inventoryJpaRepo.findByItemTypeAndItemName(ItemType.CARD_PACK, store.getStoreName());
 
         Inventory inventory;
         if (optionalInventory.isPresent()) {
@@ -70,7 +64,6 @@ public class StoreService {
             // 없는 경우 → 새 인벤토리 추가
             inventory = Inventory.builder()
                     .itemType(ItemType.CARD_PACK)
-                    .itemData(itemData)
                     .build();
             inventoryJpaRepo.save(inventory);
         }
@@ -92,22 +85,5 @@ public class StoreService {
         userJpaRepo.save(user);
 
         return store.getPrice();
-    }
-
-
-    private String storeToJson(Store store) {
-        try {
-            return new ObjectMapper().writeValueAsString(
-                    Map.of(
-                            "cardpackName", store.getStoreName(),
-                            "cardpackContent", store.getStoreContent(),
-                            "price", store.getPrice(),
-                            "storeType", store.getStoreType(),
-                            "cardpackId", store.getStoreId()
-                    )
-            );
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to convert store to JSON", e);
-        }
     }
 }

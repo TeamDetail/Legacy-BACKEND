@@ -26,8 +26,14 @@ public class Inventory {
     @Column(name = "item_type", nullable = false)
     private ItemType itemType;
 
-    @Column(name = "item_data", nullable = false, columnDefinition = "TEXT")
-    private String itemData;
+    @Column(name = "item_name", nullable = false)
+    private String itemName;
+
+    @Column(name = "item_id")
+    private Long itemId;
+
+    @Column(name = "item_description", nullable = false)
+    private String itemDescription;
 
     @CreationTimestamp
     @Column(name = "create_at", nullable = false, updatable = false)

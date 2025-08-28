@@ -73,7 +73,7 @@ public class CardService {
                 .toList();
 
         return RegionRes.builder()
-                .maxCount((long) cardResList.size())
+                .maxCount((long) cards.size())
                 .cards(cardResList)
                 .build();
     }

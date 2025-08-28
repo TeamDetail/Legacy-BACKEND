@@ -37,8 +37,4 @@ public class InventoryHistory {
 
     @Column(name = "item_count")
     private Integer itemCount;
-
-    @CreationTimestamp
-    @Column(name = "create_at", nullable = false)
-    private LocalDateTime createAt;
 }
