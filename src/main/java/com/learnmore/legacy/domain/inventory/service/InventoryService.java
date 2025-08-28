@@ -35,17 +35,18 @@ public class InventoryService {
     public List<InventoryRes> getInventory(Long userId) {
         List<InventoryHistory> histories = inventoryHistoryJpaRepo.findAllByUser_UserId(userId);
 
-        Map<Long, InventoryRes> grouped = new HashMap<>();
+        // key를 "itemType + itemName" 으로 해서 묶음
+        Map<String, InventoryRes> grouped = new HashMap<>();
 
         for (InventoryHistory history : histories) {
             InventoryRes itemRes = InventoryRes.from(history);
-            Long itemId = itemRes.getItemId();
+            String key = itemRes.getItemId() + "_" + itemRes.getItemName(); // 묶음 기준
 
-            if (grouped.containsKey(itemId)) {
-                InventoryRes existing = grouped.get(itemId);
+            if (grouped.containsKey(key)) {
+                InventoryRes existing = grouped.get(key);
                 existing.setItemCount(existing.getItemCount() + itemRes.getItemCount());
             } else {
-                grouped.put(itemId, itemRes);
+                grouped.put(key, itemRes);
             }
         }
 
