@@ -58,8 +58,8 @@ public class CardService {
         return cardHistoryJpaRepo.countByUser_UserIdAndCardType(userId, CardType.SHINING_CARD);
     }
 
-    public RegionRes getCardsByRegion(String region) {
-        List<Card> cards = cardJpaRepo.findAllByRegionAttribute_AttributeName(region);
+    public RegionRes getCardsByRegion(String region, Long userId) {
+        List<Card> cards = cardHistoryJpaRepo.findCardsByUserIdAndRegion(userId, region);
 
         List<CardRes> cardResList = cards.stream()
                 .map(card -> CardRes.builder()
@@ -71,7 +71,6 @@ public class CardService {
                         .regionAttributeName(card.getRegionAttribute().getAttributeName())
                         .build())
                 .toList();
-
 
         return RegionRes.builder()
                 .maxCount((long) cardResList.size())
