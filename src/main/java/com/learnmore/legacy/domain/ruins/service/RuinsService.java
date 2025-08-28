@@ -66,12 +66,12 @@ public class RuinsService {
                 .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
     }
 
-    public RuinsDetailRes getRuinsDetailByRuinsName(String ruinsName) {
-        Ruins ruins = ruinsJpaRepo.findByNameContaining(ruinsName)
-                .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
+    public List<RuinsDetailRes> getRuinsDetailByRuinsName(String ruinsName) {
+        List<Ruins> ruinsList = ruinsJpaRepo.searchByName(ruinsName);
 
-        Card card = cardJpaRepo.findByRuins_RuinsId(ruins.getRuinsId())
-                .orElseThrow(() -> new CustomException(CardError.CARD_NOT_FOUND));
+        if (ruinsList.isEmpty()) {
+            throw new CustomException(RuinsError.RUINS_NOT_FOUND);
+        }
 
 //        CardHistory history = cardHistoryJpaRepo.findTopByCard_CardId(card.getCardId())
 //                .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
@@ -86,7 +86,14 @@ public class RuinsService {
 //                })
 //                .toList();
 
-        return RuinsDetailRes.from(ruins, CardRuinsRes.from(card));
+        return ruinsList.stream()
+                .map(ruins -> {
+                    Card card = cardJpaRepo.findByRuins_RuinsId(ruins.getRuinsId())
+                            .orElseThrow(() -> new CustomException(CardError.CARD_NOT_FOUND));
+
+                    return RuinsDetailRes.from(ruins, CardRuinsRes.from(card));
+                })
+                .toList();
     }
 
     public RuinsCommentRes addRuinsComment(RuinsCommentReq ruinsCommentReq) {

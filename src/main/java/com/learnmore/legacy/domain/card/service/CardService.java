@@ -77,46 +77,6 @@ public class CardService {
                 .build();
     }
 
-    @Transactional
-    public CardRes addCard(CardReq cardReq) {
-        NationAttribute nation = nationAttributeJpaRepo.findByAttributeName(cardReq.getNationAttributeName())
-                .orElseThrow(() -> new CustomException(CardError.NATION_ATTRIBUTE_NOT_FOUND));
-
-        LineAttribute line = lineAttributeJpaRepo.findByAttributeName(cardReq.getLineAttributeName())
-                .orElseThrow(() -> new CustomException(CardError.LINE_ATTRIBUTE_ERROR));
-
-        RegionAttribute region = regionAttributeJpaRepo.findByAttributeName(cardReq.getRegionAttributeName())
-                .orElseThrow(() -> new CustomException(CardError.REGION_ATTRIBUTE_ERROR));
-
-        Ruins ruins = ruinsJpaRepo.findByNameContaining(cardReq.getCardName())
-                .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
-
-        Card card = Card.builder()
-                .cardName(cardReq.getCardName())
-                .cardImageUrl(cardReq.getCardImageUrl())
-                .ruins(ruins)
-                .nationAttribute(nation)
-                .lineAttribute(line)
-                .regionAttribute(region)
-                .build();
-        cardJpaRepo.save(card);
-
-        User user = userJpaRepo.findByUserId(cardReq.getUserId());
-
-        Deck deck = deckJpaRepo.findById(cardReq.getDeckId())
-                .orElseThrow(() -> new EntityNotFoundException(CardError.DECK_ERROR.getMessage()));
-
-        CardHistory cardHistory = CardHistory.builder()
-                .card(card)
-                .user(user)
-                .deck(deck)
-                .cardType(cardReq.getCardType())
-                .build();
-
-        cardHistoryJpaRepo.save(cardHistory);
-        return CardRes.from(card, cardHistory);
-    }
-
     public NationAttributeRes addNation(NationAttributeReq nationAttributeReq) {
         NationAttribute nation = NationAttribute.builder()
                 .attributeName(nationAttributeReq.getAttributeName())
