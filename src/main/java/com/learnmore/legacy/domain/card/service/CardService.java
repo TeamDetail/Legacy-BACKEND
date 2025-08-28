@@ -58,20 +58,22 @@ public class CardService {
         return cardHistoryJpaRepo.countByUser_UserIdAndCardType(userId, CardType.SHINING_CARD);
     }
 
-    public CardsRes getCardsByRegion(String region) {
+    public RegionRes getCardsByRegion(String region) {
         List<Card> cards = cardJpaRepo.findAllByRegionAttribute_AttributeName(region);
 
         List<CardRes> cardResList = cards.stream()
-                .map(card -> {
-                    CardHistory cardType = cardHistoryJpaRepo
-                            .findTopByCard_CardIdOrderByHistoryIdDesc(card.getCardId())
-                            .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
-
-                    return CardRes.from(card, cardType);
-                })
+                .map(card -> CardRes.builder()
+                        .cardId(card.getCardId())
+                        .cardName(card.getCardName())
+                        .cardImageUrl(card.getCardImageUrl())
+                        .nationAttributeName(card.getNationAttribute().getAttributeName())
+                        .lineAttributeName(card.getLineAttribute().getAttributeName())
+                        .regionAttributeName(card.getRegionAttribute().getAttributeName())
+                        .build())
                 .toList();
 
-        return CardsRes.builder()
+
+        return RegionRes.builder()
                 .maxCount((long) cardResList.size())
                 .cards(cardResList)
                 .build();
