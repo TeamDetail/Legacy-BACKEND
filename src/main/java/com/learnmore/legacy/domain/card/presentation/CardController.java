@@ -22,14 +22,14 @@ public class CardController {
     private final UserSessionHolder userSessionHolder;
 
     @Operation(summary = "카드 모두 조회", description = "카드를 모두 조회합니다.")
-    @GetMapping("/{userId}")
+    @GetMapping
     public ResponseEntity<BaseResponse<List<CardRes>>> getCard() {
         Long userId = userSessionHolder.get().getUserId();
         return BaseResponse.of(cardService.getCardByCardId(userId));
     }
 
     @Operation(summary = "지역 명으로 카드 조회", description = "지역의 카드를 조회합니다.")
-    @GetMapping("/collection/{region}/{userId}")
+    @GetMapping("/collection/{region}")
     public ResponseEntity<BaseResponse<RegionRes>> getCardsByRegion(@PathVariable String region) {
         Long userId = userSessionHolder.get().getUserId();
         return BaseResponse.of(cardService.getCardsByRegion(region, userId));
