@@ -52,7 +52,6 @@ public class StoreService {
         }
         user.useCredit(store.getPrice());
 
-        // 같은 itemData를 가진 Inventory 존재 여부 확인
         Optional<Inventory> optionalInventory =
                 inventoryJpaRepo.findByItemTypeAndItemName(ItemType.CARD_PACK, store.getStoreName());
 
@@ -63,6 +62,9 @@ public class StoreService {
         } else {
             // 없는 경우 → 새 인벤토리 추가
             inventory = Inventory.builder()
+                    .itemId(1L)
+                    .itemName(store.getStoreName())
+                    .itemDescription(store.getStoreContent())
                     .itemType(ItemType.CARD_PACK)
                     .build();
             inventoryJpaRepo.save(inventory);
