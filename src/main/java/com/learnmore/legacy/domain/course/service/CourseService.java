@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -314,5 +313,52 @@ public class CourseService {
                 .ruins(ruinsResList)
                 .clearRuins(clearRuinsResList)
                 .build();
+    }
+
+    public List<CourseRes> getCourseByCourseName(String courseName, Long userId) {
+        List<Course> courseList = courseJpaRepo.searchByName(courseName);
+
+        if (courseList.isEmpty()) {
+            throw new CustomException(CourseError.COURSE_ERROR);
+        }
+
+        return courseList.stream()
+                .map(course -> {
+                    Long courseId = course.getCourseId();
+
+                    List<String> tagNames =
+                            courseTagJpaRepo.findTagNamesByCourse_CourseId(courseId);
+
+                    List<Long> ruinsIds =
+                            courseRuinsJpaRepo.findRuinsByCourse_CourseId(courseId)
+                                    .stream()
+                                    .map(Ruins::getRuinsId)
+                                    .toList();
+
+                    boolean isClear =
+                            courseClearHistoryJpaRepo.existsByCourseClear_Course_CourseIdAndUser_UserId(courseId, userId);
+
+                    Long clearRuinsCount = courseClearHistoryJpaRepo.countClearedRuinsByCourseAndUser(courseId, userId);
+
+                    boolean isHeart = courseHeartJpaRepo.existsByCourseAndUser_UserId(course, userId);
+                    Ruins ruins = ruinsJpaRepo.findById(ruinsIds.getFirst())
+                            .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
+
+                    String thumbnail = ruins.getRuinsImage();
+
+                    Long maxRuinsCount = courseRuinsJpaRepo.countByCourse_CourseId(courseId);
+
+                    return CourseRes.from(
+                            course,
+                            tagNames,
+                            isClear,
+                            isHeart,
+                            thumbnail,
+                            clearRuinsCount,
+                            maxRuinsCount
+                    );
+                })
+                .collect(Collectors.toList());
+
     }
 }
