@@ -1,7 +1,5 @@
 package com.learnmore.legacy.domain.inventory.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.learnmore.legacy.domain.card.error.CardError;
 import com.learnmore.legacy.domain.card.model.Card;
 import com.learnmore.legacy.domain.card.model.CardHistory;
@@ -14,11 +12,8 @@ import com.learnmore.legacy.domain.card.presentation.dto.response.CardRes;
 import com.learnmore.legacy.domain.inventory.model.InventoryHistory;
 import com.learnmore.legacy.domain.inventory.model.repo.InventoryHistoryJpaRepo;
 import com.learnmore.legacy.domain.inventory.presentation.dto.requset.CardpackReq;
-import com.learnmore.legacy.domain.inventory.presentation.dto.response.InventoryItemRes;
 import com.learnmore.legacy.domain.inventory.presentation.dto.response.InventoryRes;
-import com.learnmore.legacy.domain.store.model.Store;
 import com.learnmore.legacy.domain.store.model.enums.StoreError;
-import com.learnmore.legacy.domain.store.model.repo.StoreJpaRepo;
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import com.learnmore.legacy.global.exception.CustomException;
@@ -27,13 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class InventoryService {
     private final InventoryHistoryJpaRepo inventoryHistoryJpaRepo;
-    private final StoreJpaRepo storeJpaRepo;
     private final CardJpaRepo cardJpaRepo;
     private final UserJpaRepo userJpaRepo;
     private final CardHistoryJpaRepo cardHistoryJpaRepo;
@@ -42,91 +35,43 @@ public class InventoryService {
     public List<InventoryRes> getInventory(Long userId) {
         List<InventoryHistory> histories = inventoryHistoryJpaRepo.findAllByUser_UserId(userId);
 
-        Map<Long, InventoryItemRes> grouped = new HashMap<>();
+        Map<Long, InventoryRes> grouped = new HashMap<>();
 
         for (InventoryHistory history : histories) {
-            InventoryItemRes itemRes = InventoryItemRes.from(history);
-            Long cardpackId = itemRes.getItemData().getCardpackId();
+            InventoryRes itemRes = InventoryRes.from(history);
+            Long itemId = itemRes.getItemId();
 
-            if (grouped.containsKey(cardpackId)) {
-                InventoryItemRes existing = grouped.get(cardpackId);
+            if (grouped.containsKey(itemId)) {
+                InventoryRes existing = grouped.get(itemId);
                 existing.setItemCount(existing.getItemCount() + itemRes.getItemCount());
             } else {
-                grouped.put(cardpackId, itemRes);
+                grouped.put(itemId, itemRes);
             }
         }
 
-        return grouped.values().stream()
-                .map(item -> InventoryRes.builder().item(item).build())
-                .collect(Collectors.toList());
+        return new ArrayList<>(grouped.values());
     }
 
     @Transactional
     public List<List<CardRes>> openCardpack(Long userId, CardpackReq cardpackReq) {
         User user = userJpaRepo.findByUserId(userId);
-        Store store = storeJpaRepo.findById(cardpackReq.getCardpackId())
-                .orElseThrow(() -> new CustomException(StoreError.STORE_ERROR));
 
         Deck deck = deckJpaRepo.findByUser_UserId(userId)
                 .orElseThrow(() -> new CustomException(CardError.DECK_ERROR));
 
         int packCount = cardpackReq.getCount();
-        ObjectMapper mapper = new ObjectMapper();
-
-        // 인벤토리 조회
-        List<InventoryHistory> histories = inventoryHistoryJpaRepo.findAllByUser_UserId(userId);
-
-        // 카드팩 관련 인벤토리만 필터링
-        List<InventoryHistory> matchingHistories = new ArrayList<>();
-        for (InventoryHistory history : histories) {
-            try {
-                JsonNode obj = mapper.readTree(history.getInventory().getItemData());
-                if (obj.has("cardpackId") && obj.get("cardpackId").asLong() == store.getStoreId()) {
-                    matchingHistories.add(history);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException("인벤토리 JSON 파싱 실패", e);
-            }
-        }
-
-        if (matchingHistories.isEmpty()) {
-            throw new CustomException(CardError.NOT_FOUND_INVENTORY);
-        }
-
-        // 전체 수량 합산
-        int totalCount = matchingHistories.stream()
-                .mapToInt(InventoryHistory::getItemCount)
-                .sum();
-
-        if (totalCount < packCount) {
-            throw new CustomException(CardError.NOT_ENOUGH_ITEM);
-        }
-
-        // 인벤토리 소모
-        int remain = packCount;
-        for (InventoryHistory history : matchingHistories) {
-            if (remain == 0) break;
-
-            int currentCount = history.getItemCount();
-            if (currentCount <= remain) {
-                remain -= currentCount;
-                inventoryHistoryJpaRepo.delete(history); // 전부 소모
-            } else {
-                history.setItemCount(currentCount - remain);
-                inventoryHistoryJpaRepo.save(history);
-                remain = 0;
-            }
-        }
+        Long cardpackId = cardpackReq.getCardpackId();
 
         // 결과 리스트
         List<List<CardRes>> result = new ArrayList<>();
 
         for (int i = 0; i < packCount; i++) {
-            List<Card> cards = getCardPoolByPackId(store.getStoreId());
+            List<Card> cards = getCardPoolByPackId(cardpackId);
             if (cards.isEmpty()) {
                 throw new CustomException(StoreError.STORE_ERROR);
             }
 
+            // 카드풀 섞고 3장 뽑기
             Collections.shuffle(cards);
             List<Card> selectedCards = cards.stream().limit(3).toList();
 
@@ -134,7 +79,7 @@ public class InventoryService {
             for (Card card : selectedCards) {
                 boolean alreadyOwned = cardHistoryJpaRepo.existsByUser_UserIdAndCard_CardId(userId, card.getCardId());
 
-                if (!alreadyOwned) { // 없으면 추가
+                if (!alreadyOwned) { // 유저가 아직 안 가진 카드만 추가
                     CardHistory history = CardHistory.builder()
                             .card(card)
                             .deck(deck)
@@ -151,9 +96,6 @@ public class InventoryService {
         }
         return result;
     }
-
-
-
 
     private List<Card> getCardPoolByPackId(Long cardPackId) {
         return switch (cardPackId.intValue()) {
