@@ -32,12 +32,6 @@ public class CardController {
         return BaseResponse.of(cardService.getCardsByRegion(region));
     }
 
-    @Operation(summary = "카드 더미 추가", description = "카드 더미를 추가합니다.")
-    @PostMapping
-    public ResponseEntity<BaseResponse<CardRes>> createCard(@RequestBody CardReq cardReq) {
-        return BaseResponse.of(cardService.addCard(cardReq));
-    }
-
     @Operation(summary = "국가 속성 더미 추가", description = "국가 속성 더미를 추가합니다.")
     @PostMapping("/nation")
     public ResponseEntity<BaseResponse<NationAttributeRes>> createNation(@RequestBody NationAttributeReq nationAttributeReq) {
