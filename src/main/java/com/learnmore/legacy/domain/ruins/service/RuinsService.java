@@ -102,6 +102,7 @@ public class RuinsService {
 
         RuinsComment comment = RuinsComment.builder()
                 .ruins(ruins)
+                .rating(ruinsCommentReq.rating())
                 .comment(ruinsCommentReq.comment())
                 .build();
         ruinsCommentJpaRepo.save(comment);
