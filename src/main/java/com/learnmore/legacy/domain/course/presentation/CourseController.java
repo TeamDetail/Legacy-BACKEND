@@ -72,8 +72,9 @@ public class CourseController {
     }
 
     @Operation(summary = "코스 이름으로 검색", description = "코스 이름으로 검색합니다.")
-    @GetMapping("/search/{userId}")
-    public ResponseEntity<BaseResponse<List<CourseRes>>> getRuinsDetailByName(@RequestParam String courseName, @PathVariable Long userId) {
+    @GetMapping("/search")
+    public ResponseEntity<BaseResponse<List<CourseRes>>> getRuinsDetailByName(@RequestParam String courseName) {
+        Long userId = userSessionHolder.get().getUserId();
         return BaseResponse.of(courseService.getCourseByCourseName(courseName, userId));
     }
 
