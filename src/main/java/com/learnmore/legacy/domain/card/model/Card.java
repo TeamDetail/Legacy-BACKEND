@@ -1,6 +1,5 @@
 package com.learnmore.legacy.domain.card.model;
 
-import com.learnmore.legacy.domain.quiz.model.QuizHistory;
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import com.learnmore.legacy.domain.store.model.Store;
 import jakarta.persistence.*;
