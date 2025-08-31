@@ -1,16 +1,12 @@
 package com.learnmore.legacy.domain.course.presentation.dto.response;
 
-import com.learnmore.legacy.domain.card.presentation.dto.response.CardRuinsRes;
 import com.learnmore.legacy.domain.course.model.Course;
-import com.learnmore.legacy.domain.ruins.model.Ruins;
-import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsDetailRes;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -30,45 +26,33 @@ public class CourseRuinsRes {
     private String thumbnail;
     private Long clearRuinsCount;
     private Long maxRuinsCount;
-    private List<RuinsDetailRes> ruins;
-    private List<RuinsDetailRes> clearRuins;
+    private List<CourseDetailRes> ruins;
 
     public static CourseRuinsRes from(
             Course course,
             List<String> tagNames,
-            boolean isClear,
+            boolean isClearCourse,
             boolean isHeart,
             String thumbnail,
             Long clearRuinsCount,
             Long maxRuinsCount,
-            List<Ruins> ruins,
-            List<Ruins> clearRuins) {
-
-        List<RuinsDetailRes> ruinsRes = ruins.stream()
-                .map(r -> RuinsDetailRes.from(r, (CardRuinsRes) List.of()))
-                .collect(Collectors.toList());
-
-        List<RuinsDetailRes> clearRuinsRes = clearRuins.stream()
-                .map(r -> RuinsDetailRes.from(r, (CardRuinsRes) List.of()))
-                .collect(Collectors.toList());
-
+            List<CourseDetailRes> ruinsDetailList
+    ) {
         return CourseRuinsRes.builder()
                 .courseId(course.getCourseId())
                 .courseName(course.getCourseName())
+                .thumbnail(thumbnail)
                 .creator(course.getUser().getNickname())
                 .tag(tagNames)
                 .description(course.getCourseDescription())
                 .heartCount(course.getHeartCount())
                 .clearCount(course.getClearCount())
                 .eventId(course.getEventId())
-                .isClear(isClear)
+                .isClear(isClearCourse)
                 .isHeart(isHeart)
-                .thumbnail(thumbnail)
                 .clearRuinsCount(clearRuinsCount)
                 .maxRuinsCount(maxRuinsCount)
-                .ruins(ruinsRes)
-                .clearRuins(clearRuinsRes)
+                .ruins(ruinsDetailList)
                 .build();
     }
-
 }
