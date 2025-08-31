@@ -1,10 +1,12 @@
 package com.learnmore.legacy.domain.course.service;
 
+import com.learnmore.legacy.domain.card.presentation.dto.response.CardRuinsRes;
 import com.learnmore.legacy.domain.course.error.CourseError;
 import com.learnmore.legacy.domain.course.model.*;
 import com.learnmore.legacy.domain.course.model.repo.*;
 import com.learnmore.legacy.domain.course.presentation.dto.request.CourseIdReq;
 import com.learnmore.legacy.domain.course.presentation.dto.request.CourseReq;
+import com.learnmore.legacy.domain.course.presentation.dto.response.CourseDetailRes;
 import com.learnmore.legacy.domain.course.presentation.dto.response.CourseRes;
 import com.learnmore.legacy.domain.course.presentation.dto.response.CourseRuinsRes;
 import com.learnmore.legacy.domain.ruins.error.RuinsError;
@@ -262,57 +264,49 @@ public class CourseService {
         Course course = courseJpaRepo.findById(courseId)
                 .orElseThrow(() -> new CustomException(CourseError.COURSE_ERROR));
 
-        List<String> tagNames =
-                courseTagJpaRepo.findTagNamesByCourse_CourseId(courseId);
+        List<String> tagNames = courseTagJpaRepo.findTagNamesByCourse_CourseId(courseId);
 
-        List<Long> ruinsIds =
-                courseRuinsJpaRepo.findRuinsByCourse_CourseId(courseId)
-                        .stream()
-                        .map(Ruins::getRuinsId)
-                        .toList();
-
-        Ruins ruins = ruinsJpaRepo.findById(ruinsIds.getFirst())
-                .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
-
-        boolean isClear =
-                courseClearHistoryJpaRepo.existsByCourseClear_Course_CourseIdAndUser_UserId(courseId, userId);
-
-        Long clearRuinsCount = courseClearHistoryJpaRepo.countClearedRuinsByCourseAndUser(courseId, userId);
-
-        boolean isHeart = courseHeartJpaRepo.existsByCourseAndUser_UserId(course, userId);
-
-        String thumbnail = ruins.getRuinsImage();;
-
-        Long maxRuinsCount = courseRuinsJpaRepo.countByCourse_CourseId(courseId);
-
+        // 전체 유적지
         List<Ruins> ruinsList = courseRuinsJpaRepo.findRuinsByCourse_CourseId(courseId);
+        if (ruinsList.isEmpty()) {
+            throw new CustomException(RuinsError.RUINS_NOT_FOUND);
+        }
+
+        // 클리어 유적지
         List<Ruins> clearRuinsList = courseClearHistoryJpaRepo.findRuinsByCourseIdAndUserId(courseId, userId);
 
-        List<RuinsDetailRes> ruinsResList = ruinsList.stream()
-                .map(r -> RuinsDetailRes.from(r, null))
+        // 썸네일 (첫 번째 유적지 이미지)
+        String thumbnail = ruinsList.get(0).getRuinsImage();
+
+        // 코스 전체 클리어 여부
+        boolean isClearCourse = courseClearHistoryJpaRepo.existsByCourseClear_Course_CourseIdAndUser_UserId(courseId, userId);
+
+        // 좋아요 여부
+        boolean isHeart = courseHeartJpaRepo.existsByCourseAndUser_UserId(course, userId);
+
+        // 카운트
+        Long clearRuinsCount = (long) clearRuinsList.size();
+        Long maxRuinsCount = (long) ruinsList.size();
+
+        // ruins + clear 여부 매핑
+        List<CourseDetailRes> ruinsDetailList = ruinsList.stream()
+                .map(ruins -> {
+                    boolean isClear = clearRuinsList.contains(ruins);
+                    CardRuinsRes card = null; // 필요하다면 card 매핑 로직 추가
+                    return CourseDetailRes.from(ruins, isClear, card);
+                })
                 .collect(Collectors.toList());
 
-        List<RuinsDetailRes> clearRuinsResList = clearRuinsList.stream()
-                .map(r -> RuinsDetailRes.from(r, null))
-                .collect(Collectors.toList());
-
-        return CourseRuinsRes.builder()
-                .courseId(course.getCourseId())
-                .courseName(course.getCourseName())
-                .creator(course.getUser().getNickname())
-                .tag(tagNames)
-                .description(course.getCourseDescription())
-                .heartCount(course.getHeartCount())
-                .clearCount(course.getClearCount())
-                .eventId(course.getEventId())
-                .isClear(isClear)
-                .isHeart(isHeart)
-                .thumbnail(thumbnail)
-                .clearRuinsCount(clearRuinsCount)
-                .maxRuinsCount(maxRuinsCount)
-                .ruins(ruinsResList)
-                .clearRuins(clearRuinsResList)
-                .build();
+        return CourseRuinsRes.from(
+                course,
+                tagNames,
+                isClearCourse,
+                isHeart,
+                thumbnail,
+                clearRuinsCount,
+                maxRuinsCount,
+                ruinsDetailList
+        );
     }
 
     public List<CourseRes> getCourseByCourseName(String courseName, Long userId) {
