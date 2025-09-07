@@ -50,7 +50,7 @@ public class RuinsController {
     }
 
     @Operation(summary = "유적지 한줄평 조회", description = "한줄평을 조회합니다.")
-    @GetMapping("/commen/{id}")
+    @GetMapping("/comment/{id}")
     public ResponseEntity<BaseResponse<List<RuinsCommentRes>>> getRuinsComment(@PathVariable Long id){
         return BaseResponse.of(ruinsService.getRuinsComment(id));
     }

@@ -31,7 +31,7 @@ public class MailService {
         Map<Long, List<Mail>> mailGroup = mails.stream()
                 .collect(Collectors.groupingBy(Mail::getMailId));
 
-        // 그룹핑한 데이터를 MailRes로 변환
+        // 그룹핑된 데이터 → MailRes 변환
         return mailGroup.values().stream()
                 .map(mailList -> MailRes.from(mailList.get(0), mailList))
                 .collect(Collectors.toList());
@@ -80,5 +80,5 @@ public class MailService {
 
         return results;
     }
-
+    
 }
