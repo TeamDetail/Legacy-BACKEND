@@ -27,9 +27,9 @@ public class MailService {
     public List<MailRes> getAllMyMails(Long userId) {
         List<Mail> mails = mailJpaRepo.findAllByUser_UserId(userId);
 
-        // mailId 기준으로 그룹핑
-        Map<Long, List<Mail>> mailGroup = mails.stream()
-                .collect(Collectors.groupingBy(Mail::getMailId));
+        // mailTitle 기준으로 그룹핑
+        Map<String, List<Mail>> mailGroup = mails.stream()
+                .collect(Collectors.groupingBy(Mail::getMailTitle));
 
         // 그룹핑된 데이터 → MailRes 변환
         return mailGroup.values().stream()
@@ -80,5 +80,5 @@ public class MailService {
 
         return results;
     }
-    
+
 }
