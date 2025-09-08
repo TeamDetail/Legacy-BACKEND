@@ -26,6 +26,7 @@ public class RuinsDetailRes {
     private String manager;
     private BigDecimal latitude;
     private BigDecimal longitude;
+    private String description;
 
 //    private List<CardRes> cards;
 
@@ -47,6 +48,7 @@ public class RuinsDetailRes {
                 .manager(ruins.getManager())
                 .latitude(ruins.getLatitude())
                 .longitude(ruins.getLongitude())
+                .description(ruins.getDescription())
                 .card(card)
                 .build();
     }
