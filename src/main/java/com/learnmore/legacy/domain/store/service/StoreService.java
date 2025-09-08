@@ -62,7 +62,7 @@ public class StoreService {
         } else {
             // 없는 경우 → 새 인벤토리 추가
             inventory = Inventory.builder()
-                    .itemId(1L)
+                    .itemId(storeId)
                     .itemName(store.getStoreName())
                     .itemDescription(store.getStoreContent())
                     .itemType(ItemType.CARD_PACK)
