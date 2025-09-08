@@ -3,6 +3,7 @@ package com.learnmore.legacy.domain.aws.service;
 import com.learnmore.legacy.global.properties.S3Properties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
@@ -21,6 +22,7 @@ public class S3Service {
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(s3Properties.getBucket())
                 .key(key)
+                .acl(ObjectCannedACL.PUBLIC_READ)
                 .build();
 
         PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
