@@ -70,7 +70,7 @@ public class User {
     @Column(name = "max_score", nullable = false)
     private Integer maxScore;
 
-    @Column(name = "image_url", length = 1000, nullable = false)
+    @Column(name = "image_url", length = 2048, nullable = false)
     private String imageUrl;
 
     public void updateImageUrl(String imageUrl) {
