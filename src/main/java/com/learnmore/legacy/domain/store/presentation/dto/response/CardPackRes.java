@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CardPackRes {
-    private List<CardPackDataRes> cardPack;
+    private List<CardPackDataRes> cardpack;
     private Integer buyCount;
 
     public static CardPackRes from(List<Store> cardpacks, Integer buyCount) {
@@ -23,7 +23,7 @@ public class CardPackRes {
                 .collect(Collectors.toList());
 
         return CardPackRes.builder()
-                .cardPack(cardpackResList)
+                .cardpack(cardpackResList)
                 .buyCount(buyCount)
                 .build();
     }
