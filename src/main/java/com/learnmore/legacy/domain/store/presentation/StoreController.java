@@ -16,7 +16,7 @@ public class StoreController {
     private final StoreService storeService;
     private final UserSessionHolder userSessionHolder;
 
-    @GetMapping
+    @GetMapping("/cardpack")
     @Operation(summary = "카드팩 상점 조회", description = "카드팩 상점을 조회합니다.")
     public ResponseEntity<BaseResponse<CardPackRes>> getStorePage() {
         Long userId = userSessionHolder.get().getUserId();
