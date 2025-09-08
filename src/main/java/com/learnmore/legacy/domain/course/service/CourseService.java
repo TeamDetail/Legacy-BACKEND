@@ -1,5 +1,8 @@
 package com.learnmore.legacy.domain.course.service;
 
+import com.learnmore.legacy.domain.card.error.CardError;
+import com.learnmore.legacy.domain.card.model.Card;
+import com.learnmore.legacy.domain.card.model.repo.CardJpaRepo;
 import com.learnmore.legacy.domain.card.presentation.dto.response.CardRuinsRes;
 import com.learnmore.legacy.domain.course.error.CourseError;
 import com.learnmore.legacy.domain.course.model.*;
@@ -12,7 +15,6 @@ import com.learnmore.legacy.domain.course.presentation.dto.response.CourseRuinsR
 import com.learnmore.legacy.domain.ruins.error.RuinsError;
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import com.learnmore.legacy.domain.ruins.model.repo.RuinsJpaRepo;
-import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsDetailRes;
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import com.learnmore.legacy.global.exception.CustomException;
@@ -34,6 +36,7 @@ public class CourseService {
     private final CourseRuinsJpaRepo courseRuinsJpaRepo;
     private final CourseClearHistoryJpaRepo courseClearHistoryJpaRepo;
     private final RuinsJpaRepo ruinsJpaRepo;
+    private final CardJpaRepo cardJpaRepo;
     private final UserJpaRepo userJpaRepo;
 
     public List<CourseRes> getAllCourse(Long userId) {
@@ -275,8 +278,8 @@ public class CourseService {
         // 클리어 유적지
         List<Ruins> clearRuinsList = courseClearHistoryJpaRepo.findRuinsByCourseIdAndUserId(courseId, userId);
 
-        // 썸네일 (첫 번째 유적지 이미지)
-        String thumbnail = ruinsList.get(0).getRuinsImage();
+        // 썸네일
+        String thumbnail = ruinsList.getFirst().getRuinsImage();
 
         // 코스 전체 클리어 여부
         boolean isClearCourse = courseClearHistoryJpaRepo.existsByCourseClear_Course_CourseIdAndUser_UserId(courseId, userId);
@@ -292,8 +295,9 @@ public class CourseService {
         List<CourseDetailRes> ruinsDetailList = ruinsList.stream()
                 .map(ruins -> {
                     boolean isClear = clearRuinsList.contains(ruins);
-                    CardRuinsRes card = null; // 필요하다면 card 매핑 로직 추가
-                    return CourseDetailRes.from(ruins, isClear, card);
+                    Card card = cardJpaRepo.findByRuins_RuinsId(ruins.getRuinsId())
+                            .orElseThrow(() -> new CustomException(CardError.CARD_NOT_FOUND));
+                    return CourseDetailRes.from(ruins, isClear, CardRuinsRes.from(card));
                 })
                 .collect(Collectors.toList());
 
