@@ -6,6 +6,7 @@ import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsDetailRe
 import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsMapPointRes;
 import com.learnmore.legacy.domain.ruins.service.RuinsService;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
+import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import java.util.List;
 public class RuinsController {
 
     private final RuinsService ruinsService;
+    private final UserSessionHolder userSessionHolder;
 
     @Operation(summary = "유적지 위치 조회", description = "지도에 보이는 유적지를 조회합니다")
     @GetMapping("/map")
@@ -46,7 +48,8 @@ public class RuinsController {
     @Operation(summary = "유적지 한줄평 추가", description = "한줄평을 추가합니다.")
     @PostMapping("/comment")
     public ResponseEntity<BaseResponse<RuinsCommentRes>> addRuinsComment(@RequestBody RuinsCommentReq ruinsCommentReq){
-        return BaseResponse.of(ruinsService.addRuinsComment(ruinsCommentReq));
+        String userName = userSessionHolder.get().getNickname();
+        return BaseResponse.of(ruinsService.addRuinsComment(ruinsCommentReq, userName));
     }
 
     @Operation(summary = "유적지 한줄평 조회", description = "한줄평을 조회합니다.")
