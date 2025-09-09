@@ -96,11 +96,12 @@ public class RuinsService {
                 .toList();
     }
 
-    public RuinsCommentRes addRuinsComment(RuinsCommentReq ruinsCommentReq) {
+    public RuinsCommentRes addRuinsComment(RuinsCommentReq ruinsCommentReq, String userName) {
         Ruins ruins = ruinsJpaRepo.findById(ruinsCommentReq.ruinsId())
                 .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
         RuinsComment comment = RuinsComment.builder()
+                .userName(userName)
                 .ruins(ruins)
                 .rating(ruinsCommentReq.rating())
                 .comment(ruinsCommentReq.comment())
