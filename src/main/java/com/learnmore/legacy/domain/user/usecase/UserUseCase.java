@@ -1,6 +1,7 @@
 package com.learnmore.legacy.domain.user.usecase;
 
 import com.learnmore.legacy.domain.aws.service.S3Service;
+import com.learnmore.legacy.domain.aws.service.presentation.dto.response.S3UploadRes;
 import com.learnmore.legacy.domain.card.service.CardService;
 import com.learnmore.legacy.domain.user.error.StyleError;
 import com.learnmore.legacy.domain.user.model.Style;
@@ -15,6 +16,7 @@ import com.learnmore.legacy.domain.user.service.StyleService;
 import com.learnmore.legacy.domain.user.service.UserService;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import com.learnmore.legacy.global.exception.CustomException;
+import com.learnmore.legacy.global.properties.S3Properties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,9 +96,10 @@ public class UserUseCase {
     }
 
     @Transactional
-    public String uploadUrl(String fileName) {
+    public S3UploadRes uploadUrl(String fileName) {
         String key = "profileImage/"+fileName;
-        return s3Service.generateUploadUrl(key);
+        String imageUrl = "https://learnmore-legacy-game.s3.ap-northeast-2.amazonaws.com/profileImage/"+fileName;
+        return new S3UploadRes(s3Service.generateUploadUrl(key),imageUrl);
     }
 
 }

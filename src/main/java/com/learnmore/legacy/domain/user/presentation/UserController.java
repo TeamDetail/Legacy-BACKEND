@@ -1,5 +1,6 @@
 package com.learnmore.legacy.domain.user.presentation;
 
+import com.learnmore.legacy.domain.aws.service.presentation.dto.response.S3UploadRes;
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.presentation.dto.request.ProfileImageReq;
 import com.learnmore.legacy.domain.user.presentation.dto.request.StyleIdReq;
@@ -42,9 +43,9 @@ public class UserController {
         return BaseResponse.of(userUseCase.getUserStyles());
     }
 
-    @Operation(summary = "프로필 이미지 업로드 url 발급",description = "파일 이름 (확장자 포함)과 일치하는 사진파일을 올릴수 있는 url을 반환합니다")
+    @Operation(summary = "프로필 이미지 업로드 url 발급",description = "파일 이름 (확장자 포함)과 일치하는 사진파일을 올릴수 있는 url과 s3 에 올라가 있는 파일의 주소를 반환합니다")
     @GetMapping("/uploadUrl")
-    public ResponseEntity<BaseResponse<String>> uploadUrl(@RequestParam("fileName") String fileName){
+    public ResponseEntity<BaseResponse<S3UploadRes>> uploadUrl(@RequestParam("fileName") String fileName){
         return BaseResponse.of(userUseCase.uploadUrl(fileName));
     }
 
