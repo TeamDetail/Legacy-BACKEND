@@ -45,7 +45,10 @@ public class JwtProvider {
 
     public String generateAccessToken(String id) {
         Date now = new Date();
-
+        Date expiry = new Date(now.getTime() + jwtProperties.getAccessExp());
+        System.out.println("현재 시간(ms) : " + now.getTime());
+        System.out.println("만료 시간(ms) : " + expiry.getTime());
+        System.out.println("만료까지 차이(ms) : " + (expiry.getTime() - now.getTime()));
         return Jwts.builder()
                 .setHeaderParam(Header.JWT_TYPE, JwtType.ACCESS)
                 .setSubject(id)
@@ -57,12 +60,15 @@ public class JwtProvider {
 
     private String generateRefreshToken(String id) {
         Date now = new Date();
-
+        Date expiry = new Date(now.getTime() + jwtProperties.getRefreshExp());
+        System.out.println("리프레쉬 현재 시간(ms) : " + now.getTime());
+        System.out.println("리프레쉬 만료 시간(ms) : " + expiry.getTime());
+        System.out.println("리프레쉬 만료까지 차이(ms) : " + (expiry.getTime() - now.getTime()));
         return Jwts.builder()
                 .setHeaderParam(Header.JWT_TYPE, JwtType.REFRESH)
                 .setSubject(id)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + jwtProperties.getRefreshExp()))
+                .setExpiration(expiry)
                 .signWith(getSigningKey())
                 .compact();
     }
