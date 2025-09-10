@@ -296,7 +296,7 @@ public class CourseService {
                 .map(ruins -> {
                     boolean isClear = clearRuinsList.contains(ruins);
                     Card card = cardJpaRepo.findByRuins_RuinsId(ruins.getRuinsId())
-                            .orElseThrow(() -> new CustomException(CardError.CARD_NOT_FOUND));
+                            .orElse(null);
                     return CourseDetailRes.from(ruins, isClear, CardRuinsRes.from(card));
                 })
                 .collect(Collectors.toList());
