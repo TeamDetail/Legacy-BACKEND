@@ -23,6 +23,9 @@ public class RuinsComment {
     @Column(name = "user_name")
     private String userName;
 
+    @Column(name = "user_img_url")
+    private String userImgUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ruins_id", nullable = false)
     private Ruins ruins;
@@ -35,6 +38,6 @@ public class RuinsComment {
 
     @CreationTimestamp
     @Column(name = "create_at", nullable = false, updatable = false,
-            columnDefinition = "DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6)")
+            columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP(6)")
     private LocalDateTime createAt;
 }

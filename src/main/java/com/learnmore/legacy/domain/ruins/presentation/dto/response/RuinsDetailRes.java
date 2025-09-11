@@ -27,6 +27,8 @@ public class RuinsDetailRes {
     private BigDecimal latitude;
     private BigDecimal longitude;
     private String description;
+    private double averageRating;
+    private Long countComments;
 
 //    private List<CardRes> cards;
 
@@ -49,6 +51,8 @@ public class RuinsDetailRes {
                 .latitude(ruins.getLatitude())
                 .longitude(ruins.getLongitude())
                 .description(ruins.getDescription())
+                .averageRating(ruins.getAverageRating())
+                .countComments(ruins.getCountComment())
                 .card(card)
                 .build();
     }
