@@ -60,6 +60,12 @@ public class Ruins {
     @Column(precision = 15, scale = 10)
     private BigDecimal longitude;
 
+    @Column(name = "average_rating")
+    private Double averageRating;
+
+    @Column(name = "count_commnet")
+    private Long countComment;
+
     @Lob
     @Column(name = "description", columnDefinition = "LONGTEXT")
     private String description;
