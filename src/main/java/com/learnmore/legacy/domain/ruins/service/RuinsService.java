@@ -15,6 +15,7 @@ import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsCommentR
 import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsDetailRes;
 import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsMapPointRes;
 import com.learnmore.legacy.global.exception.CustomException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -96,17 +97,33 @@ public class RuinsService {
                 .toList();
     }
 
-    public RuinsCommentRes addRuinsComment(RuinsCommentReq ruinsCommentReq, String userName) {
+    @Transactional
+    public RuinsCommentRes addRuinsComment(RuinsCommentReq ruinsCommentReq, String userName, String userImgUrl) {
         Ruins ruins = ruinsJpaRepo.findById(ruinsCommentReq.ruinsId())
                 .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
         RuinsComment comment = RuinsComment.builder()
                 .userName(userName)
+                .userImgUrl(userImgUrl)
                 .ruins(ruins)
                 .rating(ruinsCommentReq.rating())
                 .comment(ruinsCommentReq.comment())
                 .build();
         ruinsCommentJpaRepo.save(comment);
+
+        List<RuinsComment> ruinsComment = ruinsCommentJpaRepo.findAllByRuins(ruins);
+
+        Double averageRating = ruinsComment.stream()
+                .mapToDouble(RuinsComment::getRating)
+                .average()
+                .orElse(0.0);
+        averageRating = Math.round(averageRating * 10) / 10.0;
+
+        long countComment = ruinsComment.size();
+
+        ruins.setAverageRating(averageRating);
+        ruins.setCountComment(countComment);
+        ruinsJpaRepo.save(ruins);
 
         return RuinsCommentRes.from(comment);
     }
