@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Getter
 @Builder
@@ -51,8 +52,8 @@ public class RuinsDetailRes {
                 .latitude(ruins.getLatitude())
                 .longitude(ruins.getLongitude())
                 .description(ruins.getDescription())
-                .averageRating(ruins.getAverageRating())
-                .countComments(ruins.getCountComment())
+                .averageRating(Optional.ofNullable(ruins.getAverageRating()).orElse(0.0))
+                .countComments(Optional.ofNullable(ruins.getCountComment()).orElse(0L))
                 .card(card)
                 .build();
     }
