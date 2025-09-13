@@ -31,4 +31,8 @@ public class UserService {
     public List<User> blockRanking() {
         return userJpaRepo.findTop100ByOrderByAllBlocksDesc();
     }
+
+    public List<User> levelRanking() {
+        return userJpaRepo.findTop100ByOrderByLevelDesc();
+    }
 }
