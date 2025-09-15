@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,7 +72,10 @@ public class QuizService {
 
         List<Quiz> quizzes = quizJpaRepo.findAllByRuinsId(ruinsId);
 
+        Collections.shuffle(quizzes);
+
         return quizzes.stream()
+                .limit(3)
                 .map(quiz -> {
                     List<QuizOption> options = quizOptionJpaRepo.findByQuiz_QuizId(quiz.getQuizId());
 
