@@ -87,6 +87,7 @@ public class InventoryService {
                             .cardType(CardType.BASIC_CARD)
                             .user(user)
                             .build();
+                    //todo 여기다
                     cardHistoryJpaRepo.save(history);
 
                     packResult.add(CardRes.from(card, history));
