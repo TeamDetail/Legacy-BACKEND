@@ -38,6 +38,6 @@ public class RuinsComment {
 
     @CreationTimestamp
     @Column(name = "create_at", nullable = false, updatable = false,
-            columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP(6)")
+            columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP(6)")//todo 이거 빌드에서 에러남
     private LocalDateTime createAt;
 }

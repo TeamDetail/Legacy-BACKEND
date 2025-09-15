@@ -1,5 +1,7 @@
 package com.learnmore.legacy.domain.quiz.service;
 
+import com.learnmore.legacy.domain.achievement.model.enums.AchievementType;
+import com.learnmore.legacy.domain.achievement.service.AchievementProgressService;
 import com.learnmore.legacy.domain.block.model.repo.BlockHistoryJpaRepo;
 import com.learnmore.legacy.domain.block.service.BlockService;
 import com.learnmore.legacy.domain.quiz.error.QuizError;
@@ -37,6 +39,7 @@ public class QuizService {
     private final BlockService blockService;
     private final BlockHistoryJpaRepo blockHistoryJpaRepo;
     private final RuinsJpaRepo ruinsJpaRepo;
+    private final AchievementProgressService achievementProgressService;
 
     @Transactional
     public QuizAddRes addQuiz(QuizAddReq req) {
@@ -137,6 +140,11 @@ public class QuizService {
                     ruins.getLongitude()
             );
             blockGiven = true;
+        }
+        if (blockGiven) {
+            achievementProgressService.increaseProgress(userId, AchievementType.SOLVE_QUIZ, 1);
+        } else {
+            achievementProgressService.increaseProgress(userId, AchievementType.WRONG_QUIZ, 1);
         }
 
         return new QuizAnswerRes(blockGiven, results);
