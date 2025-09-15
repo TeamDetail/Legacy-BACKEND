@@ -1,6 +1,8 @@
 package com.learnmore.legacy.domain.ranking.usecase;
 
+import com.learnmore.legacy.domain.ranking.model.enums.RankingType;
 import com.learnmore.legacy.domain.ranking.presentation.dto.response.BlockRankingRes;
+import com.learnmore.legacy.domain.ranking.presentation.dto.response.LevelRankingRes;
 import com.learnmore.legacy.domain.ranking.presentation.dto.response.UserStyleRes;
 import com.learnmore.legacy.domain.user.model.Style;
 import com.learnmore.legacy.domain.user.model.User;
@@ -40,6 +42,32 @@ public class RankingUseCase {
                             user.getNickname(),
                             user.getLevel(),
                             user.getAllBlocks(),
+                            user.getImageUrl(),
+                            styleDto
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<LevelRankingRes> getTopUserLevelRanking(RankingType type) {
+        List<User> topUsers = userService.levelRanking();
+        List<Style> equippedStyles = styleService.findAllEquippedStyles(topUsers);
+
+        Map<Long, Style> userIdToStyle = equippedStyles.stream()
+                .collect(Collectors.toMap(
+                        s -> s.getUser().getUserId(),
+                        Function.identity()
+                ));
+
+        return topUsers.stream()
+                .map(user -> {
+                    Style style = userIdToStyle.get(user.getUserId());
+                    UserStyleRes styleDto = UserStyleRes.from(style);
+
+                    return new LevelRankingRes(
+                            user.getNickname(),
+                            user.getLevel(),
+                            user.getExp(),
                             user.getImageUrl(),
                             styleDto
                     );
