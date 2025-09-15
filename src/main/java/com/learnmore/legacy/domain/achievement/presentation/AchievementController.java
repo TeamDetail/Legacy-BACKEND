@@ -24,7 +24,6 @@ import java.util.List;
 public class AchievementController {
     private final AchievementUseCase achievementUseCase;
     private final UserSessionHolder userSessionHolder;
-    private final AchievementProgressService achievementProgressService;
 
     @Operation(summary = "모든 도전과제 조회" , description = "모든 도전과제 조회")
     @GetMapping("/all")
@@ -39,7 +38,6 @@ public class AchievementController {
             @PathVariable AchievementCategory type
     ) {
         Long userId = userSessionHolder.get().getUserId();
-        achievementProgressService.increaseProgress(userId, AchievementType.SOLVE_QUIZ, 1);
         return ResponseEntity.ok(achievementUseCase.getAchievementsWithHistory(userId, type));
     }
 
