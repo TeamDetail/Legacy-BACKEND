@@ -9,4 +9,6 @@ public interface UserJpaRepo extends JpaRepository<User, Long> {
     User findByUserId(Long id);
 
     List<User> findTop100ByOrderByAllBlocksDesc();
+
+    List<User> findTop100ByOrderByLevelDesc();
 }
