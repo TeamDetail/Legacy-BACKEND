@@ -14,5 +14,5 @@ public class LevelRankingRes {
     private Integer level;
     private Integer exp;
     private String imageUrl;
-    private UserStyleRes userStyle;
+    private UserStyleRes title;
 }
