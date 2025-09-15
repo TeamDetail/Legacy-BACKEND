@@ -1,6 +1,7 @@
 package com.learnmore.legacy.domain.achievement.model;
 
 import com.learnmore.legacy.domain.achievement.model.enums.AchievementCategory;
+import com.learnmore.legacy.domain.achievement.model.enums.AchievementGrade;
 import com.learnmore.legacy.domain.achievement.model.enums.AchievementType;
 import jakarta.persistence.Entity;
 
@@ -40,4 +41,6 @@ public class Achievement {
     @Column(name = "goal_rate", nullable = false)
     private Integer goalRate;
 
+    @Column(name = "grade")
+    private AchievementGrade grade;
 }

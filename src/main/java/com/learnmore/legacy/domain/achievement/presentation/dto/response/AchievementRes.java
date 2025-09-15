@@ -1,5 +1,6 @@
 package com.learnmore.legacy.domain.achievement.presentation.dto.response;
 
+import com.learnmore.legacy.domain.achievement.model.enums.AchievementGrade;
 import com.learnmore.legacy.domain.achievement.presentation.dto.AwardDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +23,7 @@ public class AchievementRes {
     private boolean isReceive;
     private int currentRate;
     private int goalRate;
+    private AchievementGrade achievementGrade;
 
     private List<AwardDto> achievementAward;
 }
