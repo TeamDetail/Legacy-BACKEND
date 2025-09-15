@@ -40,6 +40,7 @@ public class AchievementUseCase {
                 .content(req.content())
                 .goalText(req.goalText())
                 .goalRate(req.goalRate())
+                .grade(req.achievementGrade())
                 .build();
         Achievement saveAchievement = achievementService.saveAchievement(postAchievement);
 
@@ -126,6 +127,7 @@ public class AchievementUseCase {
                             .goalRate(history != null ? history.getGoalRate() : 1)
                             .achievementAward(awards)
                             .achieveUserPercent(achievementRate)
+                            .achievementGrade(achievement.getGrade())
                             .build();
                 })
                 .toList();
