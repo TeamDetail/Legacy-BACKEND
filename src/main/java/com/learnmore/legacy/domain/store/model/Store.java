@@ -2,10 +2,7 @@ package com.learnmore.legacy.domain.store.model;
 
 import com.learnmore.legacy.domain.store.model.enums.StoreType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "store")
@@ -13,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter
 public class Store {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
