@@ -1,8 +1,5 @@
 package com.learnmore.legacy.domain.quiz.presentation;
 
-import com.learnmore.legacy.domain.quiz.model.repo.QuizHistoryJpaRepo;
-import com.learnmore.legacy.domain.quiz.presentation.dto.request.QuizAddReq;
-import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizAddRes;
 import com.learnmore.legacy.domain.quiz.presentation.dto.request.QuizAnswerReq;
 import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizAnswerRes;
 import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizRes;
@@ -25,12 +22,6 @@ public class QuizController {
     private final QuizService quizService;
     private final UserSessionHolder userSessionHolder;
 
-    @Operation(summary = "더미 퀴즈 추가", description = "새로운 퀴즈를 생성합니다.")
-    @PostMapping
-    public ResponseEntity<BaseResponse<QuizAddRes>> addQuiz(@RequestBody QuizAddReq request) {
-        return BaseResponse.of(quizService.addQuiz(request));
-    }
-
     @Operation(summary = "퀴즈 조회", description = "퀴즈를 조회합니다.")
     @GetMapping("/{ruinsId}")
     public ResponseEntity<BaseResponse<List<QuizRes>>> getQuiz(@PathVariable Long ruinsId) {
@@ -48,13 +39,6 @@ public class QuizController {
     public ResponseEntity<BaseResponse<QuizAnswerRes>> checkQuizAnswers(@RequestBody List<QuizAnswerReq> requests) {
         Long userId = userSessionHolder.get().getUserId();
         return BaseResponse.of(quizService.checkAnswers(requests, userId));
-    }
-
-    @Operation(summary = "퀴즈 리셋", description = "사용자의 퀴즈를 리셋합니다.")
-    @DeleteMapping("/quiz-history/reset/{userId}")
-    public ResponseEntity<Void> resetQuizHistory(@PathVariable Long userId) {
-        quizService.resetQuizHistory(userId);
-        return ResponseEntity.noContent().build();
     }
 
 }
