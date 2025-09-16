@@ -1,6 +1,5 @@
 package com.learnmore.legacy.domain.quiz.service;
 
-import com.learnmore.legacy.domain.block.model.repo.BlockHistoryJpaRepo;
 import com.learnmore.legacy.domain.block.service.BlockService;
 import com.learnmore.legacy.domain.card.model.Card;
 import com.learnmore.legacy.domain.card.model.repo.CardJpaRepo;
@@ -11,8 +10,6 @@ import com.learnmore.legacy.domain.quiz.model.QuizOption;
 import com.learnmore.legacy.domain.quiz.model.repo.QuizHistoryJpaRepo;
 import com.learnmore.legacy.domain.quiz.model.repo.QuizJpaRepo;
 import com.learnmore.legacy.domain.quiz.model.repo.QuizOptionJpaRepo;
-import com.learnmore.legacy.domain.quiz.presentation.dto.request.QuizAddReq;
-import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizAddRes;
 import com.learnmore.legacy.domain.quiz.presentation.dto.request.QuizAnswerReq;
 import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizAnswerRes;
 import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizAnswerResult;
@@ -38,36 +35,8 @@ public class QuizService {
     private final QuizOptionJpaRepo quizOptionJpaRepo;
     private final QuizHistoryJpaRepo quizHistoryJpaRepo;
     private final BlockService blockService;
-    private final BlockHistoryJpaRepo blockHistoryJpaRepo;
     private final RuinsJpaRepo ruinsJpaRepo;
     private final CardJpaRepo cardJpaRepo;
-
-    @Transactional
-    public QuizAddRes addQuiz(QuizAddReq req) {
-        Quiz quiz = Quiz.builder()
-                .ruinsId(req.ruinsId())
-                .quizProblem(req.quizProblem())
-                .answerOption(req.answerOption())
-                .hint(req.hint())
-                .build();
-
-        Quiz savedQuiz = quizJpaRepo.save(quiz);
-
-        List<QuizOption> options = req.optionValues().stream()
-                .map(opt -> QuizOption.builder()
-                        .quiz(savedQuiz)
-                        .optionValue(opt)
-                        .build())
-                .toList();
-
-        List<QuizOption> savedOptions = quizOptionJpaRepo.saveAll(options);
-
-        List<String> optionValues = savedOptions.stream()
-                .map(QuizOption::getOptionValue)
-                .toList();
-
-        return QuizAddRes.from(savedQuiz, optionValues);
-    }
 
     public List<QuizRes> getQuiz(Long ruinsId) {
         Ruins ruins = ruinsJpaRepo.findById(ruinsId)
@@ -149,14 +118,12 @@ public class QuizService {
                     ruins.getLongitude()
             );
             blockGiven = true;
+        }else {
+            requests.forEach(request ->
+                    quizHistoryJpaRepo.deleteByUserIdAndQuizId(userId, request.quizId())
+            );
         }
 
         return new QuizAnswerRes(blockGiven, results);
     }
-
-    @Transactional
-    public void resetQuizHistory(Long userId) {
-        quizHistoryJpaRepo.deleteAllByUserId(userId);
-    }
-    
 }
