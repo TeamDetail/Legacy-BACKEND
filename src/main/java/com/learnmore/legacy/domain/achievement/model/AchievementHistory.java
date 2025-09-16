@@ -1,7 +1,5 @@
 package com.learnmore.legacy.domain.achievement.model;
 
-import com.learnmore.legacy.domain.store.model.Store;
-import com.learnmore.legacy.domain.user.model.Style;
 import com.learnmore.legacy.domain.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
