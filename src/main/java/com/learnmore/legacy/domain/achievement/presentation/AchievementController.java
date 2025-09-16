@@ -2,10 +2,8 @@ package com.learnmore.legacy.domain.achievement.presentation;
 
 import com.learnmore.legacy.domain.achievement.model.Achievement;
 import com.learnmore.legacy.domain.achievement.model.enums.AchievementCategory;
-import com.learnmore.legacy.domain.achievement.model.enums.AchievementType;
 import com.learnmore.legacy.domain.achievement.presentation.dto.request.AchievementPostReq;
 import com.learnmore.legacy.domain.achievement.presentation.dto.response.AchievementRes;
-import com.learnmore.legacy.domain.achievement.service.AchievementProgressService;
 import com.learnmore.legacy.domain.achievement.usecase.AchievementUseCase;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
