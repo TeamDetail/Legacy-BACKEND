@@ -35,7 +35,6 @@ public class InventoryService {
     public List<InventoryRes> getInventory(Long userId) {
         List<InventoryHistory> histories = inventoryHistoryJpaRepo.findAllByUser_UserId(userId);
 
-        // key를 "itemType + itemName" 으로 해서 묶음
         Map<String, InventoryRes> grouped = new HashMap<>();
 
         for (InventoryHistory history : histories) {
@@ -54,7 +53,7 @@ public class InventoryService {
     }
 
     @Transactional
-    public List<List<CardRes>> openCardpack(Long userId, CardpackReq cardpackReq) {
+    public List<CardRes> openCardpack(Long userId, CardpackReq cardpackReq) {
         User user = userJpaRepo.findByUserId(userId);
 
         Deck deck = deckJpaRepo.findByUser_UserId(userId)
@@ -63,8 +62,7 @@ public class InventoryService {
         int packCount = cardpackReq.getCount();
         Long cardpackId = cardpackReq.getCardpackId();
 
-        // 결과 리스트
-        List<List<CardRes>> result = new ArrayList<>();
+        List<CardRes> result = new ArrayList<>();
 
         for (int i = 0; i < packCount; i++) {
             List<Card> cards = getCardPoolByPackId(cardpackId);
@@ -72,11 +70,9 @@ public class InventoryService {
                 throw new CustomException(StoreError.STORE_ERROR);
             }
 
-            // 카드풀 섞고 3장 뽑기
             Collections.shuffle(cards);
             List<Card> selectedCards = cards.stream().limit(3).toList();
 
-            List<CardRes> packResult = new ArrayList<>();
             for (Card card : selectedCards) {
                 boolean alreadyOwned = cardHistoryJpaRepo.existsByUser_UserIdAndCard_CardId(userId, card.getCardId());
 
@@ -87,16 +83,16 @@ public class InventoryService {
                             .cardType(CardType.BASIC_CARD)
                             .user(user)
                             .build();
+                    //todo 여기다
                     cardHistoryJpaRepo.save(history);
 
-                    packResult.add(CardRes.from(card, history));
+                    result.add(CardRes.from(card, history));
                 }
             }
-
-            result.add(packResult);
         }
         return result;
     }
+
 
     private List<Card> getCardPoolByPackId(Long cardPackId) {
         return switch (cardPackId.intValue()) {
