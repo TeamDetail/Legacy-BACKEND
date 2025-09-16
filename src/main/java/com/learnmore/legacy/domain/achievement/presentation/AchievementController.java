@@ -27,18 +27,18 @@ public class AchievementController {
 
     @Operation(summary = "모든 도전과제 조회" , description = "모든 도전과제 조회")
     @GetMapping("/all")
-    public ResponseEntity<List<AchievementRes>> getAllAchievements() {
+    public ResponseEntity<BaseResponse<List<AchievementRes>>> getAllAchievements() {
         Long userId = userSessionHolder.get().getUserId();
-        return ResponseEntity.ok(achievementUseCase.getAchievementsWithHistory(userId, null));
+        return BaseResponse.of(achievementUseCase.getAchievementsWithHistory(userId, null));
     }
 
     @Operation(summary = "도전과제 종류로 조회 ", description = "요청한 타입의 도전과제를 유저별로 조회합니다 ")
     @GetMapping("/{type}")
-    public ResponseEntity<List<AchievementRes>> getAchievementsByCategory(
+    public ResponseEntity<BaseResponse<List<AchievementRes>>> getAchievementsByCategory(
             @PathVariable AchievementCategory type
     ) {
         Long userId = userSessionHolder.get().getUserId();
-        return ResponseEntity.ok(achievementUseCase.getAchievementsWithHistory(userId, type));
+        return BaseResponse.of(achievementUseCase.getAchievementsWithHistory(userId, type));
     }
 
     @Operation(summary = "테스트 용입니다 도전과제 생성", description = "프론트에서 필요하면 나한테 말하셈")
