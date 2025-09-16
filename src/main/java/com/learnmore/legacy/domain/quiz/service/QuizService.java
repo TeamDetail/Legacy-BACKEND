@@ -40,37 +40,9 @@ public class QuizService {
     private final QuizOptionJpaRepo quizOptionJpaRepo;
     private final QuizHistoryJpaRepo quizHistoryJpaRepo;
     private final BlockService blockService;
-    private final BlockHistoryJpaRepo blockHistoryJpaRepo;
     private final RuinsJpaRepo ruinsJpaRepo;
     private final CardJpaRepo cardJpaRepo;
     private final AchievementProgressService achievementProgressService;
-
-    @Transactional
-    public QuizAddRes addQuiz(QuizAddReq req) {
-        Quiz quiz = Quiz.builder()
-                .ruinsId(req.ruinsId())
-                .quizProblem(req.quizProblem())
-                .answerOption(req.answerOption())
-                .hint(req.hint())
-                .build();
-
-        Quiz savedQuiz = quizJpaRepo.save(quiz);
-
-        List<QuizOption> options = req.optionValues().stream()
-                .map(opt -> QuizOption.builder()
-                        .quiz(savedQuiz)
-                        .optionValue(opt)
-                        .build())
-                .toList();
-
-        List<QuizOption> savedOptions = quizOptionJpaRepo.saveAll(options);
-
-        List<String> optionValues = savedOptions.stream()
-                .map(QuizOption::getOptionValue)
-                .toList();
-
-        return QuizAddRes.from(savedQuiz, optionValues);
-    }
 
     public List<QuizRes> getQuiz(Long ruinsId) {
         Ruins ruins = ruinsJpaRepo.findById(ruinsId)
@@ -152,6 +124,10 @@ public class QuizService {
                     ruins.getLongitude()
             );
             blockGiven = true;
+        }else {
+            requests.forEach(request ->
+                    quizHistoryJpaRepo.deleteByUserIdAndQuizId(userId, request.quizId())
+            );
         }
         if (blockGiven) {
             achievementProgressService.increaseProgress(userId, AchievementType.SOLVE_QUIZ, 1);
@@ -161,10 +137,4 @@ public class QuizService {
 
         return new QuizAnswerRes(blockGiven, results);
     }
-
-    @Transactional
-    public void resetQuizHistory(Long userId) {
-        quizHistoryJpaRepo.deleteAllByUserId(userId);
-    }
-    
 }
