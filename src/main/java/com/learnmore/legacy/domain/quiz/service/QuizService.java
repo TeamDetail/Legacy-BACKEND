@@ -4,6 +4,8 @@ import com.learnmore.legacy.domain.achievement.model.enums.AchievementType;
 import com.learnmore.legacy.domain.achievement.service.AchievementProgressService;
 import com.learnmore.legacy.domain.block.model.repo.BlockHistoryJpaRepo;
 import com.learnmore.legacy.domain.block.service.BlockService;
+import com.learnmore.legacy.domain.card.model.Card;
+import com.learnmore.legacy.domain.card.model.repo.CardJpaRepo;
 import com.learnmore.legacy.domain.quiz.error.QuizError;
 import com.learnmore.legacy.domain.quiz.model.Quiz;
 import com.learnmore.legacy.domain.quiz.model.QuizHistory;
@@ -40,6 +42,7 @@ public class QuizService {
     private final BlockService blockService;
     private final BlockHistoryJpaRepo blockHistoryJpaRepo;
     private final RuinsJpaRepo ruinsJpaRepo;
+    private final CardJpaRepo cardJpaRepo;
     private final AchievementProgressService achievementProgressService;
 
     @Transactional
@@ -118,8 +121,13 @@ public class QuizService {
             boolean isCorrect = quiz.getAnswerOption().equalsIgnoreCase(request.answerOption());
             results.add(new QuizAnswerResult(quiz.getQuizId(), isCorrect));
 
+
+            Card card = cardJpaRepo.findByRuins_RuinsId(quiz.getRuinsId())
+                    .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
+
             if (isCorrect) {
                 quizHistoryJpaRepo.save(QuizHistory.builder()
+                        .card(card)
                         .userId(userId)
                         .quizId(quiz.getQuizId())
                         .build());
