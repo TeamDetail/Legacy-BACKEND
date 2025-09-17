@@ -12,6 +12,7 @@ import com.learnmore.legacy.domain.ruins.service.RuinsService;
 import com.learnmore.legacy.domain.user.error.StyleError;
 import com.learnmore.legacy.domain.user.model.Style;
 import com.learnmore.legacy.domain.user.model.User;
+import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import com.learnmore.legacy.domain.user.presentation.dto.request.ProfileImageReq;
 import com.learnmore.legacy.domain.user.presentation.dto.request.StyleIdReq;
 import com.learnmore.legacy.domain.user.presentation.dto.request.UserStyleReq;
@@ -41,6 +42,7 @@ public class UserUseCase {
     private final QuizService quizService;
     private final CourseService courseService;
     private final RuinsService ruinsService;
+    private final UserJpaRepo userJpaRepo;
     private final S3Service s3Service;
 
     @Transactional(readOnly = true)
@@ -112,7 +114,7 @@ public class UserUseCase {
 
     @Transactional(readOnly = true)
     public SingleUserRes getUser(Long userId) {
-        User user = userSessionHolder.get();
+        User user = userJpaRepo.findByUserId(userId);
         Style style = styleService.findEquipStyle(user);
         long countCard=cardService.countCardByUserId(user.getUserId());
         long countShiningCard=cardService.countShiningCardByUserId(user.getUserId());
