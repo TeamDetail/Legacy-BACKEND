@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface RuinsCommentJpaRepo extends JpaRepository<RuinsComment, Long> {
     List<RuinsComment> findAllByRuins(Ruins ruins);
+
+    long countByUser_UserId(Long userUserId);
 }

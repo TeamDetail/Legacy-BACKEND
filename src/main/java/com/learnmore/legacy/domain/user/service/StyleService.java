@@ -51,4 +51,8 @@ public class StyleService {
     public List<Style> findAllEquippedStyles(List<User> users) {
         return styleJpaRepo.findAllByUserInAndIsEquipTrue(users);
     }
+
+    public Integer countStyles(User user) {
+        return styleJpaRepo.countStylesByUser(user);
+    }
 }

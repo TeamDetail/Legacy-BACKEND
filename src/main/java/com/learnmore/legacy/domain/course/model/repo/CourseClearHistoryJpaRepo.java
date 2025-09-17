@@ -26,4 +26,5 @@ public interface CourseClearHistoryJpaRepo extends JpaRepository<CourseClearHist
     @Query("select cch.ruins from CourseClearHistory cch where cch.courseClear.course.courseId = :courseId and cch.user.userId = :userId")
     List<Ruins> findRuinsByCourseIdAndUserId(@Param("courseId") Long courseId, @Param("userId") Long userId);
 
+    Integer countByUser_UserId(Long userId);
 }

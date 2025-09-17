@@ -10,11 +10,13 @@ import com.learnmore.legacy.domain.user.service.StyleService;
 import com.learnmore.legacy.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -74,4 +76,28 @@ public class RankingUseCase {
                 })
                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public Integer getExploreRanking(Long userId) {
+        List<User> topUsers = userService.blockRanking();
+
+        return IntStream.range(0, topUsers.size())
+                .filter(i -> topUsers.get(i).getUserId().equals(userId))
+                .map(i -> i + 1)
+                .findFirst()
+                .orElse(-1);
+    }
+
+
+    @Transactional(readOnly = true)
+    public Integer getLevelRanking(Long userId) {
+        List<User> topUsers = userService.levelRanking();
+
+        return IntStream.range(0, topUsers.size())
+                .filter(i -> topUsers.get(i).getUserId().equals(userId))
+                .map(i -> i + 1)
+                .findFirst()
+                .orElse(-1);
+    }
+
 }

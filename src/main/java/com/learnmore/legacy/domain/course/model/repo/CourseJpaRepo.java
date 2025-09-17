@@ -20,4 +20,6 @@ public interface CourseJpaRepo extends JpaRepository<Course, Long> {
 
     @Query("SELECT c FROM Course c WHERE c.courseName LIKE %:name%")
     List<Course> searchByName(@Param("name") String name);
+
+    Integer countByUser_UserId(Long userId);
 }

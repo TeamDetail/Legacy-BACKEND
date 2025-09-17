@@ -6,21 +6,38 @@ import com.learnmore.legacy.domain.user.model.User;
 public record SingleUserRes(
         Long userId,
         String nickname,
-        Integer level,
         String imageUrl,
-        UserRecordRes record,
-        UserStyleRes title
+        String description,
+        Integer level,
+        UserStyleRes title,
+        UserRecordRes record
 ) {
-    public static SingleUserRes from(User user, Style style, long countCard, long countShiningCard) {
+    public static SingleUserRes from(
+            User user,
+            Style style,
+            long countCard,
+            long countShiningCard,
+            long experienceAchieve,
+            long adventureAchieve,
+            long hiddenAchieve,
+            Integer titleCount,
+            Integer exploreRank,
+
+            Integer levelRank,
+            Integer solvedQuizs,
+            Integer wrongQuizes,
+            Integer clearCourse,
+            Integer makeCourse,
+            long commentCount) {
         return new SingleUserRes(
                 user.getUserId(),
                 user.getNickname(),
-                user.getLevel(),
                 user.getImageUrl(),
-                UserRecordRes.from(user, countCard, countShiningCard),
-                UserStyleRes.from(style)
+                user.getDescription(),
+                user.getLevel(),
+                UserStyleRes.from(style),
+                UserRecordRes.from(user, countCard, countShiningCard, experienceAchieve, adventureAchieve, hiddenAchieve, titleCount, exploreRank, levelRank, solvedQuizs, wrongQuizes, clearCourse, makeCourse, commentCount)
         );
     }
 }
-
 

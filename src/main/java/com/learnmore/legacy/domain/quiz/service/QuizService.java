@@ -137,4 +137,10 @@ public class QuizService {
 
         return new QuizAnswerRes(blockGiven, results);
     }
+
+    @Transactional(readOnly = true)
+    public Integer getCorrectAnswerCount(Long userId) {
+        return quizHistoryJpaRepo.countByUserId(userId);
+    }
+    
 }

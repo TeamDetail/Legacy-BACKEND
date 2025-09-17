@@ -18,7 +18,7 @@ public interface StyleJpaRepo extends JpaRepository<Style, Long> {
 
     Optional<Style> findByUserAndStyleId(User user, Long styleId);
 
-    @Query("SELECT new com.learnmore.legacy.domain.user.presentation.dto.response.UserStyleRes(s.styleName, s.styleContent, s.styleId) " +
+    @Query("SELECT new com.learnmore.legacy.domain.user.presentation.dto.response.UserStyleRes(s.styleName, s.styleContent, s.grade, s.styleId) " +
             "FROM Style s WHERE s.user = :user")
     List<UserStyleRes> findAllStyleDtoByUser(@Param("user") User user);
 
@@ -27,4 +27,6 @@ public interface StyleJpaRepo extends JpaRepository<Style, Long> {
     Boolean existsByUserAndStyleName(User user, String styleName);
 
     List<Style> findAllByUserInAndIsEquipTrue(List<User> users);
+
+    Integer countStylesByUser(User user);
 }

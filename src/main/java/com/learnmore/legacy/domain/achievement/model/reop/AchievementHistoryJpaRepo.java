@@ -2,6 +2,7 @@ package com.learnmore.legacy.domain.achievement.model.reop;
 
 import com.learnmore.legacy.domain.achievement.model.Achievement;
 import com.learnmore.legacy.domain.achievement.model.AchievementHistory;
+import com.learnmore.legacy.domain.achievement.model.enums.AchievementCategory;
 import com.learnmore.legacy.domain.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,4 +18,16 @@ public interface AchievementHistoryJpaRepo extends JpaRepository<AchievementHist
             "WHERE ah.achievement.id = :achievementId " +
             "AND ah.currentRate = ah.goalRate")
     long countCompletedByAchievementId(@Param("achievementId") Long achievementId);
+
+
+    @Query("SELECT COUNT(ah) " +
+            "FROM AchievementHistory ah " +
+            "JOIN ah.achievement a " +
+            "WHERE ah.user.userId = :userId " +
+            "AND a.category = :category " +
+            "AND ah.goalRate = ah.currentRate")
+    long countCompletedAchievementsByUserAndCategory(
+            @Param("userId") Long userId,
+            @Param("category") AchievementCategory category
+    );
 }

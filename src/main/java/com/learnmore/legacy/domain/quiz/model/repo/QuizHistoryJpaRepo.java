@@ -8,4 +8,6 @@ public interface QuizHistoryJpaRepo extends JpaRepository<QuizHistory, Long> {
     boolean existsByUserIdAndQuizId(Long userId, Long quizId);
 
     void deleteByUserIdAndQuizId(Long userId, Long quizId);
+
+    Integer countByUserId(Long userId);
 }

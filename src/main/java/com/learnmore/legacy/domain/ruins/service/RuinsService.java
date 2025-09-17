@@ -15,9 +15,9 @@ import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsCommentR
 import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsDetailRes;
 import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsMapPointRes;
 import com.learnmore.legacy.global.exception.CustomException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -137,5 +137,10 @@ public class RuinsService {
         return comments.stream()
                 .map(RuinsCommentRes::from)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public long getMyRuinsCommentCount(Long userId) {
+        return ruinsCommentJpaRepo.countByUser_UserId(userId);
     }
 }
