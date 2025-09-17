@@ -6,25 +6,56 @@ import com.learnmore.legacy.domain.user.model.User;
 public record UserRes(
         Long userId,
         String nickname,
-        Integer level,
-        Integer exp,
-        Integer credit,
-        UserStatsRes stats,
-        UserRecordRes record,
         String imageUrl,
-        UserStyleRes title
+        String description,
+        Integer credit,
+        Integer level,
+        UserStyleRes title,
+        UserRecordRes record
 ) {
-    public static UserRes from(User user, Style style,long countCard,long countShiningCard) {
+    public static UserRes from(
+            User user,
+            Style style,
+            long cardCount,
+            long shiningCardCount,
+            long experienceAchieve,
+            long adventureAchieve,
+            long hiddenAchieve,
+            Integer titleCount,
+            Integer exploreRank,
+
+            Integer levelRank,
+            Integer solvedQuizs,
+            Integer wrongQuizes,
+            Integer clearCourse,
+            Integer makeCourse,
+            long commentCount
+    ) {
         return new UserRes(
                 user.getUserId(),
                 user.getNickname(),
-                user.getLevel(),
-                user.getExp(),
-                user.getCredit(),
-                UserStatsRes.from(user),
-                UserRecordRes.from(user, countCard, countShiningCard),
                 user.getImageUrl(),
-                UserStyleRes.from(style)
+                user.getDescription(),
+                user.getCredit(),
+                user.getLevel(),
+                UserStyleRes.from(style),
+                UserRecordRes.from(
+                        user,
+                        cardCount,
+                        shiningCardCount,
+                        experienceAchieve,
+                        adventureAchieve,
+                        hiddenAchieve,
+                        titleCount,
+                        exploreRank,
+
+                        levelRank,
+                        solvedQuizs,
+                        wrongQuizes,
+                        clearCourse,
+                        makeCourse,
+                        commentCount
+                )
         );
     }
 }

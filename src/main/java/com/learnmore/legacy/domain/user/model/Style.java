@@ -25,12 +25,13 @@ public class Style {
     @Column(name = "style_content", length = 100, nullable = false)
     private String styleContent;
 
+    @Column(name = "grade", nullable = false)
+    private Integer grade;
+
     @Column(name = "is_equip", nullable = false)
     private Boolean isEquip;
 
     public void updateEquip(Boolean isEquip) {
         this.isEquip = isEquip;
     }
-
-    //todo 등급 enum
 }

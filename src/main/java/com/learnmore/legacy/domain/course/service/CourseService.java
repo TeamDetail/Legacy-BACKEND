@@ -39,6 +39,15 @@ public class CourseService {
     private final CardJpaRepo cardJpaRepo;
     private final UserJpaRepo userJpaRepo;
 
+
+    public Integer getClearCourse(Long userId) {
+        return courseClearHistoryJpaRepo.countByUser_UserId(userId);
+    }
+
+    public Integer getMyCourse(Long userId) {
+        return courseJpaRepo.countByUser_UserId(userId);
+    }
+
     public List<CourseRes> getAllCourse(Long userId) {
         return courseJpaRepo.findAll().stream()
                 .map(course -> {
