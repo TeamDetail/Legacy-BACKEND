@@ -13,6 +13,7 @@ import com.learnmore.legacy.domain.user.error.StyleError;
 import com.learnmore.legacy.domain.user.model.Style;
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
+import com.learnmore.legacy.domain.user.presentation.dto.request.DescriptionReq;
 import com.learnmore.legacy.domain.user.presentation.dto.request.ProfileImageReq;
 import com.learnmore.legacy.domain.user.presentation.dto.request.StyleIdReq;
 import com.learnmore.legacy.domain.user.presentation.dto.request.UserStyleReq;
@@ -156,4 +157,11 @@ public class UserUseCase {
         return new S3UploadRes(s3Service.generateUploadUrl(key),imageUrl);
     }
 
+    public void setDescription(DescriptionReq req) {
+        User user = userSessionHolder.get();
+
+        user.updateDescription(req.description());
+
+        userJpaRepo.save(user);
+    }
 }

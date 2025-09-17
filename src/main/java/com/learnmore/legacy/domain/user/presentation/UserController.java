@@ -2,6 +2,7 @@ package com.learnmore.legacy.domain.user.presentation;
 
 import com.learnmore.legacy.domain.aws.service.presentation.dto.response.S3UploadRes;
 import com.learnmore.legacy.domain.user.model.User;
+import com.learnmore.legacy.domain.user.presentation.dto.request.DescriptionReq;
 import com.learnmore.legacy.domain.user.presentation.dto.request.ProfileImageReq;
 import com.learnmore.legacy.domain.user.presentation.dto.request.StyleIdReq;
 import com.learnmore.legacy.domain.user.presentation.dto.request.UserStyleReq;
@@ -67,6 +68,13 @@ public class UserController {
     @PostMapping("/title")
     public ResponseEntity<BaseResponse<String>> addTitle(@RequestBody UserStyleReq req){
         userUseCase.addStyle(req);
+        return BaseResponse.of("ok");
+    }
+
+    @Operation(summary = "자기소개 수정", description = "유저의 자기소개를 수정합니다.")
+    @PatchMapping("/description")
+    public ResponseEntity<BaseResponse<String>> updateDescription(@RequestBody DescriptionReq req){
+        userUseCase.setDescription(req);
         return BaseResponse.of("ok");
     }
 }
