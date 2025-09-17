@@ -14,6 +14,8 @@ import com.learnmore.legacy.domain.ruins.presentation.dto.request.RuinsCommentRe
 import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsCommentRes;
 import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsDetailRes;
 import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsMapPointRes;
+import com.learnmore.legacy.domain.user.model.User;
+import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ import java.util.List;
 public class RuinsService {
     private final RuinsJpaRepo ruinsJpaRepo;
     private final CardJpaRepo cardJpaRepo;
+    private final UserJpaRepo userJpaRepo;
     private final CardHistoryJpaRepo cardHistoryJpaRepo;
     private final RuinsCommentJpaRepo ruinsCommentJpaRepo;
 
@@ -98,9 +101,11 @@ public class RuinsService {
     }
 
     @Transactional
-    public RuinsCommentRes addRuinsComment(RuinsCommentReq ruinsCommentReq, String userName, String userImgUrl) {
+    public RuinsCommentRes addRuinsComment(RuinsCommentReq ruinsCommentReq, String userName, String userImgUrl, Long userId) {
         Ruins ruins = ruinsJpaRepo.findById(ruinsCommentReq.ruinsId())
                 .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
+
+        User user = userJpaRepo.findByUserId(userId);
 
         RuinsComment comment = RuinsComment.builder()
                 .userName(userName)
@@ -108,6 +113,7 @@ public class RuinsService {
                 .ruins(ruins)
                 .rating(ruinsCommentReq.rating())
                 .comment(ruinsCommentReq.comment())
+                .user(user)
                 .build();
         ruinsCommentJpaRepo.save(comment);
 

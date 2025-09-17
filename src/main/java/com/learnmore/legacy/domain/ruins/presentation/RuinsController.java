@@ -50,7 +50,8 @@ public class RuinsController {
     public ResponseEntity<BaseResponse<RuinsCommentRes>> addRuinsComment(@RequestBody RuinsCommentReq ruinsCommentReq){
         String userName = userSessionHolder.get().getNickname();
         String userImgUrl = userSessionHolder.get().getImageUrl();
-        return BaseResponse.of(ruinsService.addRuinsComment(ruinsCommentReq, userName, userImgUrl));
+        Long userId = userSessionHolder.get().getUserId();
+        return BaseResponse.of(ruinsService.addRuinsComment(ruinsCommentReq, userName, userImgUrl, userId));
     }
 
     @Operation(summary = "유적지 한줄평 조회", description = "한줄평을 조회합니다.")
