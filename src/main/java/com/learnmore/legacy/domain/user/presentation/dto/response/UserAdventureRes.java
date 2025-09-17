@@ -6,8 +6,8 @@ public record UserAdventureRes(
 		Integer rank,
 		Integer allBlocks,
 		Integer ruinsBlocks,
-		Integer solvedQuizs,
-		Integer wrongQuizes,
+		Integer solvedQuizzes,
+		Integer wrongQuizzes,
 		Integer clearCourse,
 		Integer makeCourse,
 		long commentCount
