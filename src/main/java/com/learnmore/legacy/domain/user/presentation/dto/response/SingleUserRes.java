@@ -24,8 +24,8 @@ public record SingleUserRes(
             Integer exploreRank,
 
             Integer levelRank,
-            Integer solvedQuizs,
-            Integer wrongQuizes,
+            Integer solvedQuizzes,
+            Integer wrongQuizzes,
             Integer clearCourse,
             Integer makeCourse,
             long commentCount) {
@@ -36,7 +36,7 @@ public record SingleUserRes(
                 user.getDescription(),
                 user.getLevel(),
                 UserStyleRes.from(style),
-                UserRecordRes.from(user, countCard, countShiningCard, experienceAchieve, adventureAchieve, hiddenAchieve, titleCount, exploreRank, levelRank, solvedQuizs, wrongQuizes, clearCourse, makeCourse, commentCount)
+                UserRecordRes.from(user, countCard, countShiningCard, experienceAchieve, adventureAchieve, hiddenAchieve, titleCount, exploreRank, levelRank, solvedQuizzes, wrongQuizzes, clearCourse, makeCourse, commentCount)
         );
     }
 }

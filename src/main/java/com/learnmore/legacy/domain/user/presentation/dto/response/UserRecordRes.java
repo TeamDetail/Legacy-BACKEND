@@ -17,13 +17,13 @@ public record UserRecordRes(
             Integer exploreRank,
 
             Integer levelRank,
-            Integer solvedQuizs,
-            Integer wrongQuizes,
+            Integer solvedQuizzes,
+            Integer wrongQuizzes,
             Integer clearCourse,
             Integer makeCourse,
             long commentCount) {
         return new UserRecordRes(
-                UserAdventureRes.from(user, levelRank, solvedQuizs, wrongQuizes, clearCourse, makeCourse, commentCount),
+                UserAdventureRes.from(user, levelRank, solvedQuizzes, wrongQuizzes, clearCourse, makeCourse, commentCount),
                 UserExperienceRes.from(user, cardCount, shiningCardCount, experienceAchieve, adventureAchieve, hiddenAchieve, titleCount, exploreRank)
         );
     }
