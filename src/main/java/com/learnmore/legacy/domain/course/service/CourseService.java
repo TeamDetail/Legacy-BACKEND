@@ -1,6 +1,5 @@
 package com.learnmore.legacy.domain.course.service;
 
-import com.learnmore.legacy.domain.card.error.CardError;
 import com.learnmore.legacy.domain.card.model.Card;
 import com.learnmore.legacy.domain.card.model.repo.CardJpaRepo;
 import com.learnmore.legacy.domain.card.presentation.dto.response.CardRuinsRes;
@@ -304,9 +303,13 @@ public class CourseService {
         List<CourseDetailRes> ruinsDetailList = ruinsList.stream()
                 .map(ruins -> {
                     boolean isClear = clearRuinsList.contains(ruins);
-                    Card card = cardJpaRepo.findByRuins_RuinsId(ruins.getRuinsId())
-                            .orElseThrow(() -> new CustomException(CardError.CARD_NOT_FOUND));
-                    return CourseDetailRes.from(ruins, isClear, CardRuinsRes.from(card));
+
+                    List<Card> cards = cardJpaRepo.findAllByRuins_RuinsId(ruins.getRuinsId());
+                    Card card = cards.isEmpty() ? null : cards.getFirst();
+
+                    CardRuinsRes cardRes = (card != null) ? CardRuinsRes.from(card) : null;
+                    return CourseDetailRes.from(ruins, isClear, cardRes);
+
                 })
                 .collect(Collectors.toList());
 
