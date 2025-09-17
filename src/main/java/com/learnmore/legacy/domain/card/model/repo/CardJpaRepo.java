@@ -16,4 +16,6 @@ public interface CardJpaRepo extends JpaRepository<Card, Long> {
     List<Card> findByLineAttribute_LineAttributeIdIn(List<Long> lineIds);
     List<Card> findByRegionAttribute_RegionAttributeId(Long regionId);
     List<Card> findByRegionAttribute_RegionAttributeIdIn(List<Long> regionIds);
+
+    List<Card> findAllByRuins_RuinsId(Long ruinsId);
 }

@@ -19,7 +19,9 @@ public class CourseDetailRes {
     public static CourseDetailRes from(Ruins ruins, boolean isClear, CardRuinsRes card) {
         return CourseDetailRes.builder()
                 .clear(isClear)
-                .data(RuinsDetailRes.from(ruins, card))
+                .data(card != null
+                        ? RuinsDetailRes.from(ruins, card)
+                        : RuinsDetailRes.from(ruins, null))
                 .build();
     }
 }
