@@ -43,4 +43,10 @@ public class Achievement {
 
     @Column(name = "grade")
     private AchievementGrade grade;
+
+    @Column(name = "award_credit")
+    private Integer awardCredit;
+
+    @Column(name = "award_exp")
+    private Integer awardExp;
 }
