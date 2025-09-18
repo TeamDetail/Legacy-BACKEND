@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,9 +60,11 @@ public class CardService {
     }
 
     public RegionRes getCardsByRegion(String region, Long userId) {
-        List<Card> cards = cardHistoryJpaRepo.findCardsByUserIdAndRegion(userId, region);
+        Long regionId = regionAttributeJpaRepo.findIdByAttributeName(region);
+        List<Card>  cards = cardJpaRepo.findByRegionAttribute_RegionAttributeId(regionId);
+        List<Card> userCards = cardHistoryJpaRepo.findCardsByUserIdAndRegion(userId, region);
 
-        List<CardRes> cardResList = cards.stream()
+        List<CardRes> cardResList = userCards.stream()
                 .map(card -> CardRes.builder()
                         .cardId(card.getCardId())
                         .cardName(card.getCardName())
