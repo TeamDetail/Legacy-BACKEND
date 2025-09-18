@@ -12,6 +12,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -19,15 +20,11 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 
 @Component
+@RequiredArgsConstructor
 public class JwtExtractor {
 
     private final JwtProperties jwtProperties;
     private final UserJpaRepo userJpaRepo;
-
-    public JwtExtractor(JwtProperties jwtProperties, UserJpaRepo userJpaRepo) {
-        this.jwtProperties = jwtProperties;
-        this.userJpaRepo = userJpaRepo;
-    }
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.getSecretKey());

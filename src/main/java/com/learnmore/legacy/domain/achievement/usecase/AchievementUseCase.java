@@ -8,6 +8,7 @@ import com.learnmore.legacy.domain.achievement.model.enums.AchievementCategory;
 import com.learnmore.legacy.domain.achievement.presentation.dto.AwardDto;
 import com.learnmore.legacy.domain.achievement.presentation.dto.request.AchievementPostReq;
 import com.learnmore.legacy.domain.achievement.presentation.dto.response.AchievementRes;
+import com.learnmore.legacy.domain.achievement.presentation.dto.response.AwardRes;
 import com.learnmore.legacy.domain.achievement.service.AchievementHistoryService;
 import com.learnmore.legacy.domain.achievement.service.AchievementService;
 import com.learnmore.legacy.domain.achievement.service.AchievementStoreService;
@@ -17,6 +18,7 @@ import com.learnmore.legacy.domain.user.service.UserService;
 import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -31,6 +33,7 @@ public class AchievementUseCase {
     private final AchievementHistoryService achievementHistoryService;
     private final UserService userService;
 
+    @Transactional
     public Achievement postAchievement(AchievementPostReq req) {
 
         Achievement postAchievement = Achievement.builder()
@@ -41,6 +44,8 @@ public class AchievementUseCase {
                 .goalText(req.goalText())
                 .goalRate(req.goalRate())
                 .grade(req.achievementGrade())
+                .awardCredit(req.awardCredit())
+                .awardExp(req.awardExp())
                 .build();
         Achievement saveAchievement = achievementService.saveAchievement(postAchievement);
 
@@ -71,6 +76,7 @@ public class AchievementUseCase {
         return saveAchievement;
     }
 
+    @Transactional(readOnly = true)
     public List<AchievementRes> getAchievementsWithHistory(Long userId, AchievementCategory type) {
         // 타입이 null이면 전체 조회, 아니면 해당 타입만 조회
         List<Achievement> achievements = (type == null)
@@ -124,6 +130,7 @@ public class AchievementUseCase {
                             .achievementType(achievement.getType().name())
                             .isReceive(history != null && history.getIsReceive())
                             .currentRate(history != null ? history.getCurrentRate() : 0)
+//                            .goalRate(achievement.getGoalRate())
                             .goalRate(history != null ? history.getGoalRate() : 1)
                             .achievementAward(awards)
                             .achieveUserPercent(achievementRate)
@@ -131,6 +138,21 @@ public class AchievementUseCase {
                             .build();
                 })
                 .toList();
+    }
+
+    @Transactional
+    public AwardRes getUserRewards(Long userId) {
+        Object[] sums = achievementHistoryService.getAwardSums(userId);
+        Long awardExp = sums[0] == null ? 0L : ((Number) sums[0]).longValue();
+        Long awardCredit = sums[1] == null ? 0L : ((Number) sums[1]).longValue();
+
+        List<AwardDto> items = achievementHistoryService.getCompletedAchievementItems(userId);
+
+        return AwardRes.builder()
+                .awardExp(awardExp)
+                .awardCredit(awardCredit)
+                .achievementAward(items)
+                .build();
     }
 
 }

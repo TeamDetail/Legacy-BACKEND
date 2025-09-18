@@ -13,6 +13,8 @@ public record AchievementPostReq(
    String content,
    String goalText,
    Integer goalRate,
+   Integer awardExp,
+   Integer awardCredit,
    List<Long> storeIds,
    List<Long> itemCount
 ) {

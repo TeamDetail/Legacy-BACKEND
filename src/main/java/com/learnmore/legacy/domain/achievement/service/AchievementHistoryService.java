@@ -3,6 +3,7 @@ package com.learnmore.legacy.domain.achievement.service;
 import com.learnmore.legacy.domain.achievement.model.AchievementHistory;
 import com.learnmore.legacy.domain.achievement.model.enums.AchievementCategory;
 import com.learnmore.legacy.domain.achievement.model.reop.AchievementHistoryJpaRepo;
+import com.learnmore.legacy.domain.achievement.presentation.dto.AwardDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,5 +45,13 @@ public class AchievementHistoryService {
                 userId,
                 AchievementCategory.HIDDEN
         );
+    }
+
+    public Object[] getAwardSums(Long userId){
+        return achievementHistoryJpaRepo.findAwardSums(userId);
+    }
+
+    public List<AwardDto> getCompletedAchievementItems(Long userId) {
+        return achievementHistoryJpaRepo.findCompletedAchievementItems(userId);
     }
 }
