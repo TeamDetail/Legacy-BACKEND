@@ -29,9 +29,9 @@ public class CardController {
     }
 
     @Operation(summary = "지역 명으로 카드 조회", description = "지역의 카드를 조회합니다.")
-    @GetMapping("/collection/{region}")
-    public ResponseEntity<BaseResponse<RegionRes>> getCardsByRegion(@PathVariable String region) {
-        Long userId = userSessionHolder.get().getUserId();
+    @GetMapping("/collection/{region}/{userId}")
+    public ResponseEntity<BaseResponse<RegionRes>> getCardsByRegion(@PathVariable String region, @PathVariable Long userId) {
+//        Long userId = userSessionHolder.get().getUserId();
         return BaseResponse.of(cardService.getCardsByRegion(region, userId));
     }
 
