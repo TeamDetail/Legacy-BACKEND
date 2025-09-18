@@ -107,7 +107,7 @@ public class AchievementUseCase {
                                 Store store = as.getStore();
                                 return AwardDto.builder()
                                         .itemId(store.getStoreId())
-                                        .itemType(store.getStoreType())
+                                        .itemType(store.getStoreType().name())
                                         .itemName(store.getStoreName())
                                         .itemDescription(store.getStoreContent())
                                         .itemCount(as.getItemCount())
