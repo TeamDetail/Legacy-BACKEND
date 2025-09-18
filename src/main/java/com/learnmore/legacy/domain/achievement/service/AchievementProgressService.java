@@ -23,7 +23,7 @@ public class AchievementProgressService {
 
     @Transactional
     public void increaseProgress(Long userId, AchievementType type, int amount) {
-        // 1. 해당 타입의 도전과제들 불러오기
+        // 해당 타입의 도전과제들 불러오기
         User user = userService.findByUserId(userId);
         List<Achievement> achievements = achievementJpaReop.findByType(type);
 
@@ -43,7 +43,7 @@ public class AchievementProgressService {
             history.increaseProgress(amount);
 
 //            if (history.isCompleted()) {
-//                // 이벤트 발행: 예를 들어 "도전과제 달성됨"
+//                // 이벤트 발행 나중에 할거
 //            }
         }
     }

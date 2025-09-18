@@ -4,6 +4,7 @@ import com.learnmore.legacy.domain.achievement.model.Achievement;
 import com.learnmore.legacy.domain.achievement.model.enums.AchievementCategory;
 import com.learnmore.legacy.domain.achievement.presentation.dto.request.AchievementPostReq;
 import com.learnmore.legacy.domain.achievement.presentation.dto.response.AchievementRes;
+import com.learnmore.legacy.domain.achievement.presentation.dto.response.AwardRes;
 import com.learnmore.legacy.domain.achievement.usecase.AchievementUseCase;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
@@ -37,6 +38,13 @@ public class AchievementController {
     ) {
         Long userId = userSessionHolder.get().getUserId();
         return BaseResponse.of(achievementUseCase.getAchievementsWithHistory(userId, type));
+    }
+
+    @Operation(summary = "도전과제 보상 일괄 수령", description = "현제 유저가 완료한 모든 보상을 보여줍니다")
+    @PostMapping("/award")
+    public ResponseEntity<BaseResponse<AwardRes>> awardAchievements(){
+        Long userId = userSessionHolder.get().getUserId();
+        return BaseResponse.of(achievementUseCase.getUserRewards(userId));
     }
 
     @Operation(summary = "테스트 용입니다 도전과제 생성", description = "프론트에서 필요하면 나한테 말하셈")
