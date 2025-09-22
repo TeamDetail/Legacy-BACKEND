@@ -77,7 +77,7 @@ public class InventoryService {
         }
 
         // 인벤토리 히스토리 itemCount-1 저장
-        myItem.setItemCount(myItem.getItemCount()-1);
+        myItem.setItemCount(myItem.getItemCount()-packCount);
         inventoryHistoryJpaRepo.save(myItem);
 
         List<CardRes> result = new ArrayList<>();
