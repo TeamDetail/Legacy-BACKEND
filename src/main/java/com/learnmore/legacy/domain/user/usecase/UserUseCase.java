@@ -1,6 +1,7 @@
 package com.learnmore.legacy.domain.user.usecase;
 
 import com.learnmore.legacy.domain.achievement.service.AchievementHistoryService;
+import com.learnmore.legacy.domain.achievement.service.AchievementProgressService;
 import com.learnmore.legacy.domain.achievement.service.AchievementService;
 import com.learnmore.legacy.domain.aws.service.S3Service;
 import com.learnmore.legacy.domain.aws.service.presentation.dto.response.S3UploadRes;
@@ -44,6 +45,7 @@ public class UserUseCase {
     private final CourseService courseService;
     private final RuinsService ruinsService;
     private final UserJpaRepo userJpaRepo;
+    private final AchievementProgressService achievementProgressService;
     private final S3Service s3Service;
 
     @Transactional(readOnly = true)
@@ -59,8 +61,8 @@ public class UserUseCase {
         Integer exploreRank = rankingUseCase.getExploreRanking(user.getUserId());
 
         Integer levelRank = rankingUseCase.getLevelRanking(user.getUserId());
-        Integer solvedQuizs = quizService.getCorrectAnswerCount(user.getUserId());
-        Integer wrongQuizes = 0;
+        Integer solvedQuizzes = quizService.getCorrectAnswerCount(user.getUserId());
+        Integer wrongQuizzes = achievementProgressService.wrongQuizzes(user.getUserId());
         Integer clearCourse = courseService.getClearCourse(user.getUserId());
         Integer makeCourse = courseService.getMyCourse(user.getUserId());
         long commentCount = ruinsService.getMyRuinsCommentCount(user.getUserId());
@@ -76,8 +78,8 @@ public class UserUseCase {
                 exploreRank,
 
                 levelRank,
-                solvedQuizs,
-                wrongQuizes,
+                solvedQuizzes,
+                wrongQuizzes,
                 clearCourse,
                 makeCourse,
                 commentCount
@@ -126,12 +128,13 @@ public class UserUseCase {
         Integer exploreRank = rankingUseCase.getExploreRanking(user.getUserId());
 
         Integer levelRank = rankingUseCase.getLevelRanking(user.getUserId());
-        Integer solvedQuizs = quizService.getCorrectAnswerCount(user.getUserId());
-        Integer wrongQuizes = 0;
+        Integer solvedQuizzes = quizService.getCorrectAnswerCount(user.getUserId());
+        Integer wrongQuizzes = achievementProgressService.wrongQuizzes(user.getUserId());
         Integer clearCourse = courseService.getClearCourse(user.getUserId());
         Integer makeCourse = courseService.getMyCourse(user.getUserId());
         long commentCount = ruinsService.getMyRuinsCommentCount(user.getUserId());
-        return SingleUserRes.from(user, style,countCard,countShiningCard, experienceAchieve, adventureAchieve, hiddenAchieve, titleCount, exploreRank, levelRank, solvedQuizs, wrongQuizes, clearCourse, makeCourse, commentCount);
+
+        return SingleUserRes.from(user, style,countCard,countShiningCard, experienceAchieve, adventureAchieve, hiddenAchieve, titleCount, exploreRank, levelRank, solvedQuizzes, wrongQuizzes, clearCourse, makeCourse, commentCount);
     }
 
     @Transactional

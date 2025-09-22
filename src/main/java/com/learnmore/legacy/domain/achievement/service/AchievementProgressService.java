@@ -47,5 +47,20 @@ public class AchievementProgressService {
 //            }
         }
     }
+
+    @Transactional(readOnly = true)
+    public Integer wrongQuizzes(Long userId) {
+        User user = userService.findByUserId(userId);
+        List<Achievement> achievements = achievementJpaReop.findByType(AchievementType.WRONG_QUIZ);
+        Integer wrongQuizzes = 0;
+
+        for (Achievement achievement : achievements) {
+            AchievementHistory achievementHistory = achievementHistoryJpaRepo
+                    .findByUserAndAchievement(user, achievement)
+                    .orElseThrow(() -> new RuntimeException("Achievement not found"));
+            wrongQuizzes += achievementHistory.getCurrentRate();
+        }
+        return wrongQuizzes;
+    }
 }
 
