@@ -72,7 +72,7 @@ public class InventoryService {
         InventoryHistory myItem = inventoryHistoryJpaRepo.findByStore_StoreId(cardpackId);
 
         // 내가 가진 아이템이 부족하면 에러 발생
-        if (packCount < myItem.getItemCount()) {
+        if (packCount > myItem.getItemCount()) {
             throw new CustomException(InventoryError.ITEM_ERROR);
         }
 
