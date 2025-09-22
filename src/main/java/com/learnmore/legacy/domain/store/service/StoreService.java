@@ -81,13 +81,8 @@ public class StoreService {
                     .build();
             inventoryHistoryJpaRepo.save(inventoryHistory);
         }else {
-            InventoryHistory inventoryHistory = InventoryHistory.builder()
-                    .user(user)
-                    .inventory(inventory)
-                    .store(store)
-                    .itemCount(histories.getItemCount()+1)
-                    .build();
-            inventoryHistoryJpaRepo.save(inventoryHistory);
+            histories.setItemCount(histories.getItemCount() + 1);
+            inventoryHistoryJpaRepo.save(histories);
         }
 
         // 상점 기록 추가
