@@ -69,7 +69,7 @@ public class InventoryService {
         int packCount = cardpackReq.getCount();
         Long cardpackId = cardpackReq.getCardpackId();
 
-        InventoryHistory myItem = inventoryHistoryJpaRepo.findByStore_StoreId(cardpackId);
+        InventoryHistory myItem = inventoryHistoryJpaRepo.findByStore_StoreIdAndUser(cardpackId, user);
 
         // 내가 가진 아이템이 부족하면 에러 발생
         if (packCount > myItem.getItemCount()) {

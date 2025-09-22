@@ -11,7 +11,7 @@ import java.util.List;
 public interface InventoryHistoryJpaRepo extends JpaRepository<InventoryHistory, Long> {
     List<InventoryHistory> findAllByUser_UserId(Long userId);
 
-    InventoryHistory findByStore_StoreId(Long cardpackId);
-
     InventoryHistory findByInventory_InventoryIdAndUser(Long inventoryId, User user);
+
+    InventoryHistory findByStore_StoreIdAndUser(Long storeStoreId, User user);
 }
