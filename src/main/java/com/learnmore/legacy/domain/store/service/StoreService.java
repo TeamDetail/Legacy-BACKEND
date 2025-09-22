@@ -70,14 +70,25 @@ public class StoreService {
             inventoryJpaRepo.save(inventory);
         }
 
-        // 인벤토리 히스토리 추가
-        InventoryHistory inventoryHistory = InventoryHistory.builder()
-                .user(user)
-                .inventory(inventory)
-                .store(store)
-                .itemCount(1)
-                .build();
-        inventoryHistoryJpaRepo.save(inventoryHistory);
+        // 인벤토리 히스토리 추가(이미 있다면 itemCount에 1만큼 추가)
+        InventoryHistory histories = inventoryHistoryJpaRepo.findByInventory_InventoryIdAndUser(inventory.getInventoryId(), user);
+        if(histories == null) {
+            InventoryHistory inventoryHistory = InventoryHistory.builder()
+                    .user(user)
+                    .inventory(inventory)
+                    .store(store)
+                    .itemCount(1)
+                    .build();
+            inventoryHistoryJpaRepo.save(inventoryHistory);
+        }else {
+            InventoryHistory inventoryHistory = InventoryHistory.builder()
+                    .user(user)
+                    .inventory(inventory)
+                    .store(store)
+                    .itemCount(histories.getItemCount()+1)
+                    .build();
+            inventoryHistoryJpaRepo.save(inventoryHistory);
+        }
 
         // 상점 기록 추가
         StoreHistory history = StoreHistory.create(user, store, 1);

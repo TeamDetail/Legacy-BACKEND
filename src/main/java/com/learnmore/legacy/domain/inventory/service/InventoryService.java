@@ -1,6 +1,5 @@
 package com.learnmore.legacy.domain.inventory.service;
 
-import com.learnmore.legacy.domain.card.error.CardError;
 import com.learnmore.legacy.domain.card.model.Card;
 import com.learnmore.legacy.domain.card.model.CardHistory;
 import com.learnmore.legacy.domain.card.model.Deck;
@@ -9,6 +8,7 @@ import com.learnmore.legacy.domain.card.model.repo.CardHistoryJpaRepo;
 import com.learnmore.legacy.domain.card.model.repo.CardJpaRepo;
 import com.learnmore.legacy.domain.card.model.repo.DeckJpaRepo;
 import com.learnmore.legacy.domain.card.presentation.dto.response.CardRes;
+import com.learnmore.legacy.domain.inventory.error.InventoryError;
 import com.learnmore.legacy.domain.inventory.model.InventoryHistory;
 import com.learnmore.legacy.domain.inventory.model.repo.InventoryHistoryJpaRepo;
 import com.learnmore.legacy.domain.inventory.presentation.dto.requset.CardpackReq;
@@ -57,10 +57,28 @@ public class InventoryService {
         User user = userJpaRepo.findByUserId(userId);
 
         Deck deck = deckJpaRepo.findByUser_UserId(userId)
-                .orElseThrow(() -> new CustomException(CardError.DECK_ERROR));
+                .orElse(null);
+        if (deck == null) {
+            Deck newDeck = Deck.builder()
+                    .user(user)
+                    .deckNumber(1)
+                    .build();
+            deck = deckJpaRepo.save(newDeck);
+        }
 
         int packCount = cardpackReq.getCount();
         Long cardpackId = cardpackReq.getCardpackId();
+
+        InventoryHistory myItem = inventoryHistoryJpaRepo.findByStore_StoreId(cardpackId);
+
+        // 내가 가진 아이템이 부족하면 에러 발생
+        if (packCount < myItem.getItemCount()) {
+            throw new CustomException(InventoryError.ITEM_ERROR);
+        }
+
+        // 인벤토리 히스토리 itemCount-1 저장
+        myItem.setItemCount(myItem.getItemCount()-1);
+        inventoryHistoryJpaRepo.save(myItem);
 
         List<CardRes> result = new ArrayList<>();
 
@@ -93,7 +111,7 @@ public class InventoryService {
         return result;
     }
 
-
+    // 카드에서 카드팩 오픈 범위
     private List<Card> getCardPoolByPackId(Long cardPackId) {
         return switch (cardPackId.intValue()) {
             case 1 -> // 국가 (고구려, 신라, 백제)

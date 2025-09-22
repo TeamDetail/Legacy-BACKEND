@@ -33,7 +33,7 @@ public class MailService {
 
         // 그룹핑된 데이터 → MailRes 변환
         return mailGroup.values().stream()
-                .map(mailList -> MailRes.from(mailList.get(0), mailList))
+                .map(mailList -> MailRes.from(mailList.getFirst(), mailList))
                 .collect(Collectors.toList());
     }
 
