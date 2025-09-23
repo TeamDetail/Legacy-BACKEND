@@ -2,7 +2,6 @@ package com.learnmore.legacy.domain.user.usecase;
 
 import com.learnmore.legacy.domain.achievement.service.AchievementHistoryService;
 import com.learnmore.legacy.domain.achievement.service.AchievementProgressService;
-import com.learnmore.legacy.domain.achievement.service.AchievementService;
 import com.learnmore.legacy.domain.aws.service.S3Service;
 import com.learnmore.legacy.domain.aws.service.presentation.dto.response.S3UploadRes;
 import com.learnmore.legacy.domain.card.service.CardService;
@@ -25,7 +24,6 @@ import com.learnmore.legacy.domain.user.service.StyleService;
 import com.learnmore.legacy.domain.user.service.UserService;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import com.learnmore.legacy.global.exception.CustomException;
-import com.learnmore.legacy.global.properties.S3Properties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,47 +49,15 @@ public class UserUseCase {
     @Transactional(readOnly = true)
     public UserRes getMe(){
         User user = userSessionHolder.get();
-        Style style = styleService.findEquipStyle(user);
-        long cardCount=cardService.countCardByUserId(user.getUserId());
-        long shiningCardCount=cardService.countShiningCardByUserId(user.getUserId());
-        long experienceAchieve = achievementHistoryService.countClearLevelAchievement(user.getUserId());
-        long adventureAchieve = achievementHistoryService.countClearAdventureAchievement(user.getUserId());
-        long hiddenAchieve = achievementHistoryService.countClearHiddenAchievement(user.getUserId());
-        Integer titleCount = styleService.countStyles(user);
-        Integer exploreRank = rankingUseCase.getExploreRanking(user.getUserId());
-
-        Integer levelRank = rankingUseCase.getLevelRanking(user.getUserId());
-        Integer solvedQuizzes = quizService.getCorrectAnswerCount(user.getUserId());
-        Integer wrongQuizzes = achievementProgressService.wrongQuizzes(user.getUserId());
-        Integer clearCourse = courseService.getClearCourse(user.getUserId());
-        Integer makeCourse = courseService.getMyCourse(user.getUserId());
-        long commentCount = ruinsService.getMyRuinsCommentCount(user.getUserId());
-        return UserRes.from(
-                user,
-                style,
-                cardCount,
-                shiningCardCount,
-                experienceAchieve,
-                adventureAchieve,
-                hiddenAchieve,
-                titleCount,
-                exploreRank,
-
-                levelRank,
-                solvedQuizzes,
-                wrongQuizzes,
-                clearCourse,
-                makeCourse,
-                commentCount
-        );
+        return me(user);
     }
 
     @Transactional
-    public User updateProfileImage(ProfileImageReq req) {
+    public UserRes updateProfileImage(ProfileImageReq req) {
         User sessionUser = userSessionHolder.get();
         User userEntity = userService.findByUserId(sessionUser.getUserId());
         userEntity.updateImageUrl(req.profileImageUrl());
-        return userEntity;
+        return me(userEntity);
     }
 
     @Transactional(readOnly = true)
@@ -166,5 +132,40 @@ public class UserUseCase {
         user.updateDescription(req.description());
 
         userJpaRepo.save(user);
+    }
+
+    private UserRes me(User user){
+        Style style = styleService.findEquipStyle(user);
+        long cardCount=cardService.countCardByUserId(user.getUserId());
+        long shiningCardCount=cardService.countShiningCardByUserId(user.getUserId());
+        long experienceAchieve = achievementHistoryService.countClearLevelAchievement(user.getUserId());
+        long adventureAchieve = achievementHistoryService.countClearAdventureAchievement(user.getUserId());
+        long hiddenAchieve = achievementHistoryService.countClearHiddenAchievement(user.getUserId());
+        Integer titleCount = styleService.countStyles(user);
+        Integer exploreRank = rankingUseCase.getExploreRanking(user.getUserId());
+
+        Integer levelRank = rankingUseCase.getLevelRanking(user.getUserId());
+        Integer solvedQuizzes = quizService.getCorrectAnswerCount(user.getUserId());
+        Integer wrongQuizzes = achievementProgressService.wrongQuizzes(user.getUserId());
+        Integer clearCourse = courseService.getClearCourse(user.getUserId());
+        Integer makeCourse = courseService.getMyCourse(user.getUserId());
+        long commentCount = ruinsService.getMyRuinsCommentCount(user.getUserId());
+        return UserRes.from(
+                user,
+                style,
+                cardCount,
+                shiningCardCount,
+                experienceAchieve,
+                adventureAchieve,
+                hiddenAchieve,
+                titleCount,
+                exploreRank,
+
+                levelRank,
+                solvedQuizzes,
+                wrongQuizzes,
+                clearCourse,
+                makeCourse,
+                commentCount);
     }
 }
