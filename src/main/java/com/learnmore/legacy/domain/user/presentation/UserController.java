@@ -24,7 +24,7 @@ public class UserController {
 
     private final UserUseCase userUseCase;
 
-    @Operation(summary = "유저 단일 정보 조회", description = "유저 id 로 유저 정보 조회 (로그인 불필요)")
+    @Operation(summary = "유저 단일 정보 조회", description = "유저 id 로 유저 정보 조회 ")
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse<SingleUserRes>> getUserById(@PathVariable Long id) {
         return BaseResponse.of(userUseCase.getUser(id));
