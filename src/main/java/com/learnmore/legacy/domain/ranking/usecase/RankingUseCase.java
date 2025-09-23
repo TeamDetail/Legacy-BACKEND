@@ -51,7 +51,7 @@ public class RankingUseCase {
                 .collect(Collectors.toList());
     }
 
-    public List<LevelRankingRes> getTopUserLevelRanking(RankingType type) {
+    public List<LevelRankingRes> getTopUserLevelRanking(RankingType type) {//todo 이거 타입 사용하지 않고 있음 수정
         List<User> topUsers = userService.levelRanking();
         List<Style> equippedStyles = styleService.findAllEquippedStyles(topUsers);
 
