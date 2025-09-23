@@ -23,8 +23,8 @@ public record UserRecordRes(
             Integer makeCourse,
             long commentCount) {
         return new UserRecordRes(
-                UserAdventureRes.from(user, levelRank, solvedQuizzes, wrongQuizzes, clearCourse, makeCourse, commentCount),
-                UserExperienceRes.from(user, cardCount, shiningCardCount, experienceAchieve, adventureAchieve, hiddenAchieve, titleCount, exploreRank)
+                UserAdventureRes.from(user, exploreRank, solvedQuizzes, wrongQuizzes, clearCourse, makeCourse, commentCount),
+                UserExperienceRes.from(user, cardCount, shiningCardCount, experienceAchieve, adventureAchieve, hiddenAchieve, titleCount, levelRank)
         );
     }
 }
