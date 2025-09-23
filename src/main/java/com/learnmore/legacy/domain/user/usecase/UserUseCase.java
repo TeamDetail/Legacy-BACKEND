@@ -114,6 +114,7 @@ public class UserUseCase {
                     .styleName(req.name())
                     .styleContent(req.content())
                     .isEquip(false)
+                    .grade(req.grade())
                     .build();
             styleService.saveStyle(newStyle);
         }

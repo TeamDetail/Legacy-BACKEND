@@ -47,8 +47,8 @@ public class AchievementController {
         return BaseResponse.of(achievementUseCase.getUserRewards(userId));
     }
 
-    @Operation(summary = "테스트 용입니다 도전과제 생성", description = "프론트에서 필요하면 나한테 말하셈")
-    @PostMapping("/add")
+    @Operation(summary = "테스트 용 입니다 도전과제 생성", description = "프론트에서 필요하면 나한테 말하셈")
+    @PostMapping()
     public ResponseEntity<BaseResponse<Achievement>> postAchievement(@RequestBody AchievementPostReq req) {
         return BaseResponse.of(achievementUseCase.postAchievement(req));
     }
