@@ -27,10 +27,10 @@ public class InventoryController {
         return BaseResponse.of(inventoryService.getInventory(userId));
     }
 
-    @PostMapping("/cardpack/{userId}")
+    @PostMapping("/cardpack")
     @Operation(summary = "카드팩 오픈", description = "특성에 맞는 카드 중 3개를 저장합니다.(중복 X)")
-    public ResponseEntity<BaseResponse<List<CardRes>>> openCardPack(@RequestBody CardpackReq request, @PathVariable Long userId) {
-//        Long userId = userSessionHolder.get().getUserId();
+    public ResponseEntity<BaseResponse<List<CardRes>>> openCardPack(@RequestBody CardpackReq request) {
+        Long userId = userSessionHolder.get().getUserId();
         return BaseResponse.of(inventoryService.openCardpack(userId, request));
     }
 
