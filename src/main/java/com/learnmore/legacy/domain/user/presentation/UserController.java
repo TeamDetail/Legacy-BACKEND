@@ -1,7 +1,6 @@
 package com.learnmore.legacy.domain.user.presentation;
 
 import com.learnmore.legacy.domain.aws.service.presentation.dto.response.S3UploadRes;
-import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.presentation.dto.request.DescriptionReq;
 import com.learnmore.legacy.domain.user.presentation.dto.request.ProfileImageReq;
 import com.learnmore.legacy.domain.user.presentation.dto.request.StyleIdReq;
@@ -15,7 +14,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -52,7 +50,7 @@ public class UserController {
 
     @Operation(summary = "프로필 사진 변경", description = "로그인된 유저의 프로필 사진을 변경합니다")
     @PatchMapping("/image")
-    public ResponseEntity<BaseResponse<User>> updateProfileImage(@RequestBody ProfileImageReq req){
+    public ResponseEntity<BaseResponse<UserRes>> updateProfileImage(@RequestBody ProfileImageReq req){
         return BaseResponse.of(userUseCase.updateProfileImage(req));
     }
 
