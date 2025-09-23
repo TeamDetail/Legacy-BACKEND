@@ -57,8 +57,10 @@ public class AchievementProgressService {
         for (Achievement achievement : achievements) {
             AchievementHistory achievementHistory = achievementHistoryJpaRepo
                     .findByUserAndAchievement(user, achievement)
-                    .orElseThrow(() -> new RuntimeException("Achievement not found"));
-            wrongQuizzes += achievementHistory.getCurrentRate();
+                    .orElse(null);
+            if (achievementHistory != null) {
+                wrongQuizzes += achievementHistory.getCurrentRate();
+            }
         }
         return wrongQuizzes;
     }
