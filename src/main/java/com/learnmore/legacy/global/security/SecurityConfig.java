@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -16,6 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -45,30 +47,55 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .formLogin(formLogin -> formLogin.disable())
-                .httpBasic(httpBasic -> httpBasic.disable())
-                .rememberMe(rememberMe -> rememberMe.disable())
-                .logout(logout -> logout.disable())
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .rememberMe(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
 
                 .exceptionHandling(exceptionHandling -> {
                     exceptionHandling.accessDeniedHandler(jwtAccessDeniedHandler);
                     exceptionHandling.authenticationEntryPoint(jwtAuthenticationEntryPoint);
                 })
 
-                .authorizeHttpRequests(authorize -> {
-                    authorize
-                            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                            .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**", "/api-docs").permitAll()
-                            .requestMatchers(HttpMethod.POST, "/auth/sign-in", "/auth/sign-up", "/auth/refresh").permitAll()
-                            //user
-                            .requestMatchers(HttpMethod.GET,"/user/{id}","/user/uploadUrl").permitAll()
-                            .requestMatchers("/user/**").hasAnyRole( "USER","ADMIN")
-                            //ruins
-
-                            .anyRequest().permitAll();
-                })
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**", "/api-docs").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/sign-in", "/auth/sign-up", "/auth/refresh").permitAll()
+                        //user
+                        .requestMatchers(HttpMethod.GET,"/user/**","/user/uploadUrl").permitAll()
+                        .requestMatchers("/user/**").hasAnyRole( "USER","ADMIN")
+                        //ruins
+                        .requestMatchers(HttpMethod.POST, "/ruins/comment").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("ruins/**").permitAll()
+                        //quiz
+                        .requestMatchers(HttpMethod.POST,"/quiz/check").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/quiz/**").permitAll()
+                        //mail
+                        .requestMatchers("/mail/**").hasAnyRole("USER", "ADMIN")
+                        //kakao-auth
+                        .requestMatchers("/kakao/**").permitAll()
+                        //inventory
+                        .requestMatchers("/inventory/**").hasAnyRole("USER", "ADMIN")
+                        //course
+                        .requestMatchers("/course/**").hasAnyRole("USER", "ADMIN")
+                        //card
+                        .requestMatchers("/card","card/collection/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/card/**").permitAll()
+                        //block
+                        .requestMatchers("/block/**").hasAnyRole("USER", "ADMIN")
+                        //alarm
+                        .requestMatchers("/alarm/**").permitAll()
+                        //achievement
+                        .requestMatchers(HttpMethod.POST,"/achievement").permitAll()
+                        .requestMatchers("/achievement/**").hasAnyRole("USER", "ADMIN")
+                        //store
+                        .requestMatchers("/store/**").hasAnyRole("USER", "ADMIN")
+                        //ranking
+                        .requestMatchers("/ranklist/**").permitAll()
+                        //any
+                        .anyRequest().hasRole("ADMIN"))
 
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
@@ -81,7 +108,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:8080","http://localhost:9999","https://api.legacygame.site","https://www.legacygame.site","https://legacygame.site"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
