@@ -62,7 +62,10 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**", "/api-docs").permitAll()
                             .requestMatchers(HttpMethod.POST, "/auth/sign-in", "/auth/sign-up", "/auth/refresh").permitAll()
-                            .requestMatchers(HttpMethod.GET, "/user/me").hasAnyRole( "USER")
+                            //user
+                            .requestMatchers(HttpMethod.GET,"/user/{id}","/user/uploadUrl").permitAll()
+                            .requestMatchers("/user/**").hasAnyRole( "USER","ADMIN")
+                            //ruins
 
                             .anyRequest().permitAll();
                 })
