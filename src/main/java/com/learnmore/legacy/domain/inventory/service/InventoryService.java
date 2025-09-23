@@ -76,9 +76,13 @@ public class InventoryService {
             throw new CustomException(InventoryError.ITEM_ERROR);
         }
 
-        // 인벤토리 히스토리 itemCount-1 저장
-        myItem.setItemCount(myItem.getItemCount()-packCount);
-        inventoryHistoryJpaRepo.save(myItem);
+        // 인벤토리 히스토리 itemCount-packCount 저장
+        if (myItem.getItemCount() - packCount == 0){
+            inventoryHistoryJpaRepo.delete(myItem);
+        } else {
+            myItem.setItemCount(myItem.getItemCount()-packCount);
+            inventoryHistoryJpaRepo.save(myItem);
+        }
 
         List<CardRes> result = new ArrayList<>();
 
