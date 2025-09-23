@@ -64,11 +64,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**", "/api-docs").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/sign-in", "/auth/sign-up", "/auth/refresh").permitAll()
                         //user
-                        .requestMatchers(HttpMethod.GET,"/user/**","/user/uploadUrl").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/user/*","/user/uploadUrl").permitAll()
                         .requestMatchers("/user/**").hasAnyRole( "USER","ADMIN")
                         //ruins
                         .requestMatchers(HttpMethod.POST, "/ruins/comment").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("ruins/**").permitAll()
+                        .requestMatchers("/ruins/**/").permitAll()
                         //quiz
                         .requestMatchers(HttpMethod.POST,"/quiz/check").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/quiz/**").permitAll()
@@ -81,7 +81,7 @@ public class SecurityConfig {
                         //course
                         .requestMatchers("/course/**").hasAnyRole("USER", "ADMIN")
                         //card
-                        .requestMatchers("/card","card/collection/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/card","/card/collection/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/card/**").permitAll()
                         //block
                         .requestMatchers("/block/**").hasAnyRole("USER", "ADMIN")
