@@ -95,7 +95,7 @@ public class SecurityConfig {
                         //ranking
                         .requestMatchers("/ranklist/**").permitAll()
                         //any
-                        .anyRequest().hasRole("ADMIN"))
+                        .anyRequest().permitAll())
 
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
