@@ -68,7 +68,7 @@ public class SecurityConfig {
                         .requestMatchers("/user/**").hasAnyRole( "USER","ADMIN")
                         //ruins
                         .requestMatchers(HttpMethod.POST, "/ruins/comment").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/ruins/**/").permitAll()
+                        .requestMatchers("/ruins/**").permitAll()
                         //quiz
                         .requestMatchers(HttpMethod.POST,"/quiz/check").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/quiz/**").permitAll()
