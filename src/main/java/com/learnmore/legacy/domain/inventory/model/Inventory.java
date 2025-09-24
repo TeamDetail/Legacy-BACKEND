@@ -1,6 +1,6 @@
 package com.learnmore.legacy.domain.inventory.model;
 
-import com.learnmore.legacy.domain.inventory.model.enums.ItemType;
+import com.learnmore.legacy.domain.store.model.enums.StoreType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +24,7 @@ public class Inventory {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "item_type", nullable = false)
-    private ItemType itemType;
+    private StoreType itemType;
 
     @Column(name = "item_name", nullable = false)
     private String itemName;

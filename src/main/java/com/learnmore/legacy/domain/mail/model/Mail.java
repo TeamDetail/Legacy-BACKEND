@@ -1,7 +1,7 @@
 package com.learnmore.legacy.domain.mail.model;
 
-import com.learnmore.legacy.domain.inventory.model.enums.ItemType;
 import com.learnmore.legacy.domain.store.model.Store;
+import com.learnmore.legacy.domain.store.model.enums.StoreType;
 import com.learnmore.legacy.domain.user.model.Style;
 import com.learnmore.legacy.domain.user.model.User;
 import jakarta.persistence.*;
@@ -50,7 +50,7 @@ public class Mail {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "item_type", nullable = false)
-    private ItemType itemType;
+    private StoreType itemType;
 
     @Column(name = "award_count", nullable = false)
     private Integer awardCount;

@@ -13,7 +13,7 @@ import com.learnmore.legacy.domain.inventory.model.InventoryHistory;
 import com.learnmore.legacy.domain.inventory.model.repo.InventoryHistoryJpaRepo;
 import com.learnmore.legacy.domain.inventory.presentation.dto.requset.CardpackReq;
 import com.learnmore.legacy.domain.inventory.presentation.dto.response.InventoryRes;
-import com.learnmore.legacy.domain.store.model.enums.StoreError;
+import com.learnmore.legacy.domain.store.error.StoreError;
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import com.learnmore.legacy.global.exception.CustomException;
