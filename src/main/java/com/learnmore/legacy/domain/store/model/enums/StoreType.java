@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 public enum StoreType {
     REGION("REGION"),
     NATION("NATION"),
-    LINE("LINE");
+    LINE("LINE"),
+    CARD_PACK("CARD PACK");
 
     private final String storeType;
 

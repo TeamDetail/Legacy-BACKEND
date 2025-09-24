@@ -1,7 +1,7 @@
 package com.learnmore.legacy.domain.mail.presentation.dto.response;
 
-import com.learnmore.legacy.domain.inventory.model.enums.ItemType;
 import com.learnmore.legacy.domain.mail.model.Mail;
+import com.learnmore.legacy.domain.store.model.enums.StoreType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,13 +13,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ItemData {
     private Long itemId;
-    private ItemType itemType;
+    private StoreType itemType;
     private String itemName;
     private String itemDescription;
     private Integer itemCount;
 
     public static ItemData from(Mail mail) {
-        Long itemId = mail.getItemType() == ItemType.CARD_PACK ? 1L : 2L;
+        // 카드팩 마다 아이디 지정하기
+        Long itemId = mail.getItemType() == StoreType.CARD_PACK ? 1L : 2L;
 
         return ItemData.builder()
                 .itemId(itemId)

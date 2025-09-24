@@ -1,4 +1,4 @@
-package com.learnmore.legacy.domain.store.model.enums;
+package com.learnmore.legacy.domain.store.error;
 
 import com.learnmore.legacy.global.exception.CustomError;
 import lombok.Getter;

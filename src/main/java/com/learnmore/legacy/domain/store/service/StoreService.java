@@ -2,12 +2,12 @@ package com.learnmore.legacy.domain.store.service;
 
 import com.learnmore.legacy.domain.inventory.model.Inventory;
 import com.learnmore.legacy.domain.inventory.model.InventoryHistory;
-import com.learnmore.legacy.domain.inventory.model.enums.ItemType;
 import com.learnmore.legacy.domain.inventory.model.repo.InventoryHistoryJpaRepo;
 import com.learnmore.legacy.domain.inventory.model.repo.InventoryJpaRepo;
 import com.learnmore.legacy.domain.store.model.Store;
 import com.learnmore.legacy.domain.store.model.StoreHistory;
-import com.learnmore.legacy.domain.store.model.enums.StoreError;
+import com.learnmore.legacy.domain.store.error.StoreError;
+import com.learnmore.legacy.domain.store.model.enums.StoreType;
 import com.learnmore.legacy.domain.store.model.repo.StoreHistoryJpaRepo;
 import com.learnmore.legacy.domain.store.model.repo.StoreJpaRepo;
 import com.learnmore.legacy.domain.store.presentation.dto.response.CardPackRes;
@@ -53,7 +53,7 @@ public class StoreService {
         user.useCredit(store.getPrice());
 
         Optional<Inventory> optionalInventory =
-                inventoryJpaRepo.findByItemTypeAndItemName(ItemType.CARD_PACK, store.getStoreName());
+                inventoryJpaRepo.findByItemTypeAndItemName(StoreType.CARD_PACK, store.getStoreName());
 
         Inventory inventory;
         if (optionalInventory.isPresent()) {
@@ -65,7 +65,7 @@ public class StoreService {
                     .itemId(storeId)
                     .itemName(store.getStoreName())
                     .itemDescription(store.getStoreContent())
-                    .itemType(ItemType.CARD_PACK)
+                    .itemType(StoreType.CARD_PACK)
                     .build();
             inventoryJpaRepo.save(inventory);
         }
