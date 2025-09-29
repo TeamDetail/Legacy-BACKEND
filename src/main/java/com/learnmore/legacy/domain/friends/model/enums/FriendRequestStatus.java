@@ -1,4 +1,4 @@
-package com.learnmore.legacy.domain.freinds.model.enums;
+package com.learnmore.legacy.domain.friends.model.enums;
 
 public enum FriendRequestStatus {
     PENDING,  // 대기중
