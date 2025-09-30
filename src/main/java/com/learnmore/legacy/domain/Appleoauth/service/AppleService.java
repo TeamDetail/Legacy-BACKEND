@@ -90,6 +90,7 @@ public class AppleService {
 
     private void saveUser(AppleInfo appleUser) {
         User user = User.builder()
+                .userId(convertSubToLong(appleUser.getSub()))
                 .nickname(appleUser.getFullName())
                 .level(1)
                 .exp(0)
