@@ -24,10 +24,16 @@ public class FriendRequest {
     private Long id;
 
     @Column(name = "sender_id", nullable = false)
-    private Long senderId; // 친구 요청을 보내는 사람
+    private Long senderId;
 
     @Column(name = "receiver_id", nullable = false)
-    private Long receiverId; // 친구 요청을 받는 사람
+    private Long receiverId;
+
+    @Column(name = "sender_level", nullable = false)
+    private Integer senderLevel;
+
+    @Column(name = "receiver_level", nullable = false)
+    private Integer receiverLevel;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -42,9 +48,11 @@ public class FriendRequest {
     private LocalDateTime updatedAt;
 
     @Builder
-    public FriendRequest(Long senderId, Long receiverId, FriendRequestStatus status) {
+    public FriendRequest(Long senderId, Long receiverId, Integer senderLevel, Integer receiverLevel, FriendRequestStatus status) {
         this.senderId = senderId;
         this.receiverId = receiverId;
+        this.senderLevel = senderLevel;
+        this.receiverLevel = receiverLevel;
         this.status = status != null ? status : FriendRequestStatus.PENDING;
     }
 

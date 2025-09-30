@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -93,13 +94,17 @@ public class FriendService {
             log.error("Unexpected error while processing friend code: ", e);
             throw new CustomException(FriendsError.INVALID_FRIEND_CODE);
         }
+
         // 자기 자신에게 요청하는지 확인
         if (senderId.equals(receiverId)) {
             throw new CustomException(FriendsError.SELF_FRIEND_REQUEST);
         }
 
-        // 받는 사람이 존재하는지 확인
-        if (!userService.existsByUserId(receiverId)) {
+        // 유저 정보 조회 (레벨 정보 포함)
+        User sender = userService.findByUserId(senderId);
+        User receiver = userService.findByUserId(receiverId);
+
+        if (sender == null || receiver == null) {
             throw new CustomException(FriendsError.USER_NOT_FOUND);
         }
 
@@ -117,17 +122,21 @@ public class FriendService {
         // 상대방이 나에게 이미 요청을 보냈는지 확인
         if (friendRequestJpaRepo.existsBySenderIdAndReceiverIdAndStatus(
                 receiverId, senderId, FriendRequestStatus.PENDING)) {
-            throw new CustomException(FriendsError.FRIEND_REQUEST_ALREADY_RECEIVED);
+            throw new CustomException(FriendsError.FRIEND_REQUEST_ALREADY_SENT);
         }
 
-        // 친구 요청 저장
+        // 친구 요청 저장 (레벨 정보 포함)
         FriendRequest friendRequest = FriendRequest.builder()
                 .senderId(senderId)
                 .receiverId(receiverId)
+                .senderLevel(sender.getLevel())  // 보낸 사람 레벨
+                .receiverLevel(receiver.getLevel())  // 받는 사람 레벨
                 .status(FriendRequestStatus.PENDING)
                 .build();
 
         friendRequestJpaRepo.save(friendRequest);
+        log.info("친구 요청 전송: senderId={}, receiverId={}, senderLevel={}, receiverLevel={}",
+                senderId, receiverId, sender.getLevel(), receiver.getLevel());
     }
 
     /**
@@ -151,8 +160,14 @@ public class FriendService {
         request.updateStatus(FriendRequestStatus.ACCEPTED);
         friendRequestJpaRepo.save(request);
 
-        // 양방향 친구 관계 생성
-        addFriendship(userId, request.getSenderId(), false);
+        // 양방향 친구 관계 생성 (레벨 정보 포함)
+        User sender = userService.findByUserId(request.getSenderId());
+        User receiver = userService.findByUserId(request.getReceiverId());
+
+        if (sender != null && receiver != null) {
+            addFriendshipWithLevel(request.getSenderId(), request.getReceiverId(),
+                    sender.getLevel(), receiver.getLevel(), false);
+        }
     }
 
     /**
@@ -175,7 +190,7 @@ public class FriendService {
     }
 
     /**
-     * 친구 목록 조회
+     * 친구 목록 조회 (레벨 정보 포함)
      */
     @Transactional(readOnly = true)
     public List<FriendRes> getFriends(Long userId) {
@@ -190,6 +205,7 @@ public class FriendService {
                                     .userId(friend.getFriendId())
                                     .nickname(user.getNickname())
                                     .profileImage(user.getImageUrl())
+                                    .level(friend.getFriendLevel())  // 저장된 레벨 정보 사용
                                     .friendCode(FriendCodeUtil.encode(friend.getFriendId()))
                                     .isKakaoFriend(friend.getIsKakaoFriend())
                                     .isMutualFriend(true) // 항상 양방향이므로 true
@@ -201,12 +217,72 @@ public class FriendService {
                         return null;
                     }
                 })
-                .filter(friendRes -> friendRes != null) // null 제거
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
     /**
-     * 받은 친구 요청 목록 조회
+     * 보낸 친구 요청 목록 조회 (레벨 정보 포함)
+     */
+    @Transactional(readOnly = true)
+    public List<FriendRequestRes> getSentFriendRequests(Long userId) {
+        List<FriendRequest> requests = friendRequestJpaRepo
+                .findBySenderIdAndStatus(userId, FriendRequestStatus.PENDING);
+
+        return requests.stream()
+                .map(request -> {
+                    try {
+                        User receiver = userService.findByUserId(request.getReceiverId());
+                        if (receiver != null) {
+                            return FriendRequestRes.builder()
+                                    .requestId(request.getId())
+                                    .senderId(request.getSenderId())
+                                    .receiverId(request.getReceiverId())
+                                    .senderLevel(request.getSenderLevel())  // 보낸 사람 레벨
+                                    .receiverNickname(receiver.getNickname())
+                                    .receiverProfileImage(receiver.getImageUrl())
+                                    .receiverLevel(request.getReceiverLevel())  // 받는 사람 레벨
+                                    .status(request.getStatus())
+                                    .createdAt(request.getCreatedAt())
+                                    .build();
+                        }
+                        return null;
+                    } catch (Exception e) {
+                        log.warn("수신자 정보 조회 실패: userId={}", request.getReceiverId(), e);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 보낸 친구 요청 취소
+     */
+    @Transactional
+    public void cancelFriendRequest(Long userId, Long requestId) {
+        FriendRequest request = friendRequestJpaRepo.findById(requestId)
+                .orElseThrow(() -> new CustomException(FriendsError.FRIEND_REQUEST_NOT_FOUND));
+
+        // 본인이 보낸 요청인지 확인
+        if (!request.getSenderId().equals(userId)) {
+            throw new CustomException(FriendsError.UNAUTHORIZED);
+        }
+
+        // PENDING 상태인지 확인
+        if (request.getStatus() != FriendRequestStatus.PENDING) {
+            throw new CustomException(FriendsError.FRIEND_REQUEST_ALREADY_PROCESSED);
+        }
+
+        // 요청 삭제
+        friendRequestJpaRepo.delete(request);
+
+        log.info("친구 요청 취소: requestId={}, senderId={}, receiverId={}",
+                requestId, userId, request.getReceiverId());
+    }
+
+    /**
+     * 받은 친구 요청 목록 조회 (레벨 정보 포함)
      */
     @Transactional(readOnly = true)
     public List<FriendRequestRes> getReceivedFriendRequests(Long userId) {
@@ -224,6 +300,8 @@ public class FriendService {
                                     .receiverId(request.getReceiverId())
                                     .senderNickname(sender.getNickname())
                                     .senderProfileImage(sender.getImageUrl())
+                                    .senderLevel(request.getSenderLevel())  // 보낸 사람 레벨
+                                    .receiverLevel(request.getReceiverLevel())  // 받는 사람 레벨
                                     .status(request.getStatus())
                                     .createdAt(request.getCreatedAt())
                                     .build();
@@ -234,7 +312,7 @@ public class FriendService {
                         return null;
                     }
                 })
-                .filter(requestRes -> requestRes != null) // null 제거
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
@@ -253,24 +331,44 @@ public class FriendService {
     }
 
     /**
-     * 양방향 친구 관계 생성 헬퍼 메서드
+     * 양방향 친구 관계 생성 헬퍼 메서드 (레벨 정보 포함)
      */
-    private void addFriendship(Long userId1, Long userId2, boolean isKakaoFriend) {
-        // A -> B 친구 관계
+    private void addFriendshipWithLevel(Long userId1, Long userId2,
+                                        Integer user1Level, Integer user2Level,
+                                        boolean isKakaoFriend) {
+        // A -> B 친구 관계 (B의 레벨 저장)
         Friend friendship1 = Friend.builder()
                 .userId(userId1)
                 .friendId(userId2)
+                .friendLevel(user2Level)  // 친구(B)의 레벨
                 .isKakaoFriend(isKakaoFriend)
                 .build();
 
-        // B -> A 친구 관계
+        // B -> A 친구 관계 (A의 레벨 저장)
         Friend friendship2 = Friend.builder()
                 .userId(userId2)
                 .friendId(userId1)
+                .friendLevel(user1Level)  // 친구(A)의 레벨
                 .isKakaoFriend(isKakaoFriend)
                 .build();
 
         friendJpaRepo.saveAll(List.of(friendship1, friendship2));
+    }
+
+    /**
+     * 양방향 친구 관계 생성 헬퍼 메서드 (카카오 친구용 - 레벨 조회 필요)
+     */
+    private void addFriendship(Long userId1, Long userId2, boolean isKakaoFriend) {
+        // 유저 정보 조회하여 레벨 가져오기
+        User user1 = userService.findByUserId(userId1);
+        User user2 = userService.findByUserId(userId2);
+
+        if (user1 == null || user2 == null) {
+            log.warn("친구 관계 생성 실패: 유저 정보를 찾을 수 없습니다. userId1={}, userId2={}", userId1, userId2);
+            return;
+        }
+
+        addFriendshipWithLevel(userId1, userId2, user1.getLevel(), user2.getLevel(), isKakaoFriend);
     }
 
     /**

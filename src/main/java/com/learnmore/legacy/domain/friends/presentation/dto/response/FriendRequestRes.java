@@ -10,8 +10,15 @@ public record FriendRequestRes(
         Long requestId,
         Long senderId,
         Long receiverId,
+
         String senderNickname,
         String senderProfileImage,
+        Integer senderLevel,
+
+        String receiverNickname,
+        String receiverProfileImage,
+        Integer receiverLevel,
+
         FriendRequestStatus status,
         LocalDateTime createdAt
 ) {

@@ -4,11 +4,12 @@ import lombok.Builder;
 
 @Builder
 public record FriendRes(
-    Long userId,
-    String nickname,
-    String profileImage,
-    String friendCode,
-    Boolean isKakaoFriend,
-    Boolean isMutualFriend
+        Long userId,
+        String nickname,
+        String profileImage,
+        Integer level,
+        String friendCode,
+        Boolean isKakaoFriend,
+        Boolean isMutualFriend
 ) {
 }

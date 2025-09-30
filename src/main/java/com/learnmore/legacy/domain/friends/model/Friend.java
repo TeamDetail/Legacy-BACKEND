@@ -22,22 +22,26 @@ public class Friend {
     private Long id;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId; // 사용자 ID
+    private Long userId;
 
     @Column(name = "friend_id", nullable = false)
-    private Long friendId; // 친구 ID
+    private Long friendId;
+
+    @Column(name = "friend_level", nullable = false)
+    private Integer friendLevel;
 
     @Column(name = "is_kakao_friend", nullable = false)
-    private Boolean isKakaoFriend = false; // 카카오톡 친구인지 여부
+    private Boolean isKakaoFriend = false;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    public Friend(Long userId, Long friendId, Boolean isKakaoFriend) {
+    public Friend(Long userId, Long friendId, Integer friendLevel, Boolean isKakaoFriend) {
         this.userId = userId;
         this.friendId = friendId;
+        this.friendLevel = friendLevel;
         this.isKakaoFriend = isKakaoFriend != null ? isKakaoFriend : false;
     }
 }
