@@ -42,7 +42,6 @@ public class RuinsComment {
     private String comment;
 
     @CreationTimestamp
-    @Column(name = "create_at", nullable = false, updatable = false,
-            columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP(6)")//todo 이거 빌드에서 에러남
+    @Column(name = "create_at", nullable = false, updatable = false)
     private LocalDateTime createAt;
 }
