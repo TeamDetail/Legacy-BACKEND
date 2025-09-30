@@ -88,6 +88,8 @@ public class User {
     }
 
     public void updateDescription(String description) {this.description = description;}
+
+    public void updateNickname(String nickname) {this.nickname = nickname;}
 }
 
 

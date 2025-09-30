@@ -95,9 +95,12 @@ public class AppleService {
     }
 
     private void saveUser(AppleInfo appleUser) {
+        Long userId = convertSubToLong(appleUser.getSub());
+        String nickname = appleUser.getFullName() != null ? appleUser.getFullName() : "AppleUser";
+
         User user = User.builder()
-                .userId(convertSubToLong(appleUser.getSub()))
-                .nickname(appleUser.getFullName())
+                .userId(userId)
+                .nickname(nickname)
                 .description("")
                 .level(1)
                 .exp(0)
@@ -111,16 +114,21 @@ public class AppleService {
                 .ruinsBlocks(0)
                 .maxFloor(0)
                 .maxScore(0)
-                // 애플에서 제공안해서 기본값으로 설정
                 .imageUrl("http://img1.kakaocdn.net/thumb/R640x640.q70/?fname=http://t1.kakaocdn.net/account_images/default_profile.jpeg")
                 .build();
         userService.saveUser(user);
     }
 
+
     private void updateUser(AppleInfo appleUser) {
-        User user = userService.findByUserId(Long.valueOf(appleUser.getSub()));
+        Long userId = convertSubToLong(appleUser.getSub());
+        User user = userService.findByUserId(userId);
+        if (appleUser.getFullName() != null) {
+            user.updateNickname(appleUser.getFullName());
+        }
         userService.saveUser(user);
     }
+
 
     private Long convertSubToLong(String sub) {
         return Math.abs((long) sub.hashCode());
