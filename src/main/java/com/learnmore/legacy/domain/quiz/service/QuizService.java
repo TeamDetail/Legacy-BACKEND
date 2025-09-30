@@ -49,7 +49,6 @@ public class QuizService {
     private final CardJpaRepo cardJpaRepo;
     private final AchievementProgressService achievementProgressService;
     private final CardHistoryJpaRepo cardHistoryJpaRepo;
-    private final AchievementProgressService achievementProgressService;
     private final DeckJpaRepo deckJpaRepo;
     private final UserJpaRepo userJpaRepo;
 
