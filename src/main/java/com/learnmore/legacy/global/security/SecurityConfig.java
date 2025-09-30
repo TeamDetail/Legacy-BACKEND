@@ -63,7 +63,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**", "/api-docs").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/sign-in", "/auth/sign-up", "/auth/refresh").permitAll()
-                        .requestMatchers("/apple/**").permitAll()
                         //user
                         .requestMatchers(HttpMethod.GET,"/user/uploadUrl").permitAll()
                         .requestMatchers("/user/**").hasAnyRole( "USER","ADMIN")
@@ -77,6 +76,8 @@ public class SecurityConfig {
                         .requestMatchers("/mail/**").hasAnyRole("USER", "ADMIN")
                         //kakao-auth
                         .requestMatchers("/kakao/**").permitAll()
+                        //apple-auth
+                        .requestMatchers("/apple/**").permitAll()
                         //inventory
                         .requestMatchers("/inventory/**").hasAnyRole("USER", "ADMIN")
                         //course
