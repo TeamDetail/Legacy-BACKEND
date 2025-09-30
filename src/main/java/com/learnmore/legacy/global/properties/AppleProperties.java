@@ -6,14 +6,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.core.io.ClassPathResource;
+import java.nio.file.Files;
 
-import java.io.InputStream;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
+
 
 @Setter
 @Getter
@@ -49,19 +51,24 @@ public class AppleProperties {
     }
 
     private PrivateKey getPrivateKey() throws Exception {
-        // privateKeyPath에서 파일 읽기
-        try (InputStream is = getClass().getResourceAsStream(privateKeyPath.replace("classpath:", "/"))) {
-            if (is == null) {
-                throw new IllegalArgumentException("p8 파일을 찾을 수 없음: " + privateKeyPath);
-            }
-            String key = new String(is.readAllBytes())
-                    .replace("-----BEGIN PRIVATE KEY-----", "")
-                    .replace("-----END PRIVATE KEY-----", "")
-                    .replaceAll("\\s+", "");
-            byte[] keyBytes = Base64.getDecoder().decode(key);
-            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
-            return KeyFactory.getInstance("EC").generatePrivate(keySpec);
+        // "classpath:" 접두사 제거
+        String path = privateKeyPath.replace("classpath:", "");
+        ClassPathResource resource = new ClassPathResource(path);
+
+        if (!resource.exists()) {
+            throw new IllegalArgumentException("p8 파일을 찾을 수 없음: " + privateKeyPath);
         }
+
+        // 파일 내용 읽기
+        String key = new String(Files.readAllBytes(resource.getFile().toPath()))
+                .replace("-----BEGIN PRIVATE KEY-----", "")
+                .replace("-----END PRIVATE KEY-----", "")
+                .replaceAll("\\s+", "");
+
+        byte[] keyBytes = Base64.getDecoder().decode(key);
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
+
+        return KeyFactory.getInstance("EC").generatePrivate(keySpec);
     }
 
 }
