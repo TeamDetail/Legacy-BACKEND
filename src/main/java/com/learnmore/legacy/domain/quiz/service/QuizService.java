@@ -4,6 +4,7 @@ import com.learnmore.legacy.domain.achievement.model.enums.AchievementType;
 import com.learnmore.legacy.domain.achievement.service.AchievementProgressService;
 import com.learnmore.legacy.domain.block.service.BlockService;
 import com.learnmore.legacy.domain.card.model.Card;
+import com.learnmore.legacy.domain.card.model.repo.CardJpaRepo;
 import com.learnmore.legacy.domain.card.model.CardHistory;
 import com.learnmore.legacy.domain.card.model.Deck;
 import com.learnmore.legacy.domain.card.model.enums.CardType;
@@ -46,6 +47,7 @@ public class QuizService {
     private final BlockService blockService;
     private final RuinsJpaRepo ruinsJpaRepo;
     private final CardJpaRepo cardJpaRepo;
+    private final AchievementProgressService achievementProgressService;
     private final CardHistoryJpaRepo cardHistoryJpaRepo;
     private final AchievementProgressService achievementProgressService;
     private final DeckJpaRepo deckJpaRepo;
@@ -152,7 +154,7 @@ public class QuizService {
                     .cardType(CardType.SHINING_CARD)
                     .user(user)
                     .build());
-
+          
             blockGiven = true;
         }else {
             requests.forEach(request ->

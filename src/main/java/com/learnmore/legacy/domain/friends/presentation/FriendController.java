@@ -4,6 +4,7 @@ import com.learnmore.legacy.domain.friends.presentation.dto.response.FriendReque
 import com.learnmore.legacy.domain.friends.presentation.dto.response.FriendRes;
 import com.learnmore.legacy.domain.friends.service.FriendService;
 import com.learnmore.legacy.domain.friends.service.util.FriendCodeUtil;
+import com.learnmore.legacy.global.common.dto.BaseResponse;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -66,6 +67,21 @@ public class FriendController {
 
         List<FriendRes> friends = friendService.getFriends(userId);
         return ResponseEntity.ok(friends);
+    }
+
+    @Operation(summary = "보낸 친구 요청 목록 조회", description = "다른 사용자에게 보낸 친구 목록을 반환합니다.")
+    @GetMapping("/sent")
+    public ResponseEntity<BaseResponse<List<FriendRequestRes>>> getSenderFriendResponse() {
+        Long userId = userSessionHolder.get().getUserId();
+        return BaseResponse.of(friendService.getSentFriendRequests(userId));
+    }
+
+    @Operation(summary = "보낸 친구 요청 취소", description = "다른 사용자에게 보낸 친구 요청을 취소합니다.")
+    @DeleteMapping("/sent/{requestId}")
+    public ResponseEntity<BaseResponse<String>> cancelRequest(@PathVariable Long requestId) {
+        Long userId = userSessionHolder.get().getUserId();
+        friendService.cancelFriendRequest(userId, requestId);
+        return BaseResponse.of("친구 요청 취소 성공");
     }
 
     @Operation(summary = "받은 친구 요청 목록 조회", description = "다른 사용자로부터 받은 친구 요청 목록을 반환합니다.")
