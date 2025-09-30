@@ -96,7 +96,7 @@ public class AppleService {
 
     private void saveUser(AppleInfo appleUser) {
         Long userId = convertSubToLong(appleUser.getSub());
-        String nickname = appleUser.getFullName() != null ? appleUser.getFullName() : "AppleUser";
+        String nickname = appleUser.getFullName() != null ? appleUser.getFullName() : "테스트";
 
         User user = User.builder()
                 .userId(userId)
