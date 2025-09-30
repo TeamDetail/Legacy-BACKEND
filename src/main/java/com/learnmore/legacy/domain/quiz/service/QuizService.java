@@ -5,6 +5,12 @@ import com.learnmore.legacy.domain.achievement.service.AchievementProgressServic
 import com.learnmore.legacy.domain.block.service.BlockService;
 import com.learnmore.legacy.domain.card.model.Card;
 import com.learnmore.legacy.domain.card.model.repo.CardJpaRepo;
+import com.learnmore.legacy.domain.card.model.CardHistory;
+import com.learnmore.legacy.domain.card.model.Deck;
+import com.learnmore.legacy.domain.card.model.enums.CardType;
+import com.learnmore.legacy.domain.card.model.repo.CardHistoryJpaRepo;
+import com.learnmore.legacy.domain.card.model.repo.CardJpaRepo;
+import com.learnmore.legacy.domain.card.model.repo.DeckJpaRepo;
 import com.learnmore.legacy.domain.quiz.error.QuizError;
 import com.learnmore.legacy.domain.quiz.model.Quiz;
 import com.learnmore.legacy.domain.quiz.model.QuizHistory;
@@ -19,6 +25,8 @@ import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizRes;
 import com.learnmore.legacy.domain.ruins.error.RuinsError;
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import com.learnmore.legacy.domain.ruins.model.repo.RuinsJpaRepo;
+import com.learnmore.legacy.domain.user.model.User;
+import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,6 +48,10 @@ public class QuizService {
     private final RuinsJpaRepo ruinsJpaRepo;
     private final CardJpaRepo cardJpaRepo;
     private final AchievementProgressService achievementProgressService;
+    private final CardHistoryJpaRepo cardHistoryJpaRepo;
+    private final AchievementProgressService achievementProgressService;
+    private final DeckJpaRepo deckJpaRepo;
+    private final UserJpaRepo userJpaRepo;
 
     public List<QuizRes> getQuiz(Long ruinsId) {
         Ruins ruins = ruinsJpaRepo.findById(ruinsId)
@@ -120,6 +132,29 @@ public class QuizService {
                     ruins.getLatitude(),
                     ruins.getLongitude()
             );
+
+            User user = userJpaRepo.findByUserId(userId);
+
+            Card card = cardJpaRepo.findByRuins_RuinsId(ruinsId)
+                    .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
+
+            Deck deck = deckJpaRepo.findByUser_UserId(userId)
+                    .orElse(null);
+            if (deck == null) {
+                Deck newDeck = Deck.builder()
+                        .user(user)
+                        .deckNumber(1)
+                        .build();
+                deck = deckJpaRepo.save(newDeck);
+            }
+
+            cardHistoryJpaRepo.save(CardHistory.builder()
+                    .card(card)
+                    .deck(deck)
+                    .cardType(CardType.SHINING_CARD)
+                    .user(user)
+                    .build());
+          
             blockGiven = true;
         }else {
             requests.forEach(request ->

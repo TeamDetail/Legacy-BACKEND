@@ -20,6 +20,7 @@ public enum FriendsError implements CustomError {
     INVALID_FRIEND_CODE(HttpStatus.NOT_FOUND, "유효하지 않은 친구 코드입니다."),
     KAKAO_SYNC_FAILED(HttpStatus.BAD_REQUEST, "카카오톡 친구 동기화에 실패했습니다."),
     REQUEST_PENDING_ONLY_CANCEL(HttpStatus.BAD_REQUEST, "대기 중인 요청만 취소할 수 있습니다.");
+    FRIEND_REQUEST_ALREADY_RECEIVED(HttpStatus.BAD_REQUEST, "이미 친구 요청이 있는 요청입니다." );
 
     private final HttpStatus status;
     private final String message;

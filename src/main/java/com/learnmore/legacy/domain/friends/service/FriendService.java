@@ -160,7 +160,7 @@ public class FriendService {
         request.updateStatus(FriendRequestStatus.ACCEPTED);
         friendRequestJpaRepo.save(request);
 
-        // 양방향 친구 관계 생성 (레벨 정보 포함)
+        // 양방향 친구 관계 생성
         User sender = userService.findByUserId(request.getSenderId());
         User receiver = userService.findByUserId(request.getReceiverId());
 
@@ -190,7 +190,7 @@ public class FriendService {
     }
 
     /**
-     * 친구 목록 조회 (레벨 정보 포함)
+     * 친구 목록 조회
      */
     @Transactional(readOnly = true)
     public List<FriendRes> getFriends(Long userId) {
@@ -222,7 +222,7 @@ public class FriendService {
     }
 
     /**
-     * 보낸 친구 요청 목록 조회 (레벨 정보 포함)
+     * 보낸 친구 요청 목록 조회
      */
     @Transactional(readOnly = true)
     public List<FriendRequestRes> getSentFriendRequests(Long userId) {
@@ -331,7 +331,7 @@ public class FriendService {
     }
 
     /**
-     * 양방향 친구 관계 생성 헬퍼 메서드 (레벨 정보 포함)
+     * 양방향 친구 관계 생성 헬퍼 메서드
      */
     private void addFriendshipWithLevel(Long userId1, Long userId2,
                                         Integer user1Level, Integer user2Level,
@@ -356,7 +356,7 @@ public class FriendService {
     }
 
     /**
-     * 양방향 친구 관계 생성 헬퍼 메서드 (카카오 친구용 - 레벨 조회 필요)
+     * 양방향 친구 관계 생성 헬퍼 메서드
      */
     private void addFriendship(Long userId1, Long userId2, boolean isKakaoFriend) {
         // 유저 정보 조회하여 레벨 가져오기
