@@ -4,5 +4,6 @@ import lombok.Builder;
 
 @Builder
 public record AppleCodeReq (
-        String code
+        String code,
+        String name
 ) {}

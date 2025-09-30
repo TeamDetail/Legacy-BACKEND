@@ -27,7 +27,7 @@ public class JwtProvider {
     }
 
     public TokenRes generateToken(String id) {
-        String refreshToken=generateRefreshToken(id);
+        String refreshToken = generateRefreshToken(id);
         refreshTokenDao.saveToken(id, refreshToken);
         return new TokenRes(
                 generateAccessToken(id),

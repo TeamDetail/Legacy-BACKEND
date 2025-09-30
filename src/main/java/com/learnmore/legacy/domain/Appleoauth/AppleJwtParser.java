@@ -23,7 +23,7 @@ public class AppleJwtParser {
     private final WebClient webClient = WebClient.create("https://appleid.apple.com");
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public AppleInfo parseIdentityToken(String idToken) {
+    public AppleInfo parseIdentityToken(String idToken, String name) {
         try {
             // 1. Apple 공개키 가져오기
             Map appleKeys = webClient.get()
@@ -34,9 +34,9 @@ public class AppleJwtParser {
 
             if (appleKeys == null) throw new RuntimeException("Apple JWKS 조회 실패");
 
-            // 2. 첫 번째 키 가져오기 (실무에서는 kid 비교 후 찾아야 함)
+            // 2. kid 확인 (간단히 첫 번째 키 사용)
             List<Map<String, Object>> keys = (List<Map<String, Object>>) appleKeys.get("keys");
-            Map<String, Object> key = keys.getFirst();
+            Map<String, Object> key = keys.get(0);
 
             // 3. 공개키 생성
             String n = (String) key.get("n");
@@ -54,15 +54,14 @@ public class AppleJwtParser {
                     .parseClaimsJws(idToken)
                     .getBody();
 
-            String sub = claims.getSubject(); // Apple 고유 ID
+            String sub = claims.getSubject(); // 고유 ID
             String email = claims.get("email", String.class);
 
-            // fullName은 Apple 최초 로그인 시만 제공, JWT에는 없음
-            // 필요하면 클라이언트에서 전달받아 AppleInfo에 세팅
-            return new AppleInfo(sub, email, null);
+            return new AppleInfo(sub, email, name);
 
         } catch (Exception ex) {
             throw new RuntimeException("Apple JWT 파싱 실패: " + ex.getMessage(), ex);
         }
     }
+
 }

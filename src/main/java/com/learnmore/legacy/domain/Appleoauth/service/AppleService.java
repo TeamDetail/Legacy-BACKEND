@@ -40,7 +40,7 @@ public class AppleService {
         AppleTokenRes token = getAccessToken(req.code());
 
         // id_token 검증 & 유저 정보 추출
-        AppleInfo userInfo = appleJwtParser.parseIdentityToken(token.getIdToken());
+        AppleInfo userInfo = appleJwtParser.parseIdentityToken(token.getIdToken(), req.name());
 
         // 사용자 upsert
         upsertUser(userInfo);
@@ -51,15 +51,21 @@ public class AppleService {
 
     @Transactional
     public TokenRes loginAppleApp(AppleIdTokenReq req) {
-        // id_token 검증
-        AppleInfo userInfo = appleJwtParser.parseIdentityToken(req.idToken());
+        // 1. id_token 검증
+        AppleInfo userInfo = appleJwtParser.parseIdentityToken(req.idToken(), req.name());
 
-        // 사용자 upsert
+        // 2. 최초 로그인 시 fullName 추가
+        if (req.name() != null && userInfo.getFullName() == null) {
+            userInfo.setFullName(req.name());
+        }
+
+        // 3. 사용자 upsert
         upsertUser(userInfo);
 
-        // JWT 발급
+        // 4. JWT 발급
         return jwtProvider.generateToken(userInfo.getSub());
     }
+
 
     private AppleTokenRes getAccessToken(String code) {
         return webClient.post()
