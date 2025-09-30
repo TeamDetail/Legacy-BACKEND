@@ -92,6 +92,7 @@ public class AppleService {
         User user = User.builder()
                 .userId(convertSubToLong(appleUser.getSub()))
                 .nickname(appleUser.getFullName())
+                .description("")
                 .level(1)
                 .exp(0)
                 .credit(0)

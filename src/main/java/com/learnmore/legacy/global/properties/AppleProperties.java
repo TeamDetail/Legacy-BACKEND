@@ -23,7 +23,6 @@ import java.util.Date;
 @ConfigurationProperties(prefix = "apple.auth")
 public class AppleProperties {
 
-    // getters & setters (lombok @Data 제거 권장)
     private String clientId;
     private String teamId;
     private String keyId;
