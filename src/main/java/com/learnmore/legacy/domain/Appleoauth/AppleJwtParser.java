@@ -1,6 +1,5 @@
 package com.learnmore.legacy.domain.Appleoauth;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.learnmore.legacy.domain.Appleoauth.presentation.dto.response.AppleInfo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -21,7 +20,6 @@ import java.util.Map;
 public class AppleJwtParser {
 
     private final WebClient webClient = WebClient.create("https://appleid.apple.com");
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public AppleInfo parseIdentityToken(String idToken, String name) {
         try {
@@ -34,34 +32,43 @@ public class AppleJwtParser {
 
             if (appleKeys == null) throw new RuntimeException("Apple JWKS 조회 실패");
 
-            // 2. kid 확인 (간단히 첫 번째 키 사용)
             List<Map<String, Object>> keys = (List<Map<String, Object>>) appleKeys.get("keys");
-            Map<String, Object> key = keys.getFirst();
 
-            // 3. 공개키 생성
+            // 2. JWT 헤더에서 kid 추출
+            String kid = Jwts.parserBuilder()
+                    .build()
+                    .parseClaimsJws(idToken)
+                    .getHeader()
+                    .getKeyId();
+
+            // 3. kid와 일치하는 공개키 선택
+            Map<String, Object> key = keys.stream()
+                    .filter(k -> kid.equals(k.get("kid")))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Apple JWT kid 불일치"));
+
+            // 4. 공개키 생성
             String n = (String) key.get("n");
             String e = (String) key.get("e");
-
             BigInteger modulus = new BigInteger(1, Base64.getUrlDecoder().decode(n));
             BigInteger exponent = new BigInteger(1, Base64.getUrlDecoder().decode(e));
             RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(modulus, exponent);
             PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(publicKeySpec);
 
-            // 4. JWT 파싱
+            // 5. JWT 파싱
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(publicKey)
                     .build()
                     .parseClaimsJws(idToken)
                     .getBody();
 
-            String sub = claims.getSubject(); // 고유 ID
+            String sub = claims.getSubject();
             String email = claims.get("email", String.class);
 
-            return new AppleInfo(sub, email, name);
+            return new AppleInfo(sub, email, name != null ? name : "AppleUser");
 
         } catch (Exception ex) {
             throw new RuntimeException("Apple JWT 파싱 실패: " + ex.getMessage(), ex);
         }
     }
-
 }
