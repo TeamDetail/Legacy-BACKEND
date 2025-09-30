@@ -42,6 +42,8 @@ public class AppleService {
         // id_token 검증 & 유저 정보 추출
         AppleInfo userInfo = appleJwtParser.parseIdentityToken(token.getIdToken(), req.name());
 
+        userInfo.setFullName(req.name());
+
         // 사용자 upsert
         upsertUser(userInfo);
 
@@ -54,10 +56,8 @@ public class AppleService {
         // 1. id_token 검증
         AppleInfo userInfo = appleJwtParser.parseIdentityToken(req.idToken(), req.name());
 
-        // 2. 최초 로그인 시 fullName 추가
-        if (req.name() != null && userInfo.getFullName() == null) {
-            userInfo.setFullName(req.name());
-        }
+        // 2. 로그인 시 fullName 추가
+        userInfo.setFullName(req.name());
 
         // 3. 사용자 upsert
         upsertUser(userInfo);

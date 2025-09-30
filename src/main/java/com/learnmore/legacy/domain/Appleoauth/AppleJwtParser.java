@@ -36,7 +36,7 @@ public class AppleJwtParser {
 
             // 2. kid 확인 (간단히 첫 번째 키 사용)
             List<Map<String, Object>> keys = (List<Map<String, Object>>) appleKeys.get("keys");
-            Map<String, Object> key = keys.get(0);
+            Map<String, Object> key = keys.getFirst();
 
             // 3. 공개키 생성
             String n = (String) key.get("n");
