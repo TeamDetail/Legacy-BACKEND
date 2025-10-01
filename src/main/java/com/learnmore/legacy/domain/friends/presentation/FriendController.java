@@ -38,18 +38,18 @@ public class FriendController {
 
     @Operation(summary = "친구 이름으로 검색", description = "아룸울 통해 친구를 검색합니다.")
     @GetMapping("/search")
-    public ResponseEntity<List<UserSearchRes>> searchUsers(@RequestParam String nickname) {
+    public ResponseEntity<BaseResponse<List<UserSearchRes>>> searchUsers(@RequestParam String nickname) {
 
         Long userId = userSessionHolder.get().getUserId();
 
         if (nickname == null || nickname.trim().isEmpty()) {
-            return ResponseEntity.ok(Collections.emptyList());
+            return BaseResponse.of(Collections.emptyList());
         }
 
         List<UserSearchRes> searchResults = friendService.searchUsersByNickname(
                 userId, nickname.trim());
 
-        return ResponseEntity.ok(searchResults);
+        return BaseResponse.of(searchResults);
     }
 
     @Operation(summary = "친구 코드로 친구 요청 보내기", description = "친구 코드를 입력하여 해당 사용자에게 친구 요청을 보냅니다.")
