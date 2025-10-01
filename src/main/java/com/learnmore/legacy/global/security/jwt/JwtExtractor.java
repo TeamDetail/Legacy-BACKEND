@@ -74,10 +74,11 @@ public class JwtExtractor {
     public String extractToken(HttpServletRequest request) {
         String header = request.getHeader(jwtProperties.getHeader());
         if (header != null && header.startsWith(jwtProperties.getPrefix())) {
-            return header.substring(jwtProperties.getPrefix().length());
+            return header.substring(jwtProperties.getPrefix().length()).trim();
         }
         return null;
     }
+
 
     private Jws<Claims> getClaims(String token) {
         try {
