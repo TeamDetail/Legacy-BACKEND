@@ -5,9 +5,10 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum StoreType {
-    CARD_PACK("CARD PACK");
+public enum StoreSubType {
+    REGION("REGION"),
+    NATION("NATION"),
+    LINE("LINE");
 
-    private final String storeType;
-
+    private final String storeSubType;
 }
