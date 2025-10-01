@@ -39,16 +39,14 @@ public class JwtExtractor {
     }
 
     public Authentication getAuthentication(String token) {
-        if(isAppleToken(token)) {
+        if (isAppleToken(token)) {
             try {
-                JWTClaimsSet claims = AppleJwtVerifier.verify(token); // Apple JWT 검증
+                // Apple 토큰 검증
+                JWTClaimsSet claims = AppleJwtVerifier.verify(token);
                 String appleSub = claims.getSubject();
-                Long userId = Math.abs((long) appleSub.hashCode());
 
-                User user = userJpaRepo.findByUserId(userId);
-                if(user == null) {
-                    throw new CustomException(UserError.USER_NOT_FOUND, appleSub);
-                }
+                // DB에서 유저 조회
+                User user = userJpaRepo.findByUserId(Math.abs((long) appleSub.hashCode()));
 
                 AuthDetails details = new AuthDetails(user);
                 return new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
@@ -59,10 +57,9 @@ public class JwtExtractor {
 
         } else {
             Claims claims = getClaims(token).getBody();
-            Long userId = Long.valueOf(claims.getSubject());
+            User user = userJpaRepo.findByUserId(Long.valueOf(claims.getSubject()));
 
-            User user = userJpaRepo.findByUserId(userId);
-            if(user == null) {
+            if (user == null) {
                 throw new CustomException(UserError.USER_NOT_FOUND, claims.getSubject());
             }
 
@@ -70,6 +67,7 @@ public class JwtExtractor {
             return new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
         }
     }
+
 
     public String extractToken(HttpServletRequest request) {
         String header = request.getHeader(jwtProperties.getHeader());
