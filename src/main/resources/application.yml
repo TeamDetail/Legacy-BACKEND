@@ -9,7 +9,7 @@ apple:
     team-id: ${APPLE_TEAM_ID}
     key-id: ${APPLE_KEY_ID}
     redirect-uri: ${APPLE_REDIRECT_URL}
-    private-key-path: classpath:key/AuthKey_${APPLE_KEY_ID}.p8
+    private-key-path: ${APPLE_PRIVATE_KEY_PATH}
 
   urls:
     auth: https://appleid.apple.com/auth/authorize
