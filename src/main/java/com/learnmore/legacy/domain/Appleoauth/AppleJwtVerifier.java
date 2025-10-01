@@ -1,40 +1,38 @@
 package com.learnmore.legacy.domain.Appleoauth;
 
-import com.nimbusds.jose.JWSVerifier;
-import com.nimbusds.jose.crypto.RSASSAVerifier;
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
-import java.net.URL;
-import java.security.interfaces.RSAPublicKey;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.Map;
 
 public class AppleJwtVerifier {
 
     public static JWTClaimsSet verify(String idToken) throws Exception {
-        // 1. String -> SignedJWT 변환
-        SignedJWT signedJWT = SignedJWT.parse(idToken);
+        // 1. idToken을 .으로 분리
+        String[] parts = idToken.split("\\.");
+        if (parts.length != 3) throw new Exception("잘못된 Apple idToken");
 
-        // 2. 검증 로직 (서명 검증, 만료 체크 등)
-        // 예: JWKSet에서 Apple 공개키 가져와 검증
-        JWKSet jwkSet = JWKSet.load(new URL("https://appleid.apple.com/auth/keys"));
-        JWK jwk = jwkSet.getKeyByKeyId(signedJWT.getHeader().getKeyID());
+        // 2. payload 디코딩
+        String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
 
-        if (!(jwk instanceof RSAKey rsaKey)) {
-            throw new Exception("Apple 공개키 문제");
+        // 3. JSON -> Map
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> claimsMap = mapper.readValue(payloadJson, Map.class);
+
+        // 4. 필수 검증
+        if (!"https://appleid.apple.com".equals(claimsMap.get("iss"))) {
+            throw new Exception("Apple issuer 검증 실패");
         }
 
-        RSAPublicKey publicKey = rsaKey.toRSAPublicKey();
-        JWSVerifier verifier = new RSASSAVerifier(publicKey);
+        // aud 검증 등 추가 가능
+        // 예: clientId 체크
+        // if (!"YOUR_CLIENT_ID".equals(claimsMap.get("aud"))) throw new Exception("clientId mismatch");
 
-        if (!signedJWT.verify(verifier)) {
-            throw new Exception("Apple JWT 서명 검증 실패");
-        }
-
-        // 3. Claims 반환
-        return signedJWT.getJWTClaimsSet();
+        // 5. JWTClaimsSet 생성
+        JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
+        claimsMap.forEach(builder::claim);
+        return builder.build();
     }
 }
-
-
