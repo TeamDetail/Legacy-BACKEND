@@ -19,6 +19,10 @@ public class UserService {
         userJpaRepo.save(user);
     }
 
+    public List<User> searchByNickname(String nickname) {
+        return userJpaRepo.findByNicknameContainingIgnoreCase(nickname);
+    }
+
     public User findByUserId(Long userId) {
         return userJpaRepo.findById(userId)
                 .orElseThrow(() -> new CustomException(UserError.USER_NOT_FOUND));

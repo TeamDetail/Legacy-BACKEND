@@ -8,6 +8,7 @@ import com.learnmore.legacy.domain.friends.model.repo.FriendJpaRepo;
 import com.learnmore.legacy.domain.friends.model.repo.FriendRequestJpaRepo;
 import com.learnmore.legacy.domain.friends.presentation.dto.response.FriendRequestRes;
 import com.learnmore.legacy.domain.friends.presentation.dto.response.FriendRes;
+import com.learnmore.legacy.domain.friends.presentation.dto.response.UserSearchRes;
 import com.learnmore.legacy.domain.friends.service.util.FriendCodeUtil;
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.service.UserService;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -72,6 +74,33 @@ public class FriendService {
             log.error("카카오톡 친구 동기화 실패", e);
             throw new CustomException(FriendsError.KAKAO_SYNC_FAILED);
         }
+    }
+
+    /**
+     * 친구 이름으로 검색
+     * */
+    @Transactional(readOnly = true)
+    public List<UserSearchRes> searchUsersByNickname(Long userId, String nickname) {
+        // 닉네임으로 사용자 검색
+        List<User> users = userService.searchByNickname(nickname);
+
+        // 현재 친구 목록 조회 (선택적 - 이미 친구인지 표시하고 싶은 경우)
+        List<Friend> currentFriends = friendJpaRepo.findByUserId(userId);
+        Set<Long> friendIds = currentFriends.stream()
+                .map(Friend::getFriendId)
+                .collect(Collectors.toSet());
+
+        return users.stream()
+                .filter(user -> !user.getUserId().equals(userId)) // 본인 제외
+                .map(user -> UserSearchRes.builder()
+                        .userId(user.getUserId())
+                        .nickname(user.getNickname())
+                        .profileImage(user.getImageUrl())
+                        .level(user.getLevel())
+                        .friendCode(FriendCodeUtil.encode(user.getUserId())) // 친구 코드 생성
+                        .isAlreadyFriend(friendIds.contains(user.getUserId()))
+                        .build())
+                .collect(Collectors.toList());
     }
 
     /**
