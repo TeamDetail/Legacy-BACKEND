@@ -1,49 +1,40 @@
 package com.learnmore.legacy.domain.Appleoauth;
 
+import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import java.net.URL;
-import java.util.List;
+import java.security.interfaces.RSAPublicKey;
 
 public class AppleJwtVerifier {
 
-    private static final String APPLE_JWKS_URL = "https://appleid.apple.com/auth/keys";
-
     public static JWTClaimsSet verify(String idToken) throws Exception {
+        // 1. String -> SignedJWT 변환
         SignedJWT signedJWT = SignedJWT.parse(idToken);
 
-        // 1. Apple 공개키(JWKS) 가져오기
-        JWKSet jwkSet = JWKSet.load(new URL(APPLE_JWKS_URL));
-        List<JWK> keys = jwkSet.getKeys();
+        // 2. 검증 로직 (서명 검증, 만료 체크 등)
+        // 예: JWKSet에서 Apple 공개키 가져와 검증
+        JWKSet jwkSet = JWKSet.load(new URL("https://appleid.apple.com/auth/keys"));
+        JWK jwk = jwkSet.getKeyByKeyId(signedJWT.getHeader().getKeyID());
 
-        // 2. 토큰의 kid와 alg 가져오기
-        String kid = signedJWT.getHeader().getKeyID();
-        String alg = signedJWT.getHeader().getAlgorithm().getName();
-
-        // 3. kid에 맞는 공개키 찾기
-        RSAKey rsaKey = keys.stream()
-                .filter(jwk -> jwk.getKeyID().equals(kid))
-                .findFirst()
-                .map(jwk -> {
-                    if (jwk instanceof RSAKey) {
-                        return (RSAKey) jwk;
-                    } else {
-                        throw new IllegalArgumentException("Apple 공개키가 RSA 타입이 아닙니다.");
-                    }
-                })
-                .orElseThrow(() -> new IllegalArgumentException("Apple 공개키를 찾을 수 없습니다."));
-
-
-        // 4. 서명 검증
-        if (!signedJWT.verify(new com.nimbusds.jose.crypto.RSASSAVerifier(rsaKey.toRSAPublicKey()))) {
-            throw new IllegalArgumentException("Apple JWT 서명 검증 실패");
+        if (!(jwk instanceof RSAKey rsaKey)) {
+            throw new Exception("Apple 공개키 문제");
         }
 
-        // 5. claim 반환
+        RSAPublicKey publicKey = rsaKey.toRSAPublicKey();
+        JWSVerifier verifier = new RSASSAVerifier(publicKey);
+
+        if (!signedJWT.verify(verifier)) {
+            throw new Exception("Apple JWT 서명 검증 실패");
+        }
+
+        // 3. Claims 반환
         return signedJWT.getJWTClaimsSet();
     }
 }
+
 
