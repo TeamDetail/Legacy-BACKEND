@@ -45,21 +45,20 @@ public class JwtExtractor {
                 String appleSub = claims.getSubject();
 
                 User user = userJpaRepo.findByUserId(Math.abs((long) appleSub.hashCode()));
+                if (user == null) {
+                    throw new CustomException(UserError.USER_NOT_FOUND, appleSub);
+                }
+
                 AuthDetails details = new AuthDetails(user);
 
                 return new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
-
             } catch (Exception e) {
                 throw new CustomException(JwtError.MALFORMED_TOKEN, "Apple JWT 처리 실패: " + e.getMessage());
             }
-
         } else {
             Claims claims = getClaims(token).getBody();
             User user = userJpaRepo.findByUserId(Long.valueOf(claims.getSubject()));
-
-            if (user == null) {
-                throw new CustomException(UserError.USER_NOT_FOUND, claims.getSubject());
-            }
+            if (user == null) throw new CustomException(UserError.USER_NOT_FOUND, claims.getSubject());
 
             AuthDetails details = new AuthDetails(user);
             return new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
