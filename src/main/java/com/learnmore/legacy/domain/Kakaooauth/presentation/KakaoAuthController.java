@@ -1,8 +1,8 @@
-package com.learnmore.legacy.domain.Kakaooauth.presentation;
+package com.learnmore.legacy.domain.kakaooauth.presentation;
 
-import com.learnmore.legacy.domain.Kakaooauth.presentation.dto.request.KakaoCodeReq;
+import com.learnmore.legacy.domain.kakaooauth.presentation.dto.request.KakaoCodeReq;
 import com.learnmore.legacy.domain.auth.presentation.dto.response.TokenRes;
-import com.learnmore.legacy.domain.Kakaooauth.service.KakaoAuthService;
+import com.learnmore.legacy.domain.kakaooauth.service.KakaoAuthService;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
