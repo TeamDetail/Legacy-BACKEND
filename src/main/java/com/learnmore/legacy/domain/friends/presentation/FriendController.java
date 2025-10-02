@@ -2,6 +2,7 @@ package com.learnmore.legacy.domain.friends.presentation;
 
 import com.learnmore.legacy.domain.friends.presentation.dto.response.FriendRequestRes;
 import com.learnmore.legacy.domain.friends.presentation.dto.response.FriendRes;
+import com.learnmore.legacy.domain.friends.presentation.dto.response.UserSearchRes;
 import com.learnmore.legacy.domain.friends.service.FriendService;
 import com.learnmore.legacy.domain.friends.service.util.FriendCodeUtil;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
@@ -9,8 +10,10 @@ import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -31,6 +34,22 @@ public class FriendController {
 
         friendService.syncKakaoFriends(userId, token);
         return BaseResponse.of("카카오톡 친구 동기화 완료");
+    }
+
+    @Operation(summary = "친구 이름으로 검색", description = "아룸울 통해 친구를 검색합니다.")
+    @GetMapping("/search")
+    public ResponseEntity<BaseResponse<List<UserSearchRes>>> searchUsers(@RequestParam String nickname) {
+
+        Long userId = userSessionHolder.get().getUserId();
+
+        if (nickname == null || nickname.trim().isEmpty()) {
+            return BaseResponse.of(Collections.emptyList());
+        }
+
+        List<UserSearchRes> searchResults = friendService.searchUsersByNickname(
+                userId, nickname.trim());
+
+        return BaseResponse.of(searchResults);
     }
 
     @Operation(summary = "친구 코드로 친구 요청 보내기", description = "친구 코드를 입력하여 해당 사용자에게 친구 요청을 보냅니다.")
