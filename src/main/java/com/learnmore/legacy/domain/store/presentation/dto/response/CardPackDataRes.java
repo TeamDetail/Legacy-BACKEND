@@ -1,6 +1,7 @@
 package com.learnmore.legacy.domain.store.presentation.dto.response;
 
 import com.learnmore.legacy.domain.store.model.Store;
+import com.learnmore.legacy.domain.store.model.enums.StoreSubType;
 import com.learnmore.legacy.domain.store.model.enums.StoreType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +17,7 @@ public class CardPackDataRes {
     private String cardpackContent;
     private Integer price;
     private StoreType storeType;
+    private StoreSubType storeSubType;
     private Long cardpackId;
 
     public static CardPackDataRes from(Store store) {
@@ -24,6 +26,7 @@ public class CardPackDataRes {
                 .cardpackContent(store.getStoreContent())
                 .price(store.getPrice())
                 .storeType(store.getStoreType())
+                .storeSubType(store.getStoreSubType())
                 .cardpackId(store.getStoreId())
                 .build();
     }
