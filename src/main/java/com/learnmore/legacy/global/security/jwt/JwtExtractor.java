@@ -105,15 +105,9 @@ public class JwtExtractor {
     }
 
     private boolean isAppleToken(String token) {
-        try {
-            // Apple id_token은 "iss" 클레임에 Apple 고정값이 들어있음
-            String[] parts = token.split("\\.");
-            String payload = new String(Base64.getUrlDecoder().decode(parts[1]));
-            return payload.contains("\"iss\":\"https://appleid.apple.com\"");
-        } catch (Exception e) {
-            return false;
-        }
+        return token.contains(".");
     }
+
 
     private Long convertSubToLong(String appleSub) {
         try {
