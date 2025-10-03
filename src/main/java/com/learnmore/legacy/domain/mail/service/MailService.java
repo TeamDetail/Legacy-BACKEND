@@ -9,6 +9,7 @@ import com.learnmore.legacy.domain.mail.model.repo.MailJpaRepo;
 import com.learnmore.legacy.domain.mail.presentation.dto.response.MailRes;
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
+import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,11 +21,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MailService {
     private final MailJpaRepo mailJpaRepo;
-    private final UserJpaRepo userJpaRepo;
     private final InventoryJpaRepo inventoryJpaRepo;
     private final InventoryHistoryJpaRepo inventoryHistoryJpaRepo;
+    private final UserSessionHolder userSessionHolder;
 
-    public List<MailRes> getAllMyMails(Long userId) {
+    public List<MailRes> getAllMyMails() {
+        Long userId =userSessionHolder.get().getUserId();
         List<Mail> mails = mailJpaRepo.findAllByUser_UserId(userId);
 
         // mailTitle 기준으로 그룹핑
@@ -38,10 +40,10 @@ public class MailService {
     }
 
     @Transactional
-    public List<MailRes> getAllMails(Long userId) {
-        User user = userJpaRepo.findByUserId(userId);
+    public List<MailRes> getAllMails() {
+        User user = userSessionHolder.get();
 
-        List<Mail> mails = mailJpaRepo.findAllByUser_UserId(userId);
+        List<Mail> mails = mailJpaRepo.findAllByUser_UserId(user.getUserId());
         if (mails.isEmpty()) {
             return Collections.emptyList();
         }

@@ -46,10 +46,14 @@ public class AchievementHistory {
     private Boolean isReceive;
 
     public void increaseProgress(int amount) {
-        this.currentRate += Math.min(this.currentRate + amount, this.goalRate);
+        this.currentRate = Math.min(this.currentRate + amount, this.goalRate);
     }
 
     public boolean isCompleted() {
         return currentRate >= goalRate;
+    }
+
+    public void updateReceive(Boolean isReceive) {
+        this.isReceive = isReceive;
     }
 }

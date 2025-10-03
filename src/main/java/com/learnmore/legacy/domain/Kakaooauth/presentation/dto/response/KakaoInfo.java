@@ -1,4 +1,4 @@
-package com.learnmore.legacy.domain.Kakaooauth.presentation.dto.response;
+package com.learnmore.legacy.domain.kakaooauth.presentation.dto.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -4,6 +4,7 @@ import com.learnmore.legacy.domain.achievement.model.AchievementHistory;
 import com.learnmore.legacy.domain.achievement.model.enums.AchievementCategory;
 import com.learnmore.legacy.domain.achievement.model.reop.AchievementHistoryJpaRepo;
 import com.learnmore.legacy.domain.achievement.presentation.dto.AwardDto;
+import com.learnmore.legacy.domain.store.model.enums.StoreType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +52,7 @@ public class AchievementHistoryService {
         return achievementHistoryJpaRepo.findAwardSums(userId);
     }
 
-    public List<AwardDto> getCompletedAchievementItems(Long userId) {
-        return achievementHistoryJpaRepo.findCompletedAchievementItems(userId);
+    public List<AwardDto> getCompletedAchievementItems(Long userId ,StoreType storeType) {
+        return achievementHistoryJpaRepo.findCompletedAchievementItemsByStoreType(userId, storeType);
     }
 }

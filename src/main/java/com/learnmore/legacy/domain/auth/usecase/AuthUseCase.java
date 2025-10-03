@@ -1,6 +1,6 @@
 package com.learnmore.legacy.domain.auth.usecase;
 
-import com.learnmore.legacy.domain.Kakaooauth.presentation.dto.request.KakaoUserReq;
+import com.learnmore.legacy.domain.kakaooauth.presentation.dto.request.KakaoUserReq;
 import com.learnmore.legacy.domain.auth.dao.RefreshTokenDao;
 import com.learnmore.legacy.domain.auth.presentation.dto.request.RefreshReq;
 import com.learnmore.legacy.domain.auth.presentation.dto.request.SingInReq;

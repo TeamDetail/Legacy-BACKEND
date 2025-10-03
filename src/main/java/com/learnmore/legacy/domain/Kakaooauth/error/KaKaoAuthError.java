@@ -1,4 +1,4 @@
-package com.learnmore.legacy.domain.Kakaooauth.error;
+package com.learnmore.legacy.domain.kakaooauth.error;
 
 
 import com.learnmore.legacy.global.exception.CustomError;

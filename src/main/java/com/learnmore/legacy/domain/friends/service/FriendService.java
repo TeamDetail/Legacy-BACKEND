@@ -1,5 +1,7 @@
 package com.learnmore.legacy.domain.friends.service;
 
+import com.learnmore.legacy.domain.achievement.model.enums.AchievementType;
+import com.learnmore.legacy.domain.achievement.service.AchievementProgressService;
 import com.learnmore.legacy.domain.friends.error.FriendsError;
 import com.learnmore.legacy.domain.friends.model.Friend;
 import com.learnmore.legacy.domain.friends.model.FriendRequest;
@@ -34,6 +36,7 @@ public class FriendService {
     private final FriendRequestJpaRepo friendRequestJpaRepo;
     private final KakaoApiService kakaoApiService;
     private final UserService userService;
+    private final AchievementProgressService  achievementProgressService;
 
     /**
      * 카카오톡 친구 자동 추가
@@ -357,6 +360,7 @@ public class FriendService {
         }
 
         friendJpaRepo.deleteAll(friendships);
+        //도전과제 친구 -1
     }
 
     /**
@@ -382,6 +386,8 @@ public class FriendService {
                 .build();
 
         friendJpaRepo.saveAll(List.of(friendship1, friendship2));
+        achievementProgressService.increaseProgress(userId1, AchievementType.FRIEND, 1);
+        achievementProgressService.increaseProgress(userId2, AchievementType.FRIEND, 1);
     }
 
     /**

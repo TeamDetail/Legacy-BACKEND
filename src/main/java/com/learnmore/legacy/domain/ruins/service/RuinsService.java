@@ -1,5 +1,7 @@
 package com.learnmore.legacy.domain.ruins.service;
 
+import com.learnmore.legacy.domain.achievement.model.enums.AchievementType;
+import com.learnmore.legacy.domain.achievement.service.AchievementProgressService;
 import com.learnmore.legacy.domain.card.error.CardError;
 import com.learnmore.legacy.domain.card.model.Card;
 import com.learnmore.legacy.domain.card.model.repo.CardHistoryJpaRepo;
@@ -15,7 +17,7 @@ import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsCommentR
 import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsDetailRes;
 import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsMapPointRes;
 import com.learnmore.legacy.domain.user.model.User;
-import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
+import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,9 +31,10 @@ import java.util.List;
 public class RuinsService {
     private final RuinsJpaRepo ruinsJpaRepo;
     private final CardJpaRepo cardJpaRepo;
-    private final UserJpaRepo userJpaRepo;
     private final CardHistoryJpaRepo cardHistoryJpaRepo;
     private final RuinsCommentJpaRepo ruinsCommentJpaRepo;
+    private final UserSessionHolder userSessionHolder;
+    private final AchievementProgressService  achievementProgressService;
 
     public List<RuinsMapPointRes> getRuinsMapPoint(BigDecimal minLat, BigDecimal maxLat, BigDecimal minLng, BigDecimal maxLng) {
         return ruinsJpaRepo.findInBounds(minLat, maxLat, minLng, maxLng).stream()
@@ -101,25 +104,28 @@ public class RuinsService {
     }
 
     @Transactional
-    public RuinsCommentRes addRuinsComment(RuinsCommentReq ruinsCommentReq, String userName, String userImgUrl, Long userId) {
+    public RuinsCommentRes addRuinsComment(RuinsCommentReq ruinsCommentReq) {
+        User user = userSessionHolder.get();
+
         Ruins ruins = ruinsJpaRepo.findById(ruinsCommentReq.ruinsId())
                 .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
-        User user = userJpaRepo.findByUserId(userId);
 
         RuinsComment comment = RuinsComment.builder()
-                .userName(userName)
-                .userImgUrl(userImgUrl)
+                .userName(user.getNickname())
+                .userImgUrl(user.getImageUrl())
                 .ruins(ruins)
                 .rating(ruinsCommentReq.rating())
                 .comment(ruinsCommentReq.comment())
                 .user(user)
                 .build();
         ruinsCommentJpaRepo.save(comment);
+        achievementProgressService.increaseProgress(user.getUserId(), AchievementType.WRITE_COMMENT, 1);
+
 
         List<RuinsComment> ruinsComment = ruinsCommentJpaRepo.findAllByRuins(ruins);
 
-        Double averageRating = ruinsComment.stream()
+        double averageRating = ruinsComment.stream()
                 .mapToDouble(RuinsComment::getRating)
                 .average()
                 .orElse(0.0);
