@@ -2,7 +2,6 @@ package com.learnmore.legacy.global.security.jwt;
 
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
-import com.learnmore.legacy.domain.user.error.UserError;
 import com.learnmore.legacy.domain.Appleoauth.AppleJwtVerifier;
 import com.learnmore.legacy.global.exception.CustomException;
 import com.learnmore.legacy.global.security.auth.AuthDetails;
@@ -23,7 +22,6 @@ import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.Base64;
 
 @Component
 @RequiredArgsConstructor
@@ -52,9 +50,6 @@ public class JwtExtractor {
                 Long appleUserId = convertSubToLong(appleSub);
 
                 User user = userJpaRepo.findByUserId(appleUserId);
-                if (user == null) {
-                    throw new CustomException(UserError.USER_NOT_FOUND, appleSub);
-                }
 
                 AuthDetails details = new AuthDetails(user);
                 return new UsernamePasswordAuthenticationToken(
@@ -105,21 +100,23 @@ public class JwtExtractor {
     }
 
     private boolean isAppleToken(String token) {
-        return token.contains(".");
+        if (token == null || token.isBlank()) return false;
+        // Apple JWT는 header.payload.signature 구조를 가지고 있음
+        String[] parts = token.split("\\.");
+        return parts.length == 3;
     }
-
 
     private Long convertSubToLong(String appleSub) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] digest = md.digest(appleSub.getBytes(StandardCharsets.UTF_8));
 
-            // 앞에서 8바이트를 long 으로 변환
+            // 앞 8바이트를 long으로 변환
             ByteBuffer buffer = ByteBuffer.wrap(digest);
-            return buffer.getLong();
+            long value = buffer.getLong();
+            return value & 0x7FFFFFFFFFFFFFFFL; // 양수로 변환
         } catch (Exception e) {
             throw new RuntimeException("Apple Sub 변환 실패", e);
         }
     }
-
 }

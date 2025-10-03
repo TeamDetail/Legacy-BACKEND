@@ -42,7 +42,7 @@ public class AppleJwtParser {
             String[] tokenParts = idToken.split("\\.");
             if (tokenParts.length < 2) throw new RuntimeException("잘못된 idToken 형식");
             Map<String, Object> header = objectMapper.readValue(
-                    new String(Base64.getUrlDecoder().decode(tokenParts[0])),
+                    Base64.getUrlDecoder().decode(tokenParts[0]),
                     Map.class
             );
             String kid = (String) header.get("kid");
@@ -71,6 +71,7 @@ public class AppleJwtParser {
             String sub = claims.getSubject();
             String email = claims.get("email", String.class);
 
+            // 5. AppleInfo 반환
             return new AppleInfo(sub, email, fullName);
 
         } catch (Exception ex) {

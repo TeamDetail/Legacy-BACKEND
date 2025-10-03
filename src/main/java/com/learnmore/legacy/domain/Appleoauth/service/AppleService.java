@@ -138,12 +138,14 @@ public class AppleService {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] digest = md.digest(appleSub.getBytes(StandardCharsets.UTF_8));
 
-            // 앞에서 8바이트를 long 으로 변환
+            // 앞 8바이트를 long으로 변환
             ByteBuffer buffer = ByteBuffer.wrap(digest);
-            return buffer.getLong();
+            long value = buffer.getLong();
+            return value & 0x7FFFFFFFFFFFFFFFL; // 양수로 변환
         } catch (Exception e) {
             throw new RuntimeException("Apple Sub 변환 실패", e);
         }
     }
+
 
 }
