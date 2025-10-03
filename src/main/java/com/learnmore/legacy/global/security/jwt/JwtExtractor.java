@@ -44,6 +44,7 @@ public class JwtExtractor {
     public Authentication getAuthentication(String token) {
         if (isAppleToken(token)) {
             try {
+                // Apple 서버에서 토큰 검증
                 JWTClaimsSet claims = AppleJwtVerifier.verify(token);
                 String appleSub = claims.getSubject(); // Apple sub (문자열)
 
@@ -56,7 +57,11 @@ public class JwtExtractor {
                 }
 
                 AuthDetails details = new AuthDetails(user);
-                return new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
+                return new UsernamePasswordAuthenticationToken(
+                        details,
+                        null,
+                        details.getAuthorities()
+                );
             } catch (Exception e) {
                 throw new CustomException(JwtError.MALFORMED_TOKEN, "Apple JWT 처리 실패: " + e.getMessage());
             }
