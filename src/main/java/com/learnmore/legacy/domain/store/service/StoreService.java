@@ -1,5 +1,7 @@
 package com.learnmore.legacy.domain.store.service;
 
+import com.learnmore.legacy.domain.achievement.model.enums.AchievementType;
+import com.learnmore.legacy.domain.achievement.service.AchievementProgressService;
 import com.learnmore.legacy.domain.inventory.model.Inventory;
 import com.learnmore.legacy.domain.inventory.model.InventoryHistory;
 import com.learnmore.legacy.domain.inventory.model.repo.InventoryHistoryJpaRepo;
@@ -13,6 +15,7 @@ import com.learnmore.legacy.domain.store.model.repo.StoreJpaRepo;
 import com.learnmore.legacy.domain.store.presentation.dto.response.CardPackRes;
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
+import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,20 +32,22 @@ public class StoreService {
     private final InventoryHistoryJpaRepo inventoryHistoryJpaRepo;
     private final UserJpaRepo userJpaRepo;
     private final InventoryJpaRepo inventoryJpaRepo;
+    private final UserSessionHolder  userSessionHolder;
+    private final AchievementProgressService achievementProgressService;
 
     @Transactional(readOnly = true)
-    public CardPackRes getCardPack(Long userId) {
-        User user = userJpaRepo.findByUserId(userId);
+    public CardPackRes getCardPack() {
+        User user = userSessionHolder.get();
 
-        List<Store> cardpacks = storeJpaRepo.findAll(); // 카드팩 리스트 가져오기
+        List<Store> cardPacks = storeJpaRepo.findAllByStoreType(StoreType.CARD_PACK); // 카드팩 리스트 가져오기
         int todayBuyCount = storeHistoryJpaRepo.getTodayBuyCount(user);
 
-        return CardPackRes.from(cardpacks, todayBuyCount);
+        return CardPackRes.from(cardPacks, todayBuyCount);
     }
 
     @Transactional
-    public Integer buyCardPack(Long userId, Long storeId) {
-        User user = userJpaRepo.findByUserId(userId);
+    public Integer buyCardPack( Long storeId) {
+        User user = userSessionHolder.get();
 
         Store store = storeJpaRepo.findById(storeId)
                 .orElseThrow(() -> new CustomException(StoreError.STORE_ERROR));
@@ -91,7 +96,7 @@ public class StoreService {
 
         // 유저 크레딧 업데이트
         userJpaRepo.save(user);
-
+        achievementProgressService.increaseProgress(user.getUserId(), AchievementType.CARD_PACK, 1);
         return store.getPrice();
     }
 }

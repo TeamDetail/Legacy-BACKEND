@@ -7,8 +7,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -90,6 +88,12 @@ public class User {
     public void updateDescription(String description) {this.description = description;}
 
     public void updateNickname(String nickname) {this.nickname = nickname;}
+
+    public void updateLevel(Integer level) {this.level += level;}
+
+    public void updateExp(Integer exp) {this.exp = exp;}
+
+    public void updateCredit(Integer credit) {this.credit = credit;}
 }
 
 

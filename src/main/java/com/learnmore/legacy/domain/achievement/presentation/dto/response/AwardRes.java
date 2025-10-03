@@ -6,8 +6,8 @@ import java.util.List;
 
 @Builder
 public record AwardRes(
-        Long awardExp,
-        Long awardCredit,
+        Integer awardExp,
+        Integer awardCredit,
         List<AwardDto> achievementAward
 ) {
 }

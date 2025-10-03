@@ -3,7 +3,6 @@ package com.learnmore.legacy.domain.mail.presentation;
 import com.learnmore.legacy.domain.mail.presentation.dto.response.MailRes;
 import com.learnmore.legacy.domain.mail.service.MailService;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
-import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,20 +15,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MailController {
     private final MailService mailService;
-    private final UserSessionHolder userSessionHolder;
 
     @GetMapping
     @Operation(summary = "우편함 조회", description = "우편함을 모두 조회합니다.")
     public ResponseEntity<BaseResponse<List<MailRes>>> getMails() {
-        Long userId = userSessionHolder.get().getUserId();
-        return BaseResponse.of(mailService.getAllMyMails(userId));
+        return BaseResponse.of(mailService.getAllMyMails());
     }
 
     @PostMapping("/allGet")
     @Operation(summary = "우편함 모두 지급", description = "우편함을 모두 지급합니다.")
     public ResponseEntity<BaseResponse<List<MailRes>>> getAllMails() {
-        Long userId = userSessionHolder.get().getUserId();
-        return BaseResponse.of(mailService.getAllMails(userId));
+        return BaseResponse.of(mailService.getAllMails());
     }
 
 }

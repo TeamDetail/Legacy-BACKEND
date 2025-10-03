@@ -1,5 +1,6 @@
 package com.learnmore.legacy.domain.user.usecase;
 
+import com.learnmore.legacy.domain.achievement.model.enums.AchievementType;
 import com.learnmore.legacy.domain.achievement.service.AchievementHistoryService;
 import com.learnmore.legacy.domain.achievement.service.AchievementProgressService;
 import com.learnmore.legacy.domain.aws.service.S3Service;
@@ -117,6 +118,8 @@ public class UserUseCase {
                     .grade(req.grade())
                     .build();
             styleService.saveStyle(newStyle);
+            achievementProgressService.increaseProgress(user.getUserId(), AchievementType.TITLE, 1);
+
         }
     }
 
