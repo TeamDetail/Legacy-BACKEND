@@ -20,6 +20,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.Base64;
 
 @Component
@@ -42,15 +45,17 @@ public class JwtExtractor {
         if (isAppleToken(token)) {
             try {
                 JWTClaimsSet claims = AppleJwtVerifier.verify(token);
-                String appleSub = claims.getSubject();
+                String appleSub = claims.getSubject(); // Apple sub (문자열)
 
-                User user = userJpaRepo.findByUserId(Math.abs((long) appleSub.hashCode()));
+                // 안전하게 Long 변환
+                Long appleUserId = convertSubToLong(appleSub);
+
+                User user = userJpaRepo.findByUserId(appleUserId);
                 if (user == null) {
                     throw new CustomException(UserError.USER_NOT_FOUND, appleSub);
                 }
 
                 AuthDetails details = new AuthDetails(user);
-
                 return new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
             } catch (Exception e) {
                 throw new CustomException(JwtError.MALFORMED_TOKEN, "Apple JWT 처리 실패: " + e.getMessage());
@@ -58,7 +63,6 @@ public class JwtExtractor {
         } else {
             Claims claims = getClaims(token).getBody();
             User user = userJpaRepo.findByUserId(Long.valueOf(claims.getSubject()));
-            if (user == null) throw new CustomException(UserError.USER_NOT_FOUND, claims.getSubject());
 
             AuthDetails details = new AuthDetails(user);
             return new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
@@ -103,6 +107,19 @@ public class JwtExtractor {
             return payload.contains("\"iss\":\"https://appleid.apple.com\"");
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    private Long convertSubToLong(String appleSub) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] digest = md.digest(appleSub.getBytes(StandardCharsets.UTF_8));
+
+            // 앞에서 8바이트를 long 으로 변환
+            ByteBuffer buffer = ByteBuffer.wrap(digest);
+            return buffer.getLong();
+        } catch (Exception e) {
+            throw new RuntimeException("Apple Sub 변환 실패", e);
         }
     }
 

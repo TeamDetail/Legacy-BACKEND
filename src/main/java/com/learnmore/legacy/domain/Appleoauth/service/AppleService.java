@@ -20,6 +20,9 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.Duration;
 
 @Service
@@ -130,7 +133,17 @@ public class AppleService {
     }
 
 
-    private Long convertSubToLong(String sub) {
-        return Math.abs((long) sub.hashCode());
+    private Long convertSubToLong(String appleSub) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] digest = md.digest(appleSub.getBytes(StandardCharsets.UTF_8));
+
+            // 앞에서 8바이트를 long 으로 변환
+            ByteBuffer buffer = ByteBuffer.wrap(digest);
+            return buffer.getLong();
+        } catch (Exception e) {
+            throw new RuntimeException("Apple Sub 변환 실패", e);
+        }
     }
+
 }
