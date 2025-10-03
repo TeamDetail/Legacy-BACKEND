@@ -26,10 +26,6 @@ public class AppleJwtVerifier {
             throw new Exception("Apple issuer 검증 실패");
         }
 
-        // aud 검증 등 추가 가능
-        // 예: clientId 체크
-        // if (!"YOUR_CLIENT_ID".equals(claimsMap.get("aud"))) throw new Exception("clientId mismatch");
-
         // 5. JWTClaimsSet 생성
         JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
         claimsMap.forEach(builder::claim);

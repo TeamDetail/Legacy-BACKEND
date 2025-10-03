@@ -20,6 +20,10 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.Duration;
 
 @Service
@@ -53,19 +57,15 @@ public class AppleService {
 
     @Transactional
     public TokenRes loginAppleApp(AppleIdTokenReq req) {
-        // 1. id_token 검증
         AppleInfo userInfo = appleJwtParser.parseIdentityToken(req.idToken(), req.name());
 
-        // 2. 로그인 시 fullName 추가
         userInfo.setFullName(req.name());
 
-        // 3. 사용자 upsert
         upsertUser(userInfo);
 
-        // 4. JWT 발급
-        return jwtProvider.generateToken(userInfo.getSub());
+        Long userId = convertSubToLong(userInfo.getSub());
+        return jwtProvider.generateToken(userId.toString());
     }
-
 
     private AppleTokenRes getAccessToken(String code) {
         return webClient.post()
@@ -130,7 +130,18 @@ public class AppleService {
     }
 
 
-    private Long convertSubToLong(String sub) {
-        return Math.abs((long) sub.hashCode());
+    private Long convertSubToLong(String appleSub) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] digest = md.digest(appleSub.getBytes(StandardCharsets.UTF_8));
+
+            BigInteger bigInt = new BigInteger(1, digest); // 1 = 양수 처리
+
+            // 앞 63비트만 사용 (Long의 양수 범위)
+            return bigInt.mod(BigInteger.valueOf(Long.MAX_VALUE)).longValue();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Apple Sub 변환 실패", e);
+        }
     }
 }
