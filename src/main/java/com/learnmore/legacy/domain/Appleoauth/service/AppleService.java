@@ -56,19 +56,15 @@ public class AppleService {
 
     @Transactional
     public TokenRes loginAppleApp(AppleIdTokenReq req) {
-        // 1. id_token 검증
         AppleInfo userInfo = appleJwtParser.parseIdentityToken(req.idToken(), req.name());
 
-        // 2. 로그인 시 fullName 추가
         userInfo.setFullName(req.name());
 
-        // 3. 사용자 upsert
         upsertUser(userInfo);
 
-        // 4. JWT 발급
-        return jwtProvider.generateToken(userInfo.getSub());
+        Long userId = convertSubToLong(userInfo.getSub());
+        return jwtProvider.generateToken(userId.toString());
     }
-
 
     private AppleTokenRes getAccessToken(String code) {
         return webClient.post()
