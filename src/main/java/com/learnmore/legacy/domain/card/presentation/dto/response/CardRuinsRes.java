@@ -19,13 +19,16 @@ public class CardRuinsRes {
     private String regionAttributeName;
 
     public static CardRuinsRes from(Card card) {
-        return CardRuinsRes.builder()
-                .cardId(card.getCardId())
-                .cardName(card.getCardName())
-                .cardImageUrl(card.getCardImageUrl())
-                .nationAttributeName(card.getNationAttribute().getAttributeName())
-                .lineAttributeName(card.getLineAttribute().getAttributeName())
-                .regionAttributeName(card.getRegionAttribute().getAttributeName())
-                .build();
+        if (card == null) {return null;}
+        else {
+            return CardRuinsRes.builder()
+                    .cardId(card.getCardId())
+                    .cardName(card.getCardName())
+                    .cardImageUrl(card.getCardImageUrl())
+                    .nationAttributeName(card.getNationAttribute().getAttributeName())
+                    .lineAttributeName(card.getLineAttribute().getAttributeName())
+                    .regionAttributeName(card.getRegionAttribute().getAttributeName())
+                    .build();
+        }
     }
 }
