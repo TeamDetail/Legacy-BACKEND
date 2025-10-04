@@ -4,7 +4,6 @@ import com.learnmore.legacy.domain.achievement.model.enums.AchievementType;
 import com.learnmore.legacy.domain.achievement.service.AchievementProgressService;
 import com.learnmore.legacy.domain.card.error.CardError;
 import com.learnmore.legacy.domain.card.model.Card;
-import com.learnmore.legacy.domain.card.model.repo.CardHistoryJpaRepo;
 import com.learnmore.legacy.domain.card.model.repo.CardJpaRepo;
 import com.learnmore.legacy.domain.card.presentation.dto.response.CardRuinsRes;
 import com.learnmore.legacy.domain.ruins.error.RuinsError;
@@ -31,7 +30,6 @@ import java.util.List;
 public class RuinsService {
     private final RuinsJpaRepo ruinsJpaRepo;
     private final CardJpaRepo cardJpaRepo;
-    private final CardHistoryJpaRepo cardHistoryJpaRepo;
     private final RuinsCommentJpaRepo ruinsCommentJpaRepo;
     private final UserSessionHolder userSessionHolder;
     private final AchievementProgressService  achievementProgressService;
@@ -48,7 +46,7 @@ public class RuinsService {
                 .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
         Card card = cardJpaRepo.findByRuins_RuinsId(ruinsId)
-                .orElseThrow(() -> new CustomException(CardError.CARD_NOT_FOUND));
+                .orElse(null);
 
 //        CardHistory history = cardHistoryJpaRepo.findTopByCard_CardId(card.getCardId())
 //                .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
