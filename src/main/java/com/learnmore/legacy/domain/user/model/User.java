@@ -85,15 +85,26 @@ public class User {
         this.credit -= price;
     }
 
-    public void updateDescription(String description) {this.description = description;}
+    public void updateDescription(String description) {
+        this.description = description;
+    }
 
-    public void updateNickname(String nickname) {this.nickname = nickname;}
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
 
-    public void updateLevel(Integer level) {this.level += level;}
+    public void updateLevel(Integer level) {
+        this.level += level;
+    }
 
-    public void updateExp(Integer exp) {this.exp = exp;}
+    public void updateExp(Integer exp) {
+        this.exp = exp;
+    }
 
-    public void updateCredit(Integer credit) {this.credit = credit;}
+    public void updateCredit(Integer credit) {
+        this.credit = credit;
+    }
+
 }
 
 
