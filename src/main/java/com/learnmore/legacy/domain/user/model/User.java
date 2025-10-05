@@ -87,7 +87,13 @@ public class User {
         this.credit -= price;
     }
 
-    public void updateDescription(String description) {this.description = description;}
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
+    public void updateNickname(String name) {
+        this.nickname = name;
+    }
 }
 
 
