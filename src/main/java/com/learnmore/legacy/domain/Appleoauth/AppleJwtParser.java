@@ -23,22 +23,36 @@ public class AppleJwtParser {
     private final WebClient webClient = WebClient.create("https://appleid.apple.com");
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public AppleInfo parseIdentityToken(String idToken) {
+    public AppleInfo parseIdentityToken(String idToken, String fullName) {
         try {
             // 1. Apple 공개키 가져오기
-            Map appleKeys = webClient.get()
+            Map<String, Object> appleKeys = webClient.get()
                     .uri("/auth/keys")
                     .retrieve()
                     .bodyToMono(Map.class)
                     .block();
 
-            if (appleKeys == null) throw new RuntimeException("Apple JWKS 조회 실패");
+            if (appleKeys == null || !appleKeys.containsKey("keys")) {
+                throw new RuntimeException("Apple JWKS 조회 실패");
+            }
 
-            // 2. 첫 번째 키 가져오기 (실무에서는 kid 비교 후 찾아야 함)
             List<Map<String, Object>> keys = (List<Map<String, Object>>) appleKeys.get("keys");
-            Map<String, Object> key = keys.getFirst();
 
-            // 3. 공개키 생성
+            // 2. JWT 헤더에서 kid 추출
+            String[] tokenParts = idToken.split("\\.");
+            if (tokenParts.length < 2) throw new RuntimeException("잘못된 idToken 형식");
+            Map<String, Object> header = objectMapper.readValue(
+                    Base64.getUrlDecoder().decode(tokenParts[0]),
+                    Map.class
+            );
+            String kid = (String) header.get("kid");
+
+            // 3. kid에 맞는 공개키 선택
+            Map<String, Object> key = keys.stream()
+                    .filter(k -> kid.equals(k.get("kid")))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Apple 공개키 없음"));
+
             String n = (String) key.get("n");
             String e = (String) key.get("e");
 
@@ -54,12 +68,11 @@ public class AppleJwtParser {
                     .parseClaimsJws(idToken)
                     .getBody();
 
-            String sub = claims.getSubject(); // Apple 고유 ID
+            String sub = claims.getSubject();
             String email = claims.get("email", String.class);
 
-            // fullName은 Apple 최초 로그인 시만 제공, JWT에는 없음
-            // 필요하면 클라이언트에서 전달받아 AppleInfo에 세팅
-            return new AppleInfo(sub, email, null);
+            // 5. AppleInfo 반환
+            return new AppleInfo(sub, email, fullName);
 
         } catch (Exception ex) {
             throw new RuntimeException("Apple JWT 파싱 실패: " + ex.getMessage(), ex);

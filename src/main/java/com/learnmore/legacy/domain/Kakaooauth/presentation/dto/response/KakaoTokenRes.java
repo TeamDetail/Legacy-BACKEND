@@ -1,4 +1,4 @@
-package com.learnmore.legacy.domain.Kakaooauth.presentation.dto.response;
+package com.learnmore.legacy.domain.kakaooauth.presentation.dto.response;
 
 public record KakaoTokenRes(
         String access_token,

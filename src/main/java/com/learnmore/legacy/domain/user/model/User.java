@@ -7,8 +7,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -25,7 +23,7 @@ public class User {
     @Column(length = 100)
     private String nickname;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description")
     private String description;
 
     @Column(nullable = false)
@@ -91,9 +89,22 @@ public class User {
         this.description = description;
     }
 
-    public void updateNickname(String name) {
-        this.nickname = name;
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
     }
+
+    public void updateLevel(Integer level) {
+        this.level += level;
+    }
+
+    public void updateExp(Integer exp) {
+        this.exp = exp;
+    }
+
+    public void updateCredit(Integer credit) {
+        this.credit = credit;
+    }
+
 }
 
 

@@ -76,6 +76,8 @@ public class SecurityConfig {
                         .requestMatchers("/mail/**").hasAnyRole("USER", "ADMIN")
                         //kakao-auth
                         .requestMatchers("/kakao/**").permitAll()
+                        //apple-auth
+                        .requestMatchers("/apple/**").permitAll()
                         //inventory
                         .requestMatchers("/inventory/**").hasAnyRole("USER", "ADMIN")
                         //course

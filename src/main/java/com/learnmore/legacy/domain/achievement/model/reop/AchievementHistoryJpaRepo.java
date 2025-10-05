@@ -4,6 +4,7 @@ import com.learnmore.legacy.domain.achievement.model.Achievement;
 import com.learnmore.legacy.domain.achievement.model.AchievementHistory;
 import com.learnmore.legacy.domain.achievement.model.enums.AchievementCategory;
 import com.learnmore.legacy.domain.achievement.presentation.dto.AwardDto;
+import com.learnmore.legacy.domain.store.model.enums.StoreType;
 import com.learnmore.legacy.domain.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -38,7 +39,8 @@ public interface AchievementHistoryJpaRepo extends JpaRepository<AchievementHist
             s.storeType,
             s.storeName,
             s.storeContent,
-            SUM(ast.itemCount)
+            SUM(ast.itemCount),
+            s.styleId
         )
         FROM AchievementHistory ah
         JOIN ah.achievement a
@@ -46,9 +48,14 @@ public interface AchievementHistoryJpaRepo extends JpaRepository<AchievementHist
         JOIN ast.store s
         WHERE ah.user.userId = :userId
           AND ah.currentRate = ah.goalRate
+          AND ah.isReceive = false
+          AND s.storeType = :storeType
         GROUP BY s.storeId, s.storeType, s.storeName, s.storeContent
     """)
-    List<AwardDto> findCompletedAchievementItems(@Param("userId") Long userId);
+    List<AwardDto> findCompletedAchievementItemsByStoreType(
+            @Param("userId") Long userId,
+            @Param("storeType") StoreType storeType
+    );
 
 
 
@@ -58,7 +65,17 @@ public interface AchievementHistoryJpaRepo extends JpaRepository<AchievementHist
         JOIN ah.achievement a
         WHERE ah.user.userId = :userId
           AND ah.currentRate = ah.goalRate
+          AND ah.isReceive = false
     """)
     Object[] findAwardSums(@Param("userId") Long userId);
 
+
+    @Query("""
+    SELECT ah
+    FROM AchievementHistory ah
+    WHERE ah.user.userId = :userId
+      AND ah.currentRate = ah.goalRate
+      AND ah.isReceive = false
+""")
+    List<AchievementHistory> findUnreceivedHistories(@Param("userId") Long userId);
 }

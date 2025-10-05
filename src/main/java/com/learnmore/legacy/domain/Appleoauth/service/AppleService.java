@@ -20,6 +20,10 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.Duration;
 
 @Service
@@ -40,7 +44,9 @@ public class AppleService {
         AppleTokenRes token = getAccessToken(req.code());
 
         // id_token 검증 & 유저 정보 추출
-        AppleInfo userInfo = appleJwtParser.parseIdentityToken(token.getIdToken());
+        AppleInfo userInfo = appleJwtParser.parseIdentityToken(token.getIdToken(), req.name());
+
+        userInfo.setFullName(req.name());
 
         // 사용자 upsert
         upsertUser(userInfo);
@@ -51,14 +57,14 @@ public class AppleService {
 
     @Transactional
     public TokenRes loginAppleApp(AppleIdTokenReq req) {
-        // id_token 검증
-        AppleInfo userInfo = appleJwtParser.parseIdentityToken(req.idToken());
+        AppleInfo userInfo = appleJwtParser.parseIdentityToken(req.idToken(), req.name());
 
-        // 사용자 upsert
+        userInfo.setFullName(req.name());
+
         upsertUser(userInfo);
 
-        // JWT 발급
-        return jwtProvider.generateToken(userInfo.getSub());
+        Long userId = convertSubToLong(userInfo.getSub());
+        return jwtProvider.generateToken(userId.toString());
     }
 
     private AppleTokenRes getAccessToken(String code) {
@@ -89,8 +95,13 @@ public class AppleService {
     }
 
     private void saveUser(AppleInfo appleUser) {
+        Long userId = convertSubToLong(appleUser.getSub());
+        String nickname = appleUser.getFullName() != null ? appleUser.getFullName() : "테스트";
+
         User user = User.builder()
-                .nickname(appleUser.getFullName())
+                .userId(userId)
+                .nickname(nickname)
+                .description("")
                 .level(1)
                 .exp(0)
                 .credit(0)
@@ -103,18 +114,34 @@ public class AppleService {
                 .ruinsBlocks(0)
                 .maxFloor(0)
                 .maxScore(0)
-                // 애플에서 제공안해서 기본값으로 설정
                 .imageUrl("http://img1.kakaocdn.net/thumb/R640x640.q70/?fname=http://t1.kakaocdn.net/account_images/default_profile.jpeg")
                 .build();
         userService.saveUser(user);
     }
 
+
     private void updateUser(AppleInfo appleUser) {
-        User user = userService.findByUserId(Long.valueOf(appleUser.getSub()));
+        Long userId = convertSubToLong(appleUser.getSub());
+        User user = userService.findByUserId(userId);
+        if (appleUser.getFullName() != null) {
+            user.updateNickname(appleUser.getFullName());
+        }
         userService.saveUser(user);
     }
 
-    private Long convertSubToLong(String sub) {
-        return Math.abs((long) sub.hashCode());
+
+    private Long convertSubToLong(String appleSub) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] digest = md.digest(appleSub.getBytes(StandardCharsets.UTF_8));
+
+            BigInteger bigInt = new BigInteger(1, digest); // 1 = 양수 처리
+
+            // 앞 63비트만 사용 (Long의 양수 범위)
+            return bigInt.mod(BigInteger.valueOf(Long.MAX_VALUE)).longValue();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Apple Sub 변환 실패", e);
+        }
     }
 }

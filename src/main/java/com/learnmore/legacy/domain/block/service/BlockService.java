@@ -1,5 +1,7 @@
 package com.learnmore.legacy.domain.block.service;
 
+import com.learnmore.legacy.domain.achievement.model.enums.AchievementType;
+import com.learnmore.legacy.domain.achievement.service.AchievementProgressService;
 import com.learnmore.legacy.domain.block.error.BlockError;
 import com.learnmore.legacy.domain.block.model.Block;
 import com.learnmore.legacy.domain.block.model.BlockHistory;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 public class BlockService {
     private final BlockJpaRepo blockJpaRepo;
     private final BlockHistoryJpaRepo blockHistoryJpaRepo;
+    private final AchievementProgressService  achievementProgressService;
 
     public BlockRes addBlock(BlockAddReq request, Long userId) {
         List<Block> existingBlocks = blockJpaRepo.findAllByLatitudeAndLongitude(
@@ -47,7 +50,7 @@ public class BlockService {
                 .build();
 
         blockHistoryJpaRepo.save(blockHistory);
-
+        achievementProgressService.increaseProgress(userId, AchievementType.BLOCKS, 1);
         return BlockRes.from(savedBlock);
     }
 
@@ -82,6 +85,7 @@ public class BlockService {
 
         blockJpaRepo.save(block);
         blockHistoryJpaRepo.save(history);
+        achievementProgressService.increaseProgress(userId, AchievementType.RUINS, 1);
     }
 
 }

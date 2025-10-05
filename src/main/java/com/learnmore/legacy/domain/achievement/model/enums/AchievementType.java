@@ -17,5 +17,6 @@ public enum AchievementType {
     TITLE,
     FRIEND,
     PRESENT,
-    SEQUENCE_PRESENT
+    SEQUENCE_PRESENT,
+    WRITE_COMMENT
 }

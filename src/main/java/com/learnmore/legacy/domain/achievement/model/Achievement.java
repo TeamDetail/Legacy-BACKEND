@@ -41,6 +41,7 @@ public class Achievement {
     @Column(name = "goal_rate", nullable = false)
     private Integer goalRate;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "grade")
     private AchievementGrade grade;
 

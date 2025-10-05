@@ -5,16 +5,28 @@ import com.learnmore.legacy.domain.achievement.model.Achievement;
 import com.learnmore.legacy.domain.achievement.model.AchievementHistory;
 import com.learnmore.legacy.domain.achievement.model.AchievementStore;
 import com.learnmore.legacy.domain.achievement.model.enums.AchievementCategory;
+import com.learnmore.legacy.domain.achievement.model.enums.AchievementType;
+import com.learnmore.legacy.domain.achievement.model.reop.AchievementHistoryJpaRepo;
 import com.learnmore.legacy.domain.achievement.presentation.dto.AwardDto;
 import com.learnmore.legacy.domain.achievement.presentation.dto.request.AchievementPostReq;
 import com.learnmore.legacy.domain.achievement.presentation.dto.response.AchievementRes;
 import com.learnmore.legacy.domain.achievement.presentation.dto.response.AwardRes;
 import com.learnmore.legacy.domain.achievement.service.AchievementHistoryService;
+import com.learnmore.legacy.domain.achievement.service.AchievementProgressService;
 import com.learnmore.legacy.domain.achievement.service.AchievementService;
 import com.learnmore.legacy.domain.achievement.service.AchievementStoreService;
+import com.learnmore.legacy.domain.inventory.model.Inventory;
+import com.learnmore.legacy.domain.inventory.model.InventoryHistory;
+import com.learnmore.legacy.domain.inventory.model.repo.InventoryHistoryJpaRepo;
+import com.learnmore.legacy.domain.inventory.model.repo.InventoryJpaRepo;
+import com.learnmore.legacy.domain.store.error.StoreError;
 import com.learnmore.legacy.domain.store.model.Store;
+import com.learnmore.legacy.domain.store.model.enums.StoreType;
 import com.learnmore.legacy.domain.store.model.repo.StoreJpaRepo;
+import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.service.UserService;
+import com.learnmore.legacy.domain.user.service.util.UserUtil;
+import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -22,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -32,6 +45,11 @@ public class AchievementUseCase {
     private final AchievementStoreService achievementStoreService;
     private final AchievementHistoryService achievementHistoryService;
     private final UserService userService;
+    private final UserSessionHolder userSessionHolder;
+    private final InventoryJpaRepo inventoryJpaRepo;
+    private final InventoryHistoryJpaRepo inventoryHistoryJpaRepo;
+    private final AchievementHistoryJpaRepo  achievementHistoryJpaRepo;
+    private final AchievementProgressService  achievementProgressService;
 
     @Transactional
     public Achievement postAchievement(AchievementPostReq req) {
@@ -77,7 +95,8 @@ public class AchievementUseCase {
     }
 
     @Transactional(readOnly = true)
-    public List<AchievementRes> getAchievementsWithHistory(Long userId, AchievementCategory type) {
+    public List<AchievementRes> getAchievementsWithHistory( AchievementCategory type) {
+        Long userId = userSessionHolder.get().getUserId();
         // 타입이 null이면 전체 조회, 아니면 해당 타입만 조회
         List<Achievement> achievements = (type == null)
                 ? achievementService.getAllAchievements()
@@ -141,12 +160,22 @@ public class AchievementUseCase {
     }
 
     @Transactional
-    public AwardRes getUserRewards(Long userId) {
-        Object[] sums = achievementHistoryService.getAwardSums(userId);
-        Long awardExp = sums[0] == null ? 0L : ((Number) sums[0]).longValue();
-        Long awardCredit = sums[1] == null ? 0L : ((Number) sums[1]).longValue();
+    public AwardRes getUserRewards() {
+        User user = userSessionHolder.get();
+        Object[] sums = achievementHistoryService.getAwardSums(user.getUserId());
+        int awardExp = sums[0] == null ? 0 : ((Number) sums[0]).intValue();
+        Integer awardCredit = sums[1] == null ? 0 : ((Number) sums[1]).intValue();
 
-        List<AwardDto> items = achievementHistoryService.getCompletedAchievementItems(userId);
+        List<AwardDto> items = achievementHistoryService.getCompletedAchievementItems(user.getUserId(),StoreType.CARD_PACK);
+        List<AwardDto> styles = achievementHistoryService.getCompletedAchievementItems(user.getUserId(),StoreType.STYLE);//todo 이거 스타일이랑 유저 테이블 연관테이블로 만들고
+        //스타일은 받자마자 유저한테 등록되는 식으로 그리고 디비에 데이터 수정해야됨 등급 이넘 바꾸고 수정하고 exp 수정
+
+
+        saveRewards(items);
+        markCompletedItemsAsReceived(user.getUserId());
+        user.updateCredit(awardCredit);
+        achievementProgressService.increaseProgress(user.getUserId(), AchievementType.WRITE_COMMENT, UserUtil.levelUp(user,awardExp));
+        userService.saveUser(user);
 
         return AwardRes.builder()
                 .awardExp(awardExp)
@@ -155,4 +184,47 @@ public class AchievementUseCase {
                 .build();
     }
 
+    private void saveRewards(List<AwardDto> rewards) {
+        User user = userSessionHolder.get();
+
+        for (AwardDto reward : rewards) {
+            //조회
+            StoreType storeType = StoreType.valueOf(reward.getItemType());
+            Optional<Inventory> optionalInventory =
+                    inventoryJpaRepo.findByItemTypeAndItemName(storeType, reward.getItemName());
+
+            Inventory inventory;
+            if (optionalInventory.isPresent()) {
+                inventory = optionalInventory.get();
+            } else {
+                inventory = Inventory.builder()
+                        .itemId(reward.getItemId())
+                        .itemType(storeType)
+                        .itemName(reward.getItemName())
+                        .itemDescription(reward.getItemDescription())
+                        .build();
+                inventoryJpaRepo.save(inventory);
+            }
+
+            // 인벤 저장
+            InventoryHistory history = InventoryHistory.builder()
+                    .user(user)
+                    .inventory(inventory)
+                    .store(storeJpaRepo.findById(reward.getItemId()).
+                            orElseThrow(() -> new CustomException(StoreError.NOT_ENOUGH_ITEM)))
+                    .itemCount(reward.getItemCount().intValue())
+                    .build();
+
+            inventoryHistoryJpaRepo.save(history);
+        }
+    }
+
+    private void markCompletedItemsAsReceived(Long userId) {
+        List<AchievementHistory> histories =
+                achievementHistoryJpaRepo.findUnreceivedHistories(userId);
+
+        for (AchievementHistory history : histories) {
+            history.updateReceive(true);
+        }
+    }
 }

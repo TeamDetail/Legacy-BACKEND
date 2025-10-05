@@ -1,8 +1,8 @@
-package com.learnmore.legacy.domain.Kakaooauth.service;
+package com.learnmore.legacy.domain.kakaooauth.service;
 
-import com.learnmore.legacy.domain.Kakaooauth.error.KaKaoAuthError;
-import com.learnmore.legacy.domain.Kakaooauth.presentation.dto.response.KakaoInfo;
-import com.learnmore.legacy.domain.Kakaooauth.presentation.dto.response.KakaoTokenRes;
+import com.learnmore.legacy.domain.kakaooauth.error.KaKaoAuthError;
+import com.learnmore.legacy.domain.kakaooauth.presentation.dto.response.KakaoInfo;
+import com.learnmore.legacy.domain.kakaooauth.presentation.dto.response.KakaoTokenRes;
 import com.learnmore.legacy.domain.auth.presentation.dto.response.TokenRes;
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.model.enums.UserRole;
