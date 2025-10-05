@@ -20,7 +20,7 @@ public class GoogleController {
 
     private final GoogleService googleService;
 
-    @PostMapping("/code")
+    @PostMapping("/web")
     @Operation(summary = "웹 Google 로그인", description = "authorization code로 로그인")
     public ResponseEntity<BaseResponse<TokenRes>> webLogin(
             @RequestBody GoogleCodeReq request
@@ -29,12 +29,21 @@ public class GoogleController {
         return BaseResponse.of(token);
     }
 
-    @PostMapping("/idToken")
-    @Operation(summary = "앱 Google 로그인", description = "ID 토큰으로 로그인")
+    @PostMapping("/android")
+    @Operation(summary = "Android Google 로그인", description = "ID 토큰으로 로그인")
     public ResponseEntity<BaseResponse<TokenRes>> androidLogin(
             @RequestBody GoogleIdTokenReq request
     ) {
-        TokenRes token = googleService.loginWithApp(request);
+        TokenRes token = googleService.loginWithAndroid(request);
+        return BaseResponse.of(token);
+    }
+
+    @PostMapping("/ios")
+    @Operation(summary = "iOS Google 로그인", description = "ID 토큰으로 로그인")
+    public ResponseEntity<BaseResponse<TokenRes>> iosLogin(
+            @RequestBody GoogleIdTokenReq request
+    ) {
+        TokenRes token = googleService.loginWithIos(request);
         return BaseResponse.of(token);
     }
 }

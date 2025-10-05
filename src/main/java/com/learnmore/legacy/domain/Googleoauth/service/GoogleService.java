@@ -55,11 +55,24 @@ public class GoogleService {
     }
 
     @Transactional
-    public TokenRes loginWithApp(GoogleIdTokenReq request) {
+    public TokenRes loginWithAndroid(GoogleIdTokenReq request) {
         // 1. ID 토큰 검증
         GoogleUserInfo userInfo = tokenVerifier.verifyIdToken(
                 request.idToken(),
                 googleProperties.getAndroidClientId()
+        );
+
+        // 2. 사용자 처리 및 JWT 발급
+        Long userId = processUser(userInfo);
+        return jwtProvider.generateToken(userId.toString());
+    }
+
+    @Transactional
+    public TokenRes loginWithIos(GoogleIdTokenReq request) {
+        // 1. ID 토큰 검증
+        GoogleUserInfo userInfo = tokenVerifier.verifyIdToken(
+                request.idToken(),
+                googleProperties.getIosClientId()
         );
 
         // 2. 사용자 처리 및 JWT 발급
