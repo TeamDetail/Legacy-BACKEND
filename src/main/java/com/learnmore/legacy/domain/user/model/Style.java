@@ -19,14 +19,9 @@ public class Style {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "style_name", length = 30, nullable = false)
-    private String styleName;
-
-    @Column(name = "style_content", length = 100, nullable = false)
-    private String styleContent;
-
-    @Column(name = "grade", nullable = false)
-    private Integer grade;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "style", nullable = false)
+    private UserStyle style;
 
     @Column(name = "is_equip", nullable = false)
     private Boolean isEquip;

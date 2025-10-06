@@ -3,6 +3,7 @@ package com.learnmore.legacy.domain.user.service;
 import com.learnmore.legacy.domain.user.error.StyleError;
 import com.learnmore.legacy.domain.user.model.Style;
 import com.learnmore.legacy.domain.user.model.User;
+import com.learnmore.legacy.domain.user.model.UserStyle;
 import com.learnmore.legacy.domain.user.model.repo.StyleJpaRepo;
 import com.learnmore.legacy.domain.user.presentation.dto.response.UserStyleRes;
 import com.learnmore.legacy.global.exception.CustomException;
@@ -44,12 +45,13 @@ public class StyleService {
         return styleJpaRepo.existsByUserAndIsEquipTrue(user);
     }
 
-    public boolean existsStyleByUserAndName (User user,String name) {
-        return styleJpaRepo.existsByUserAndStyleName(user,name);
-    }
-
     public List<Style> findAllEquippedStyles(List<User> users) {
         return styleJpaRepo.findAllByUserInAndIsEquipTrue(users);
+    }
+
+    public void existsStyleByUserAndStyle(User user, UserStyle style) {
+        if (!styleJpaRepo.existsByUserAndStyle(user,style))
+            throw new CustomException(StyleError.STYLE_DUPLICATED);
     }
 
     public Integer countStyles(User user) {
