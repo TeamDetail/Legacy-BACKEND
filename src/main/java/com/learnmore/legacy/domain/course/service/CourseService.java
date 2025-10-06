@@ -15,7 +15,7 @@ import com.learnmore.legacy.domain.ruins.error.RuinsError;
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import com.learnmore.legacy.domain.ruins.model.repo.RuinsJpaRepo;
 import com.learnmore.legacy.domain.user.model.User;
-import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
+import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import com.learnmore.legacy.global.exception.CustomException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ public class CourseService {
     private final CourseClearHistoryJpaRepo courseClearHistoryJpaRepo;
     private final RuinsJpaRepo ruinsJpaRepo;
     private final CardJpaRepo cardJpaRepo;
-    private final UserJpaRepo userJpaRepo;
+    private final UserSessionHolder userSessionHolder;
 
 
     public Integer getClearCourse(Long userId) {
@@ -47,7 +47,8 @@ public class CourseService {
         return courseJpaRepo.countByUser_UserId(userId);
     }
 
-    public List<CourseRes> getAllCourse(Long userId) {
+    public List<CourseRes> getAllCourse() {
+        Long userId = userSessionHolder.get().getUserId();
         return courseJpaRepo.findAll().stream()
                 .map(course -> {
                     Long courseId = course.getCourseId();
@@ -88,7 +89,9 @@ public class CourseService {
                 .collect(Collectors.toList());
     }
 
-    public List<CourseRes> getAllPopularCourse(Long userId) {
+    public List<CourseRes> getAllPopularCourse() {
+        Long userId = userSessionHolder.get().getUserId();
+
         return courseJpaRepo.findTop10ByOrderByHeartCountDesc().stream()
                 .map(course -> {
                     Long courseId = course.getCourseId();
@@ -128,7 +131,8 @@ public class CourseService {
                 .collect(Collectors.toList());
     }
 
-    public List<CourseRes> getAllRecentCourse(Long userId) {
+    public List<CourseRes> getAllRecentCourse() {
+        Long userId = userSessionHolder.get().getUserId();
         return courseJpaRepo.findTop10ByOrderByCreateAtDesc().stream()
                 .map(course -> {
                     Long courseId = course.getCourseId();
@@ -169,7 +173,10 @@ public class CourseService {
                 .collect(Collectors.toList());
     }
 
-    public List<CourseRes> getAllEventCourse(Long userId) {
+    public List<CourseRes> getAllEventCourse() {
+        Long userId = userSessionHolder.get().getUserId();
+
+
         return courseJpaRepo.findTop10ByEventIdNotNullOrderByCreateAtDesc().stream()
                 .map(course -> {
                     Long courseId = course.getCourseId();
@@ -199,9 +206,9 @@ public class CourseService {
     }
 
     @Transactional
-    public void toggleHeart(CourseIdReq courseIdReq, Long userId) {
+    public void toggleHeart(CourseIdReq courseIdReq) {
         Long courseId = courseIdReq.getCourseId();
-        User user = userJpaRepo.findByUserId(userId);
+        User user = userSessionHolder.get();
 
         Course course = courseJpaRepo.findById(courseId)
                 .orElseThrow(() -> new CustomException(CourseError.COURSE_ERROR));
@@ -225,8 +232,8 @@ public class CourseService {
     }
 
     @Transactional
-    public CourseRes addCourse(CourseReq courseReq, Long userId) {
-        User user = userJpaRepo.findByUserId(userId);
+    public CourseRes addCourse(CourseReq courseReq) {
+        User user = userSessionHolder.get();
 
         Course course = Course.builder()
                 .courseName(courseReq.getName())
@@ -271,7 +278,8 @@ public class CourseService {
         return CourseRes.from(course, courseReq.getTag(), false,  false, thumbnail, 0L, 0L);
     }
 
-    public CourseRuinsRes getRuinsAndClearRuins(Long courseId, Long userId) {
+    public CourseRuinsRes getRuinsAndClearRuins(Long courseId) {
+        Long userId = userSessionHolder.get().getUserId();
         Course course = courseJpaRepo.findById(courseId)
                 .orElseThrow(() -> new CustomException(CourseError.COURSE_ERROR));
 
@@ -325,7 +333,8 @@ public class CourseService {
         );
     }
 
-    public List<CourseRes> getCourseByCourseName(String courseName, Long userId) {
+    public List<CourseRes> getCourseByCourseName(String courseName) {
+        Long userId = userSessionHolder.get().getUserId();
         List<Course> courseList = courseJpaRepo.searchByName(courseName);
 
         if (courseList.isEmpty()) {

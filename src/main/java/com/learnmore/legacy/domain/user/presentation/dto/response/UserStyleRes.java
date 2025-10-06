@@ -13,10 +13,10 @@ public record UserStyleRes(
             return new UserStyleRes( "", "",1, 0L);
         }
         return new UserStyleRes(
-                style.getStyleName(),
-                style.getStyleContent(),
-                style.getGrade(),
-                style.getStyleId()
+                style.getStyle().getStyleName(),
+                style.getStyle().getStyleContent(),
+                style.getStyle().getGrade(),
+                style.getStyle().getUserStyleId()
         );
     }
 }

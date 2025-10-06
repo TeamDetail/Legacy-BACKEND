@@ -12,9 +12,9 @@ public record UserStyleRes(
             return new UserStyleRes( "", "",0L);
         }
         return new UserStyleRes(
-                style.getStyleName(),
-                style.getStyleContent(),
-                style.getStyleId()
+                style.getStyle().getStyleName(),
+                style.getStyle().getStyleContent(),
+                style.getStyle().getUserStyleId()
         );
     }
 }

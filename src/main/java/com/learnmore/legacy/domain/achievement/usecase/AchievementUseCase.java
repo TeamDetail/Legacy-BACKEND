@@ -26,6 +26,7 @@ import com.learnmore.legacy.domain.store.model.repo.StoreJpaRepo;
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.service.UserService;
 import com.learnmore.legacy.domain.user.service.util.UserUtil;
+import com.learnmore.legacy.domain.user.usecase.UserUseCase;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +51,7 @@ public class AchievementUseCase {
     private final InventoryHistoryJpaRepo inventoryHistoryJpaRepo;
     private final AchievementHistoryJpaRepo  achievementHistoryJpaRepo;
     private final AchievementProgressService  achievementProgressService;
+    private final UserUseCase userUseCase;
 
     @Transactional
     public Achievement postAchievement(AchievementPostReq req) {
@@ -167,10 +169,11 @@ public class AchievementUseCase {
         Integer awardCredit = sums[1] == null ? 0 : ((Number) sums[1]).intValue();
 
         List<AwardDto> items = achievementHistoryService.getCompletedAchievementItems(user.getUserId(),StoreType.CARD_PACK);
-        List<AwardDto> styles = achievementHistoryService.getCompletedAchievementItems(user.getUserId(),StoreType.STYLE);//todo 이거 스타일이랑 유저 테이블 연관테이블로 만들고
-        //스타일은 받자마자 유저한테 등록되는 식으로 그리고 디비에 데이터 수정해야됨 등급 이넘 바꾸고 수정하고 exp 수정
+        List<AwardDto> styles = achievementHistoryService.getCompletedAchievementItems(user.getUserId(),StoreType.STYLE);
 
+        //스타일은 받자마자 유저한테 등록되는 식으로 그리고 디비에 데이터 수정해야됨 등급 이넘 바꾸고 수정하고 exp 수정 도전과제 보상 테이블도 수동입력 해야됨
 
+        saveStyles(styles,user);
         saveRewards(items);
         markCompletedItemsAsReceived(user.getUserId());
         user.updateCredit(awardCredit);
@@ -182,6 +185,12 @@ public class AchievementUseCase {
                 .awardCredit(awardCredit)
                 .achievementAward(items)
                 .build();
+    }
+
+    private void saveStyles(List<AwardDto> items ,User user) {
+        for (AwardDto awardDto : items) {
+            userUseCase.saveStyles(awardDto.getStyleId(),user);
+        }
     }
 
     private void saveRewards(List<AwardDto> rewards) {

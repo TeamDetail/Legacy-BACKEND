@@ -2,7 +2,6 @@ package com.learnmore.legacy.domain.store.model;
 
 import com.learnmore.legacy.domain.store.model.enums.StoreSubType;
 import com.learnmore.legacy.domain.store.model.enums.StoreType;
-import com.learnmore.legacy.domain.user.model.Style;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,7 +34,6 @@ public class Store {
     @Column(name = "store_type", nullable = false)
     private StoreType storeType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "style_id")
-    private Style styleId;
+    @Column(name = "style_id")
+    private Long styleId;
 }

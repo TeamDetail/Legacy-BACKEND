@@ -13,7 +13,9 @@ import com.learnmore.legacy.domain.ruins.service.RuinsService;
 import com.learnmore.legacy.domain.user.error.StyleError;
 import com.learnmore.legacy.domain.user.model.Style;
 import com.learnmore.legacy.domain.user.model.User;
+import com.learnmore.legacy.domain.user.model.UserStyle;
 import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
+import com.learnmore.legacy.domain.user.model.repo.UserStyleJpaRepo;
 import com.learnmore.legacy.domain.user.presentation.dto.request.DescriptionReq;
 import com.learnmore.legacy.domain.user.presentation.dto.request.ProfileImageReq;
 import com.learnmore.legacy.domain.user.presentation.dto.request.StyleIdReq;
@@ -46,6 +48,7 @@ public class UserUseCase {
     private final UserJpaRepo userJpaRepo;
     private final AchievementProgressService achievementProgressService;
     private final S3Service s3Service;
+    private final UserStyleJpaRepo userStyleJpaRepo;
 
     @Transactional(readOnly = true)
     public UserRes getMe(){
@@ -63,8 +66,7 @@ public class UserUseCase {
 
     @Transactional(readOnly = true)
     public List<UserStyleRes> getUserStyles() {
-        User user = userSessionHolder.get();
-        return styleService.findAllStyles(user);
+        return styleService.findAllStyles(userSessionHolder.get());
     }
 
     @Transactional
@@ -107,26 +109,29 @@ public class UserUseCase {
     @Transactional
     public void addStyle(UserStyleReq req) {
         User user = userSessionHolder.get();
-        if (styleService.existsStyleByUserAndName(user, req.name())) {
-            throw new CustomException(StyleError.STYLE_DUPLICATED);
-        }else {
-            Style newStyle = Style.builder()
-                    .user(user)
-                    .styleName(req.name())
-                    .styleContent(req.content())
-                    .isEquip(false)
-                    .grade(req.grade())
-                    .build();
-            styleService.saveStyle(newStyle);
-            achievementProgressService.increaseProgress(user.getUserId(), AchievementType.TITLE, 1);
+        saveStyles(req.styleId(), user);
+    }
 
-        }
+    public void saveStyles(long styleId , User user){
+        UserStyle style = userStyleJpaRepo.findById(styleId)
+                .orElseThrow(()-> new CustomException(StyleError.STYLE_NOT_FOUND));
+
+        styleService.existsStyleByUserAndStyle(user,style);
+
+        Style newStyle = Style.builder()
+                .user(user)
+                .style(style)
+                .isEquip(false).build();
+
+        styleService.saveStyle(newStyle);
+
+        achievementProgressService.increaseProgress(user.getUserId(), AchievementType.TITLE, 1);
     }
 
     @Transactional
     public S3UploadRes uploadUrl(String fileName) {
         String key = "profileImage/"+fileName;
-        String imageUrl = "https://learnmore-legacy-game.s3.ap-northeast-2.amazonaws.com/profileImage/"+fileName;
+        String imageUrl = "https://learnmore-legacy-game.s3.ap-northeast-2.amazonaws.com/profileImage/"+fileName;//todo 맘에 안듬
         return new S3UploadRes(s3Service.generateUploadUrl(key),imageUrl);
     }
 
