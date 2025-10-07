@@ -44,9 +44,7 @@ public class AppleService {
         AppleTokenRes token = getAccessToken(req.code());
 
         // id_token 검증 & 유저 정보 추출
-        AppleInfo userInfo = appleJwtParser.parseIdentityToken(token.getIdToken(), req.name());
-
-        userInfo.setFullName(req.name());
+        AppleInfo userInfo = appleJwtParser.parseIdentityToken(token.getIdToken(), null);
 
         // 사용자 upsert
         upsertUser(userInfo);
@@ -57,14 +55,19 @@ public class AppleService {
 
     @Transactional
     public TokenRes loginAppleApp(AppleIdTokenReq req) {
-        AppleInfo userInfo = appleJwtParser.parseIdentityToken(req.idToken(), req.name());
-
-        userInfo.setFullName(req.name());
+        AppleInfo userInfo = appleJwtParser.parseIdentityToken(req.idToken(), null);
 
         upsertUser(userInfo);
 
         Long userId = convertSubToLong(userInfo.getSub());
         return jwtProvider.generateToken(userId.toString());
+    }
+
+    @Transactional
+    public void updateNickname(Long userId, String nickname) {
+        User user = userService.findByUserId(userId);
+        user.updateNickname(nickname);
+        userService.saveUser(user);
     }
 
     private AppleTokenRes getAccessToken(String code) {
@@ -88,7 +91,6 @@ public class AppleService {
 
     private void upsertUser(AppleInfo userInfo) {
         if (userService.existsByUserId(convertSubToLong(userInfo.getSub()))) {
-            updateUser(userInfo);
         } else {
             saveUser(userInfo);
         }
@@ -96,7 +98,7 @@ public class AppleService {
 
     private void saveUser(AppleInfo appleUser) {
         Long userId = convertSubToLong(appleUser.getSub());
-        String nickname = appleUser.getFullName() != null ? appleUser.getFullName() : "테스트";
+        String nickname = "";
 
         User user = User.builder()
                 .userId(userId)
