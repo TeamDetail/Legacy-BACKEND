@@ -1,4 +1,4 @@
-package com.learnmore.legacy.domain.kakaooauth.service;
+package com.learnmore.legacy.domain.Kakaooauth.service;
 
 import com.learnmore.legacy.domain.kakaooauth.error.KaKaoAuthError;
 import com.learnmore.legacy.domain.kakaooauth.presentation.dto.response.KakaoInfo;
