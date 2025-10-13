@@ -35,11 +35,6 @@ public class AppleController {
         return BaseResponse.of(appleService.loginAppleApp(codeReq));
     }
 
-    @PostMapping("/android")
-    public ResponseEntity<BaseResponse<TokenRes>> appleAndroid(@RequestBody AppleCodeReq codeReq) {
-        return BaseResponse.of(appleService.loginAppleAndroid(codeReq));
-    }
-
     @Operation(summary = "닉네임 수정", description = "유저 닉네임을 수정합니다.")
     @PostMapping("/update-nickname")
     public ResponseEntity<BaseResponse<HttpStatus>> updateNickname(
