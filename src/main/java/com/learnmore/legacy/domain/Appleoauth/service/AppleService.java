@@ -63,6 +63,15 @@ public class AppleService {
         return jwtProvider.generateToken(userId.toString());
     }
 
+    public TokenRes loginAppleAndroid(AppleCodeReq codeReq) {
+        AppleInfo userInfo = appleJwtParser.parseIdentityToken(codeReq.idToken(), null);
+
+        upsertUser(userInfo);
+
+        Long userId = convertSubToLong(userInfo.getSub());
+        return jwtProvider.generateToken(userId.toString());
+    }
+
     @Transactional
     public void updateNickname(Long userId, String nickname) {
         User user = userService.findByUserId(userId);

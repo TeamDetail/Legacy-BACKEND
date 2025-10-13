@@ -1,9 +1,7 @@
 package com.learnmore.legacy.domain.Appleoauth.presentation.dto.request;
 
-import lombok.Builder;
-
-@Builder
-public record AppleCodeReq (
+public record AppleAndroidReq(
         String code,
         String idToken
-) {}
+) {
+}
