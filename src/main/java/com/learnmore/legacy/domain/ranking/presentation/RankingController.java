@@ -5,6 +5,7 @@ import com.learnmore.legacy.domain.ranking.presentation.dto.response.BlockRankin
 import com.learnmore.legacy.domain.ranking.presentation.dto.response.LevelRankingRes;
 import com.learnmore.legacy.domain.ranking.usecase.RankingUseCase;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
+import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,16 +23,19 @@ import java.util.List;
 @RequestMapping("/ranklist")
 public class RankingController {
     private final RankingUseCase rankingUseCase;
+    private final UserSessionHolder userSessionHolder;
 
     @Operation(summary = "탐험 랭킹 조회", description = "탐험 랭킹을 조회합니다.")
-    @GetMapping("/explore/all")
-    public ResponseEntity<BaseResponse<List<BlockRankingRes>>> getExploreRanking() {
-        return BaseResponse.of(rankingUseCase.getTopUserRanking());
+    @GetMapping("/explore/{type}")
+    public ResponseEntity<BaseResponse<List<BlockRankingRes>>> getExploreRanking(@PathVariable RankingType type) {
+        Long userId = userSessionHolder.get().getUserId();
+        return BaseResponse.of(rankingUseCase.getTopUserRanking(type, userId));
     }
 
     @Operation(summary = "숙련 랭킹 조회", description = "숙련 랭킹을 조회합니다.")
     @GetMapping("/level/{type}")
     public ResponseEntity<BaseResponse<List<LevelRankingRes>>> getLevelRanking(@PathVariable RankingType type) {
-        return BaseResponse.of(rankingUseCase.getTopUserLevelRanking(type));
+        Long userId = userSessionHolder.get().getUserId();
+        return BaseResponse.of(rankingUseCase.getTopUserLevelRanking(type, userId));
     }
 }

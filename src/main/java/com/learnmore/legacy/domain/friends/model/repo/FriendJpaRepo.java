@@ -1,6 +1,7 @@
 package com.learnmore.legacy.domain.friends.model.repo;
 
 import com.learnmore.legacy.domain.friends.model.Friend;
+import com.learnmore.legacy.domain.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -30,4 +31,7 @@ public interface FriendJpaRepo extends JpaRepository<Friend, Long> {
             "(f.userId = :userId1 AND f.friendId = :userId2) OR " +
             "(f.userId = :userId2 AND f.friendId = :userId1)")
     List<Friend> findAllFriendshipsBetween(@Param("userId1") Long userId1, @Param("userId2") Long userId2);
+
+    //
+    List<Friend> findByFriendId(Long userId);
 }

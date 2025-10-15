@@ -13,6 +13,7 @@ import com.learnmore.legacy.domain.friends.presentation.dto.response.FriendRes;
 import com.learnmore.legacy.domain.friends.presentation.dto.response.UserSearchRes;
 import com.learnmore.legacy.domain.friends.service.util.FriendCodeUtil;
 import com.learnmore.legacy.domain.user.model.User;
+import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import com.learnmore.legacy.domain.user.service.UserService;
 import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +36,7 @@ public class FriendService {
     private final KakaoApiService kakaoApiService;
     private final UserService userService;
     private final AchievementProgressService  achievementProgressService;
+    private final UserJpaRepo userJpaRepo;
 
     /**
      * 카카오톡 친구 자동 추가
@@ -423,5 +423,38 @@ public class FriendService {
             log.warn("카카오 ID 추출 실패: {}", kakaoFriend);
             return null;
         }
+    }
+
+
+    /**
+     * 친구 레벨 랭킹 조회
+     */
+    public List<User> levelRanking(Long userId) {
+        List<Friend> friendsAsUser = friendJpaRepo.findByUserId(userId);
+        List<Friend> friendsAsFriend = friendJpaRepo.findByFriendId(userId);
+
+        Set<Long> friendUserIds = Stream.concat(
+                        friendsAsUser.stream().map(Friend::getFriendId),
+                        friendsAsFriend.stream().map(Friend::getUserId)
+                ).filter(id -> !id.equals(userId))
+                .collect(Collectors.toSet());
+
+        return userJpaRepo.findByUserIdInOrderByLevelDescExpDesc(new ArrayList<>(friendUserIds));
+    }
+
+    /**
+     * 친구 블록 랭킹 조회
+     */
+    public List<User> blockRanking(Long userId) {
+        List<Friend> friendsAsUser = friendJpaRepo.findByUserId(userId);
+        List<Friend> friendsAsFriend = friendJpaRepo.findByFriendId(userId);
+
+        Set<Long> friendUserIds = Stream.concat(
+                        friendsAsUser.stream().map(Friend::getFriendId),
+                        friendsAsFriend.stream().map(Friend::getUserId)
+                ).filter(id -> !id.equals(userId))
+                .collect(Collectors.toSet());
+
+        return userJpaRepo.findByUserIdInOrderByAllBlocksDescLevelDesc(new ArrayList<>(friendUserIds));
     }
 }
