@@ -22,20 +22,18 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/ranklist")
 public class RankingController {
+
     private final RankingUseCase rankingUseCase;
-    private final UserSessionHolder userSessionHolder;
 
     @Operation(summary = "탐험 랭킹 조회", description = "탐험 랭킹을 조회합니다.")
     @GetMapping("/explore/{type}")
     public ResponseEntity<BaseResponse<List<BlockRankingRes>>> getExploreRanking(@PathVariable RankingType type) {
-        Long userId = userSessionHolder.get().getUserId();
-        return BaseResponse.of(rankingUseCase.getTopUserRanking(type, userId));
+        return BaseResponse.of(rankingUseCase.getTopUserRanking(type));
     }
 
     @Operation(summary = "숙련 랭킹 조회", description = "숙련 랭킹을 조회합니다.")
     @GetMapping("/level/{type}")
     public ResponseEntity<BaseResponse<List<LevelRankingRes>>> getLevelRanking(@PathVariable RankingType type) {
-        Long userId = userSessionHolder.get().getUserId();
-        return BaseResponse.of(rankingUseCase.getTopUserLevelRanking(type, userId));
+        return BaseResponse.of(rankingUseCase.getTopUserLevelRanking(type));
     }
 }

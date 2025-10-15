@@ -9,6 +9,7 @@ import com.learnmore.legacy.domain.user.model.Style;
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.service.StyleService;
 import com.learnmore.legacy.domain.user.service.UserService;
+import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +26,12 @@ public class RankingUseCase {
     private final UserService userService;
     private final StyleService styleService;
     private final FriendService friendService;
+    private final UserSessionHolder userSessionHolder;
 
-    public List<BlockRankingRes> getTopUserRanking(RankingType type, Long userId) {
+
+    public List<BlockRankingRes> getTopUserRanking(RankingType type) {
         List<User> topUsers;
+        Long userId = userSessionHolder.get().getUserId();
 
         if(type == RankingType.ALL) {
             // 전체 유저 랭킹
@@ -61,19 +65,17 @@ public class RankingUseCase {
                 .collect(Collectors.toList());
     }
 
-    public List<LevelRankingRes> getTopUserLevelRanking(RankingType type, Long userId) {
+    public List<LevelRankingRes> getTopUserLevelRanking(RankingType type) {
         List<User> topUsers;
-        List<Style> equippedStyles;
+        Long userId = userSessionHolder.get().getUserId();
 
         // 타입 별로 조회
         if(type == RankingType.ALL) {
             topUsers = userService.levelRanking();
-            equippedStyles = styleService.findAllEquippedStyles(topUsers);
         }else {
             topUsers = friendService.levelRanking(userId);
-
-            equippedStyles = styleService.findAllEquippedStyles(topUsers);
         }
+        List<Style> equippedStyles =  styleService.findAllEquippedStyles(topUsers);
 
         Map<Long, Style> userIdToStyle = equippedStyles.stream()
                 .collect(Collectors.toMap(
