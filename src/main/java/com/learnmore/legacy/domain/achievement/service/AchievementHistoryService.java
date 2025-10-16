@@ -26,7 +26,7 @@ public class AchievementHistoryService {
 
     @Transactional(readOnly = true)
     public long countClearAdventureAchievement(Long userId) {
-        return achievementHistoryJpaRepo.countCompletedAchievementsByUserAndCategory(
+        return achievementHistoryJpaRepo. countCompletedAchievementsByUserAndCategory(
                 userId,
                 AchievementCategory.EXPLORE
         );

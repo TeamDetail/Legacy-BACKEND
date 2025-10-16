@@ -18,5 +18,8 @@ public enum AchievementType {
     FRIEND,
     PRESENT,
     SEQUENCE_PRESENT,
-    WRITE_COMMENT
+    WRITE_COMMENT,
+    CARD_DGSW,
+    CARD_SEONGSIMDANG,
+    CARD_GYEONGBOKGUNG
 }

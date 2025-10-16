@@ -152,7 +152,7 @@ public class AchievementUseCase {
                             .isReceive(history != null && history.getIsReceive())
                             .currentRate(history != null ? history.getCurrentRate() : 0)
 //                            .goalRate(achievement.getGoalRate())
-                            .goalRate(history != null ? history.getGoalRate() : 1)
+                            .goalRate(achievement.getGoalRate())
                             .achievementAward(awards)
                             .achieveUserPercent(achievementRate)
                             .achievementGrade(achievement.getGrade())
@@ -177,7 +177,7 @@ public class AchievementUseCase {
         saveRewards(items);
         markCompletedItemsAsReceived(user.getUserId());
         user.updateCredit(awardCredit);
-        achievementProgressService.increaseProgress(user.getUserId(), AchievementType.WRITE_COMMENT, UserUtil.levelUp(user,awardExp));
+        achievementProgressService.increaseProgress(user.getUserId(), AchievementType.LEVEL, UserUtil.levelUp(user,awardExp));
         userService.saveUser(user);
 
         return AwardRes.builder()
