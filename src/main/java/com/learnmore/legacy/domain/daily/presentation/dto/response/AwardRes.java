@@ -14,5 +14,5 @@ public class AwardRes {
     private StoreType itemType;
     private String itemName;
     private String itemDescription;
-    private String itemCount;
+    private Integer itemCount;
 }

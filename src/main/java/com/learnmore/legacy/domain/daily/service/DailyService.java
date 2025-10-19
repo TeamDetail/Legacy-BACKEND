@@ -75,7 +75,7 @@ public class DailyService {
             throw new CustomException(DailyError.DAILY_ERROR);
         }
 
-        DailyCheck event = activeEvents.get(Math.toIntExact(dailyCheckId));
+        DailyCheck event = activeEvents.get(Math.toIntExact(dailyCheckId-1));
 
         // 오늘 이미 출석했는지 확인
         boolean alreadyChecked = dailyCheckHistoryJpaRepo
@@ -199,7 +199,7 @@ public class DailyService {
                 .itemType(item.getItemType())
                 .itemName(itemName)
                 .itemDescription(itemDescription)
-                .itemCount(String.valueOf(item.getItemCount()))
+                .itemCount(item.getItemCount())
                 .build();
     }
 
