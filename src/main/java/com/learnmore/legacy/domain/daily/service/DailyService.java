@@ -29,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -231,21 +230,25 @@ public class DailyService {
         }
     }
 
-    /**
-     * 두 날짜가 같은 날인지 확인 (시간 무시)
-     */
-    private boolean isSameDay(LocalDateTime date1, LocalDateTime date2) {
-        return date1.toLocalDate().isEqual(date2.toLocalDate());
-    }
-
-
     private void grantRewards(User user, DailyCheckItem reward) {
-        // Store 테이블에서 해당 크레딧팩의 Store 정보 조회
-        Store store = storeJpaRepo.findByStoreIdAndStoreType(reward.getItemId(), StoreType.CARD_PACK);
+        Store store;
+        Optional<Inventory> optionalInventory;
 
-        // Inventory 확인 (이미 있는지)
-        Optional<Inventory> optionalInventory = inventoryJpaRepo
-                .findByItemIdAndItemType(reward.getItemId(), StoreType.CARD_PACK);
+        if(reward.getItemType() == StoreType.CREDIT_PACK) {
+            // Store 테이블에서 해당 크레딧팩의 Store 정보 조회
+            store = storeJpaRepo.findByStoreIdAndStoreType(reward.getItemId(), StoreType.CREDIT_PACK);
+
+            // Inventory 확인 (이미 있는지)
+            optionalInventory = inventoryJpaRepo
+                    .findByItemIdAndItemType(reward.getItemId(), StoreType.CREDIT_PACK);
+        } else {
+            // Store 테이블에서 해당 크레딧팩의 Store 정보 조회
+            store = storeJpaRepo.findByStoreIdAndStoreType(reward.getItemId(), StoreType.CARD_PACK);
+
+            // Inventory 확인 (이미 있는지)
+            optionalInventory = inventoryJpaRepo
+                    .findByItemIdAndItemType(reward.getItemId(), StoreType.CARD_PACK);
+        }
 
         Inventory inventory;
         if (optionalInventory.isPresent()) {
@@ -257,7 +260,7 @@ public class DailyService {
                     .itemId(reward.getItemId())
                     .itemName(store.getStoreName())
                     .itemDescription(store.getStoreContent())
-                    .itemType(StoreType.CREDIT_PACK)
+                    .itemType(StoreType.CARD_PACK)
                     .build();
             inventoryJpaRepo.save(inventory);
         }
