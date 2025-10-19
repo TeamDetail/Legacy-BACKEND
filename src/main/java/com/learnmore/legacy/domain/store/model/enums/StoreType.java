@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum StoreType {
     CARD_PACK("CARD PACK"),
+    CREDIT_PACK("CREDIT PACK"),
     STYLE("STYLE");
 
     private final String storeType;

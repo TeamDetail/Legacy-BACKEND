@@ -2,6 +2,8 @@ package com.learnmore.legacy.domain.inventory.presentation;
 
 import com.learnmore.legacy.domain.card.presentation.dto.response.CardRes;
 import com.learnmore.legacy.domain.inventory.presentation.dto.requset.CardpackReq;
+import com.learnmore.legacy.domain.inventory.presentation.dto.requset.CreditpackReq;
+import com.learnmore.legacy.domain.inventory.presentation.dto.response.CreditpackRes;
 import com.learnmore.legacy.domain.inventory.presentation.dto.response.InventoryRes;
 import com.learnmore.legacy.domain.inventory.service.InventoryService;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
@@ -32,6 +34,13 @@ public class InventoryController {
     public ResponseEntity<BaseResponse<List<CardRes>>> openCardPack(@RequestBody CardpackReq request) {
         Long userId = userSessionHolder.get().getUserId();
         return BaseResponse.of(inventoryService.openCardpack(userId, request));
+    }
+
+    @PostMapping("/credit-pack/use")
+    @Operation(summary = "크레딧팩 오픈", description = "1000개의 크레딧을 획득합니다.")
+    public ResponseEntity<BaseResponse<CreditpackRes>> openCreditPack(@RequestBody CreditpackReq request) {
+        Long userId = userSessionHolder.get().getUserId();
+        return BaseResponse.of(inventoryService.openCreditPack(userId, request));
     }
 
 }
