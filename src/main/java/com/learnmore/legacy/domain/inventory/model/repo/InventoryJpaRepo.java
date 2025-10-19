@@ -11,4 +11,6 @@ import java.util.Optional;
 @Repository
 public interface InventoryJpaRepo extends JpaRepository<Inventory, Long> {
     Optional<Inventory> findByItemTypeAndItemName(StoreType itemType, String itemName);
+
+    Optional<Inventory> findByItemIdAndItemType(Long itemId, StoreType storeType);
 }
