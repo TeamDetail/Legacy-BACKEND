@@ -1,5 +1,7 @@
 package com.learnmore.legacy.domain.inventory.service;
 
+import com.learnmore.legacy.domain.achievement.model.enums.AchievementType;
+import com.learnmore.legacy.domain.achievement.service.AchievementProgressService;
 import com.learnmore.legacy.domain.card.model.Card;
 import com.learnmore.legacy.domain.card.model.CardHistory;
 import com.learnmore.legacy.domain.card.model.Deck;
@@ -34,6 +36,8 @@ public class InventoryService {
     private final UserJpaRepo userJpaRepo;
     private final CardHistoryJpaRepo cardHistoryJpaRepo;
     private final DeckJpaRepo deckJpaRepo;
+    private final AchievementProgressService achievementProgressService;
+
 
     public List<InventoryRes> getInventory(Long userId) {
         List<InventoryHistory> histories = inventoryHistoryJpaRepo.findAllByUser_UserId(userId);
@@ -108,7 +112,12 @@ public class InventoryService {
                             .cardType(CardType.BASIC_CARD)
                             .user(user)
                             .build();
-                    //todo 여기다
+                    achievementProgressService.increaseProgress(userId, AchievementType.ALL_CARD, 1);
+
+                    if (card.getCardId()==152056){
+                        achievementProgressService.increaseProgress(userId, AchievementType.CARD_GYEONGBOKGUNG, 1);
+                    }
+
                     cardHistoryJpaRepo.save(history);
 
                     result.add(CardRes.from(card, history));

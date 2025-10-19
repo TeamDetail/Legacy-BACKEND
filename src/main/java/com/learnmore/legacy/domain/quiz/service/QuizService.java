@@ -9,7 +9,6 @@ import com.learnmore.legacy.domain.card.model.CardHistory;
 import com.learnmore.legacy.domain.card.model.Deck;
 import com.learnmore.legacy.domain.card.model.enums.CardType;
 import com.learnmore.legacy.domain.card.model.repo.CardHistoryJpaRepo;
-import com.learnmore.legacy.domain.card.model.repo.CardJpaRepo;
 import com.learnmore.legacy.domain.card.model.repo.DeckJpaRepo;
 import com.learnmore.legacy.domain.quiz.error.QuizError;
 import com.learnmore.legacy.domain.quiz.model.Quiz;
@@ -26,7 +25,7 @@ import com.learnmore.legacy.domain.ruins.error.RuinsError;
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import com.learnmore.legacy.domain.ruins.model.repo.RuinsJpaRepo;
 import com.learnmore.legacy.domain.user.model.User;
-import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
+import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -50,7 +49,7 @@ public class QuizService {
     private final AchievementProgressService achievementProgressService;
     private final CardHistoryJpaRepo cardHistoryJpaRepo;
     private final DeckJpaRepo deckJpaRepo;
-    private final UserJpaRepo userJpaRepo;
+    private final UserSessionHolder userSessionHolder;
 
     public List<QuizRes> getQuiz(Long ruinsId) {
         Ruins ruins = ruinsJpaRepo.findById(ruinsId)
@@ -81,7 +80,10 @@ public class QuizService {
     }
 
     @Transactional
-    public QuizAnswerRes checkAnswers(List<QuizAnswerReq> requests, Long userId) {
+    public QuizAnswerRes checkAnswers(List<QuizAnswerReq> requests) {
+        User user = userSessionHolder.get();
+        Long userId = user.getUserId();
+
         if (requests.size() < 3) {
             throw new CustomException(QuizError.NOT_ENOUGH_QUIZ_ANSWERS);
         }
@@ -132,8 +134,6 @@ public class QuizService {
                     ruins.getLongitude()
             );
 
-            User user = userJpaRepo.findByUserId(userId);
-
             Card card = cardJpaRepo.findByRuins_RuinsId(ruinsId)
                     .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
@@ -153,7 +153,8 @@ public class QuizService {
                     .cardType(CardType.SHINING_CARD)
                     .user(user)
                     .build());
-          
+            achievementProgressService.increaseProgress(userId, AchievementType.SHINING_ALL_CARD, 1);
+
             blockGiven = true;
         }else {
             requests.forEach(request ->
