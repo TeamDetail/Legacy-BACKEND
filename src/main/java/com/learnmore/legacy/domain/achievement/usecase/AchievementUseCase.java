@@ -151,7 +151,6 @@ public class AchievementUseCase {
                             .achievementType(achievement.getType().name())
                             .isReceive(history != null && history.getIsReceive())
                             .currentRate(history != null ? history.getCurrentRate() : 0)
-//                            .goalRate(achievement.getGoalRate())
                             .goalRate(achievement.getGoalRate())
                             .achievementAward(awards)
                             .achieveUserPercent(achievementRate)
