@@ -62,9 +62,8 @@ public class DailyService {
     }
 
     @Transactional
-    public List<AwardRes> addTodayAward(Long userId) {
-//        User user = userSessionHolder.get();
-        User user = userJpaRepo.findByUserId(userId);
+    public List<AwardRes> addTodayAward(Long dailyCheckId) {
+        User user = userSessionHolder.get();
         LocalDate today = LocalDate.now();
 
         List<DailyCheck> activeEvents = dailyCheckJpaRepo
@@ -76,8 +75,7 @@ public class DailyService {
             throw new CustomException(DailyError.DAILY_ERROR);
         }
 
-        // 첫 번째 활성 이벤트 사용 (여러 개면 우선순위 로직 추가 가능)
-        DailyCheck event = activeEvents.getFirst();
+        DailyCheck event = activeEvents.get(Math.toIntExact(dailyCheckId));
 
         // 오늘 이미 출석했는지 확인
         boolean alreadyChecked = dailyCheckHistoryJpaRepo
