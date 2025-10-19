@@ -231,24 +231,46 @@ public class DailyService {
     }
 
     private void grantRewards(User user, DailyCheckItem reward) {
-        Store store;
-        Optional<Inventory> optionalInventory;
-
         if(reward.getItemType() == StoreType.CREDIT_PACK) {
-            // Store 테이블에서 해당 크레딧팩의 Store 정보 조회
-            store = storeJpaRepo.findByStoreIdAndStoreType(reward.getItemId(), StoreType.CREDIT_PACK);
-
-            // Inventory 확인 (이미 있는지)
-            optionalInventory = inventoryJpaRepo
-                    .findByItemIdAndItemType(reward.getItemId(), StoreType.CREDIT_PACK);
+            grantCredit(user, reward);
         } else {
-            // Store 테이블에서 해당 크레딧팩의 Store 정보 조회
-            store = storeJpaRepo.findByStoreIdAndStoreType(reward.getItemId(), StoreType.CARD_PACK);
-
-            // Inventory 확인 (이미 있는지)
-            optionalInventory = inventoryJpaRepo
-                    .findByItemIdAndItemType(reward.getItemId(), StoreType.CARD_PACK);
+            grantCard(user, reward);
         }
+    }
+
+    private void grantCredit(User user, DailyCheckItem reward) {
+        // Store 테이블에서 해당 크레딧팩의 Store 정보 조회
+        Store store = storeJpaRepo.findByStoreIdAndStoreType(reward.getItemId(), StoreType.CREDIT_PACK);
+
+        // Inventory 확인 (이미 있는지)
+        Optional<Inventory> optionalInventory = inventoryJpaRepo
+                .findByItemIdAndItemType(reward.getItemId(), StoreType.CREDIT_PACK);
+
+        Inventory inventory;
+        if (optionalInventory.isPresent()) {
+            // 이미 인벤토리에 존재 → 새로 추가하지 않음
+            inventory = optionalInventory.get();
+        } else {
+            // 없는 경우 → 새 인벤토리 추가
+            inventory = Inventory.builder()
+                    .itemId(reward.getItemId())
+                    .itemName(store.getStoreName())
+                    .itemDescription(store.getStoreContent())
+                    .itemType(StoreType.CREDIT_PACK)
+                    .build();
+            inventoryJpaRepo.save(inventory);
+        }
+
+        saveInventoryHistory(inventory, user, reward, store);
+    }
+
+    private void grantCard(User user, DailyCheckItem reward) {
+        // Store 테이블에서 해당 크레딧팩의 Store 정보 조회
+        Store store = storeJpaRepo.findByStoreIdAndStoreType(reward.getItemId(), StoreType.CARD_PACK);
+
+        // Inventory 확인 (이미 있는지)
+        Optional<Inventory> optionalInventory = inventoryJpaRepo
+                .findByItemIdAndItemType(reward.getItemId(), StoreType.CARD_PACK);
 
         Inventory inventory;
         if (optionalInventory.isPresent()) {
@@ -265,6 +287,10 @@ public class DailyService {
             inventoryJpaRepo.save(inventory);
         }
 
+        saveInventoryHistory(inventory, user, reward, store);
+    }
+
+    private void saveInventoryHistory(Inventory inventory, User user, DailyCheckItem reward, Store store) {
         // 인벤토리 히스토리 추가(이미 있다면 itemCount에 reward.getItemCount()만큼 추가)
         InventoryHistory histories = inventoryHistoryJpaRepo
                 .findByInventory_InventoryIdAndUser(inventory.getInventoryId(), user);
