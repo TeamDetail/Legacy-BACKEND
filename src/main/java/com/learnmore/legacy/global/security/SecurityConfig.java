@@ -96,8 +96,10 @@ public class SecurityConfig {
                         .requestMatchers("/store/**").hasAnyRole("USER", "ADMIN")
                         //ranking
                         .requestMatchers("/ranklist/**").hasAnyRole("USER", "ADMIN")
-                        // google-auth
+                        //google-auth
                         .requestMatchers("/google/**").permitAll()
+                        //daily
+//                        .requestMatchers("/daily/**").hasAnyRole("USER", "ADMIN")
                         //any
                         .anyRequest().permitAll())
 
