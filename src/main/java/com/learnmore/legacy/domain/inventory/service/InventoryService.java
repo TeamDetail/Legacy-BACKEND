@@ -12,8 +12,11 @@ import com.learnmore.legacy.domain.inventory.error.InventoryError;
 import com.learnmore.legacy.domain.inventory.model.InventoryHistory;
 import com.learnmore.legacy.domain.inventory.model.repo.InventoryHistoryJpaRepo;
 import com.learnmore.legacy.domain.inventory.presentation.dto.requset.CardpackReq;
+import com.learnmore.legacy.domain.inventory.presentation.dto.requset.CreditpackReq;
+import com.learnmore.legacy.domain.inventory.presentation.dto.response.CreditpackRes;
 import com.learnmore.legacy.domain.inventory.presentation.dto.response.InventoryRes;
 import com.learnmore.legacy.domain.store.error.StoreError;
+import com.learnmore.legacy.domain.store.model.enums.StoreType;
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import com.learnmore.legacy.global.exception.CustomException;
@@ -148,5 +151,48 @@ public class InventoryService {
                     cardJpaRepo.findByRegionAttribute_RegionAttributeId(2L);
             default -> Collections.emptyList();
         };
+    }
+
+    @Transactional
+    public CreditpackRes openCreditPack(Long userId, CreditpackReq request) {
+        User user = userJpaRepo.findByUserId(userId);
+
+        int packCount = request.count();
+        Long creditpackId = request.creditpackId();
+
+        InventoryHistory inventoryHistory = inventoryHistoryJpaRepo.findById(creditpackId)
+                .orElseThrow(() -> new CustomException(InventoryError.ITEM_NOT_FOUND));
+
+        // 사용자가 소유한 아이템인지 확인
+        if (!inventoryHistory.getUser().getUserId().equals(userId)) {
+            throw new CustomException(InventoryError.ITEM_NOT_FOUND);
+        }
+
+        // 크레딧 팩 타입 확인
+        if (!inventoryHistory.getInventory().getItemType().equals(StoreType.CREDIT_PACK)) {
+            throw new CustomException(InventoryError.ITEM_NOT_FOUND);
+        }
+
+        // 내가 가진 아이템이 부족하면 에러 발생
+        if (packCount > inventoryHistory.getItemCount()) {
+            throw new CustomException(InventoryError.ITEM_ERROR);
+        }
+
+        // 크레딧 지급
+        int totalCredit = packCount * 1000;
+        user.addCredit(totalCredit);
+
+        // 인벤토리 히스토리 itemCount-packCount 저장
+        if (inventoryHistory.getItemCount() - packCount == 0) {
+            inventoryHistoryJpaRepo.delete(inventoryHistory);
+        } else {
+            inventoryHistory.setItemCount(inventoryHistory.getItemCount() - packCount);
+            inventoryHistoryJpaRepo.save(inventoryHistory);
+        }
+
+        // 유저 크레딧 업데이트
+        userJpaRepo.save(user);
+
+        return CreditpackRes.from(totalCredit, user.getCredit());
     }
 }
