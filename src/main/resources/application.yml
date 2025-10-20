@@ -71,4 +71,5 @@ cloud:
 logging:
   level:
     org.hibernate.SQL: debug
+    org.hibernate.tool.hbm2ddl: debug
     org.hibernate.type.descriptor.sql.BasicBinder: trace
