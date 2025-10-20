@@ -163,9 +163,25 @@ public class AchievementUseCase {
     @Transactional
     public AwardRes getUserRewards() {
         User user = userSessionHolder.get();
+
         Object[] sums = achievementHistoryService.getAwardSums(user.getUserId());
-        int awardExp = sums[0] == null ? 0 : ((Number) sums[0]).intValue();
-        Integer awardCredit = sums[1] == null ? 0 : ((Number) sums[1]).intValue();
+
+        int awardExp = 0;
+        int awardCredit = 0;
+
+        if (sums != null) {
+            if (sums[0] instanceof Object[] arr0 && arr0.length > 0) {
+                awardExp = arr0[0] instanceof Number n ? n.intValue() : 0;
+            } else if (sums[0] instanceof Number n0) {
+                awardExp = n0.intValue();
+            }
+
+            if (sums[1] instanceof Object[] arr1 && arr1.length > 0) {
+                awardCredit = arr1[0] instanceof Number n ? n.intValue() : 0;
+            } else if (sums[1] instanceof Number n1) {
+                awardCredit = n1.intValue();
+            }
+        }
 
         List<AwardDto> items = achievementHistoryService.getCompletedAchievementItems(user.getUserId(),StoreType.CARD_PACK);
         List<AwardDto> styles = achievementHistoryService.getCompletedAchievementItems(user.getUserId(),StoreType.STYLE);
