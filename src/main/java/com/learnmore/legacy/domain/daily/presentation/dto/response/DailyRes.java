@@ -20,9 +20,10 @@ public class DailyRes {
     private LocalDate endAt;
     private List<List<AwardRes>> awards;
     private Integer checkCount;
+    private boolean isCheck;
 
 
-    public static DailyRes from(DailyCheck dailyCheck, List<List<AwardRes>> awards, Integer checkCount) {
+    public static DailyRes from(DailyCheck dailyCheck, List<List<AwardRes>> awards, Integer checkCount, boolean isCheck) {
         return DailyRes.builder()
                 .id(dailyCheck.getDailyCheckId())
                 .name(dailyCheck.getDailyName())
@@ -30,6 +31,7 @@ public class DailyRes {
                 .endAt(dailyCheck.getEndAt())
                 .awards(awards)
                 .checkCount(checkCount)
+                .isCheck(isCheck)
                 .build();
     }
 }

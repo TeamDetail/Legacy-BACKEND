@@ -56,7 +56,11 @@ public class DailyService {
                 .map(event -> {
                     List<List<AwardRes>> awards = getAwardsByEvent(event.getDailyCheckId());
                     Integer checkCount = calculateDayNumber(user, event) - 1;
-                    return DailyRes.from(event, awards, checkCount);
+
+                    boolean isCheck = dailyCheckHistoryJpaRepo
+                            .existsByUserAndDailyCheckAndCheckDate(user, event, today);
+
+                    return DailyRes.from(event, awards, checkCount, isCheck);
                 })
                 .collect(Collectors.toList());
     }
