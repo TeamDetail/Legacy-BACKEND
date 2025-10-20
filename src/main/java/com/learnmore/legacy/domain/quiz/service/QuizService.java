@@ -61,12 +61,7 @@ public class QuizService {
                 .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
         User user = userJpaRepo.findByUserId(userId);
-
-        if (user.getCredit()<1000) {
-            throw new CustomException(StoreError.CREDIT_ERROR);
-        }
-
-        user.removeCredit(1000);
+        user.useCredit(1000 );
 
         List<Quiz> quizzes = quizJpaRepo.findAllByRuinsId(ruinsId);
 

@@ -89,10 +89,6 @@ public class User {
         this.credit += price;
     }
 
-    public void removeCredit(int price){
-        this.credit -= price;
-    }
-
     public void updateDescription(String description) {
         this.description = description;
     }
