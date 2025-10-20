@@ -55,7 +55,7 @@ public class DailyService {
         return activeEvents.stream()
                 .map(event -> {
                     List<List<AwardRes>> awards = getAwardsByEvent(event.getDailyCheckId());
-                    Integer checkCount = calculateDayNumber(user, event);
+                    Integer checkCount = calculateDayNumber(user, event) - 1;
                     return DailyRes.from(event, awards, checkCount);
                 })
                 .collect(Collectors.toList());
