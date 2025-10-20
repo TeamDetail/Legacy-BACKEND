@@ -46,7 +46,7 @@ public class GoogleService {
         // 2. ID 토큰 검증
         GoogleUserInfo userInfo = tokenVerifier.verifyIdToken(
                 tokenResponse.getIdToken(),
-                googleProperties.getWebClientId()
+                googleProperties.getClientId()
         );
 
         // 3. 사용자 처리 및 JWT 발급
@@ -86,8 +86,8 @@ public class GoogleService {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters
                         .fromFormData("grant_type", "authorization_code")
-                        .with("client_id", googleProperties.getWebClientId())
-                        .with("client_secret", googleProperties.getWebClientSecret())
+                        .with("client_id", googleProperties.getClientId())
+                        .with("client_secret", googleProperties.getClientSecret())
                         .with("code", code)
                         .with("redirect_uri", googleProperties.getRedirectUri()))
                 .retrieve()
