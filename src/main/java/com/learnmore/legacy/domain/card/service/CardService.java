@@ -1,31 +1,18 @@
 package com.learnmore.legacy.domain.card.service;
 
-import com.learnmore.legacy.domain.card.error.*;
 import com.learnmore.legacy.domain.card.model.*;
 import com.learnmore.legacy.domain.card.model.enums.CardType;
 import com.learnmore.legacy.domain.card.model.repo.*;
-import com.learnmore.legacy.domain.card.presentation.dto.request.CardReq;
 import com.learnmore.legacy.domain.card.presentation.dto.request.LineAttributeReq;
 import com.learnmore.legacy.domain.card.presentation.dto.request.NationAttributeReq;
 import com.learnmore.legacy.domain.card.presentation.dto.request.RegionAttributeReq;
 import com.learnmore.legacy.domain.card.presentation.dto.response.*;
-import com.learnmore.legacy.domain.quiz.error.QuizError;
-import com.learnmore.legacy.domain.quiz.model.QuizHistory;
-import com.learnmore.legacy.domain.quiz.model.repo.QuizHistoryJpaRepo;
-import com.learnmore.legacy.domain.ruins.error.RuinsError;
-import com.learnmore.legacy.domain.ruins.model.Ruins;
-import com.learnmore.legacy.domain.ruins.model.repo.RuinsJpaRepo;
-import com.learnmore.legacy.domain.user.model.User;
-import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
-import com.learnmore.legacy.global.exception.CustomException;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,13 +21,9 @@ import java.util.stream.Collectors;
 public class CardService {
     private final CardJpaRepo cardJpaRepo;
     private final CardHistoryJpaRepo cardHistoryJpaRepo;
-    private final DeckJpaRepo deckJpaRepo;
     private final NationAttributeJpaRepo nationAttributeJpaRepo;
     private final LineAttributeJpaRepo lineAttributeJpaRepo;
     private final RegionAttributeJpaRepo regionAttributeJpaRepo;
-    private final UserJpaRepo userJpaRepo;
-    private final QuizHistoryJpaRepo quizHistoryJpaRepo;
-    private final RuinsJpaRepo ruinsJpaRepo;
 
     public List<CardRes> getCardByCardId(Long userId) {
         List<CardHistory> histories = cardHistoryJpaRepo.findAllByUser_UserId(userId);

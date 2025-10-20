@@ -8,7 +8,6 @@ import com.learnmore.legacy.domain.mail.model.Mail;
 import com.learnmore.legacy.domain.mail.model.repo.MailJpaRepo;
 import com.learnmore.legacy.domain.mail.presentation.dto.response.MailRes;
 import com.learnmore.legacy.domain.user.model.User;
-import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

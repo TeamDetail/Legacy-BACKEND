@@ -20,7 +20,6 @@ import com.learnmore.legacy.domain.store.model.Store;
 import com.learnmore.legacy.domain.store.model.enums.StoreType;
 import com.learnmore.legacy.domain.store.model.repo.StoreJpaRepo;
 import com.learnmore.legacy.domain.user.model.User;
-import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +42,6 @@ public class DailyService {
     private final UserSessionHolder userSessionHolder;
     private final InventoryJpaRepo inventoryJpaRepo;
     private final InventoryHistoryJpaRepo inventoryHistoryJpaRepo;
-    private final UserJpaRepo userJpaRepo;
 
     public List<DailyRes> getDaily() {
         LocalDate today = LocalDate.now();
@@ -86,7 +84,7 @@ public class DailyService {
         }
 
         // 연속 출석 일수 계산
-        int dayNumber = calculateDayNumber(user, event, today);
+        int dayNumber = calculateDayNumber(user, event);
 
         // 출석 기록 저장
         DailyCheckHistory history = DailyCheckHistory.builder()
@@ -174,40 +172,22 @@ public class DailyService {
     }
 
     private AwardRes convertToAwardRes(DailyCheckItem item) {
-        String itemName;
-        String itemDescription;
-
-        // itemType에 따라 실제 아이템 정보 조회
-        switch (item.getItemType()) {
-            case CARD_PACK:
-                Store store = storeJpaRepo.findById(item.getItemId())
-                        .orElseThrow(() -> new CustomException(StoreError.STORE_ERROR));
-                itemName = store.getStoreName();
-                itemDescription = store.getStoreContent();
-                break;
-
-            case CREDIT_PACK:
-                itemName = "크레딧 꾸러미";
-                itemDescription = "크레딧 1000을 지급하는 꾸러미";
-                break;
-
-            default:
-                throw new CustomException(StoreError.STORE_ERROR);
-        }
+        Store store = storeJpaRepo.findById(item.getItemId())
+                .orElseThrow(() -> new CustomException(StoreError.STORE_ERROR));
 
         return AwardRes.builder()
-                .itemId(item.getItemId())
+                .itemId(store.getStoreId())
                 .itemType(item.getItemType())
-                .itemName(itemName)
-                .itemDescription(itemDescription)
+                .itemName(store.getStoreName())
+                .itemDescription(store.getStoreContent())
                 .itemCount(item.getItemCount())
                 .build();
     }
 
     /**
-     * 연속 출석 일수 계산
+     * 출석 일수 계산
      */
-    private int calculateDayNumber(User user, DailyCheck dailyCheck, LocalDate today) {
+    private int calculateDayNumber(User user, DailyCheck dailyCheck) {
         // 해당 이벤트에서 사용자의 마지막 출석 기록 조회
         Optional<DailyCheckHistory> lastHistory = dailyCheckHistoryJpaRepo
                 .findTopByUserAndDailyCheckOrderByCheckDateDesc(user, dailyCheck);
@@ -217,16 +197,8 @@ public class DailyService {
         }
 
         DailyCheckHistory last = lastHistory.get();
-        LocalDate lastCheckDate = last.getCheckDate();
 
-        // 어제 출석했는지 확인
-        LocalDate yesterday = today.minusDays(1);
-
-        if (lastCheckDate.equals(yesterday)) {
-            return last.getDayNumber() + 1; // 연속 출석
-        } else {
-            return 1; // 연속 끊김, 다시 1일차부터
-        }
+        return last.getDayNumber() + 1;
     }
 
     private void grantRewards(User user, DailyCheckItem reward) {
