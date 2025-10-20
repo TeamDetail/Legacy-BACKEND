@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AwardRes {
+    private Long itemId;
     private StoreType itemType;
     private String itemName;
     private String itemDescription;

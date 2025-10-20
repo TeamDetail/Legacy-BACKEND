@@ -196,6 +196,7 @@ public class DailyService {
         }
 
         return AwardRes.builder()
+                .itemId(item.getItemId())
                 .itemType(item.getItemType())
                 .itemName(itemName)
                 .itemDescription(itemDescription)
