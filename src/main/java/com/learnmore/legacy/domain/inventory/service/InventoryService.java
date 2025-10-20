@@ -169,8 +169,8 @@ public class InventoryService {
         int packCount = request.count();
         Long creditpackId = request.creditpackId();
 
-        InventoryHistory inventoryHistory = inventoryHistoryJpaRepo.findById(creditpackId)
-                .orElseThrow(() -> new CustomException(InventoryError.ITEM_NOT_FOUND));
+        // 아이디와 유저로 아이템 조회
+        InventoryHistory inventoryHistory = inventoryHistoryJpaRepo.findByStore_StoreIdAndUser(creditpackId, user);
 
         // 사용자가 소유한 아이템인지 확인
         if (!inventoryHistory.getUser().getUserId().equals(userId)) {
