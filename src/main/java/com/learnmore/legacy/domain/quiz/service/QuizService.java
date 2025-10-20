@@ -55,6 +55,7 @@ public class QuizService {
     private final UserSessionHolder userSessionHolder;
     private final UserJpaRepo userJpaRepo;
 
+    @Transactional
     public List<QuizWebRes> getWebQuiz(Long ruinsId, Long userId) {
         Ruins ruins = ruinsJpaRepo.findById(ruinsId)
                 .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
