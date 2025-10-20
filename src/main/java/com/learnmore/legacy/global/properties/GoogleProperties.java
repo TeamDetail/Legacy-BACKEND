@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class GoogleProperties {
     private String androidClientId;
     private String iosClientId;
-    private String webClientId;
-    private String webClientSecret;
+    private String clientId;
+    private String clientSecret;
     private String redirectUri;
 }
