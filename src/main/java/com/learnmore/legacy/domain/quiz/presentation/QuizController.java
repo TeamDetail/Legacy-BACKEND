@@ -3,8 +3,10 @@ package com.learnmore.legacy.domain.quiz.presentation;
 import com.learnmore.legacy.domain.quiz.presentation.dto.request.QuizAnswerReq;
 import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizAnswerRes;
 import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizRes;
+import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizWebRes;
 import com.learnmore.legacy.domain.quiz.service.QuizService;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
+import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,14 @@ import java.util.List;
 public class QuizController {
 
     private final QuizService quizService;
+    private final UserSessionHolder userSessionHolder;
+
+    @Operation(summary = "웹 전용 퀴즈 조회", description = "퀴즈를 조회하면 크레딧을 사용합니다.")
+    @GetMapping("/web/{ruinsId}")
+    public ResponseEntity<BaseResponse<List<QuizWebRes>>> getWebQuiz(@PathVariable Long ruinsId) {
+        Long userId = userSessionHolder.get().getUserId();
+        return BaseResponse.of(quizService.getWebQuiz(ruinsId, userId));
+    }
 
     @Operation(summary = "퀴즈 조회", description = "퀴즈를 조회합니다.")
     @GetMapping("/{ruinsId}")
