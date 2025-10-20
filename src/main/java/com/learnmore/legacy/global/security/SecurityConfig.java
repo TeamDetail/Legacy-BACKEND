@@ -71,7 +71,7 @@ public class SecurityConfig {
                         .requestMatchers("/ruins/**").permitAll()
                         //quiz
                         .requestMatchers(HttpMethod.POST,"/quiz/check").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/quiz/**").permitAll()
+                        .requestMatchers("/quiz/**").hasAnyRole("USER", "ADMIN")
                         //mail
                         .requestMatchers("/mail/**").hasAnyRole("USER", "ADMIN")
                         //kakao-auth

@@ -4,11 +4,11 @@ import com.learnmore.legacy.domain.achievement.model.enums.AchievementType;
 import com.learnmore.legacy.domain.achievement.service.AchievementProgressService;
 import com.learnmore.legacy.domain.block.service.BlockService;
 import com.learnmore.legacy.domain.card.model.Card;
-import com.learnmore.legacy.domain.card.model.repo.CardJpaRepo;
 import com.learnmore.legacy.domain.card.model.CardHistory;
 import com.learnmore.legacy.domain.card.model.Deck;
 import com.learnmore.legacy.domain.card.model.enums.CardType;
 import com.learnmore.legacy.domain.card.model.repo.CardHistoryJpaRepo;
+import com.learnmore.legacy.domain.card.model.repo.CardJpaRepo;
 import com.learnmore.legacy.domain.card.model.repo.DeckJpaRepo;
 import com.learnmore.legacy.domain.quiz.error.QuizError;
 import com.learnmore.legacy.domain.quiz.model.Quiz;
@@ -25,7 +25,6 @@ import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizWebRes;
 import com.learnmore.legacy.domain.ruins.error.RuinsError;
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import com.learnmore.legacy.domain.ruins.model.repo.RuinsJpaRepo;
-import com.learnmore.legacy.domain.store.error.StoreError;
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
@@ -62,11 +61,18 @@ public class QuizService {
 
         User user = userJpaRepo.findByUserId(userId);
 
-        if (user.getCredit()<1000) {
-            throw new CustomException(StoreError.CREDIT_ERROR);
-        }
+        int exploreCount = user.getWebExploreCount();
 
-        user.removeCredit(1000);
+        //탐험 1회 추가
+        user.setWebExploreCount(exploreCount + 1);
+
+        //차감 금액 = 탐험횟수 * 1000
+        int cost = user.getWebExploreCount() * 1000;
+
+        //크레딧 차감
+        user.useCredit(cost);
+
+        user.useCredit(1000);
 
         List<Quiz> quizzes = quizJpaRepo.findAllByRuinsId(ruinsId);
 
@@ -106,9 +112,13 @@ public class QuizService {
                 }).toList();
     }
 
-    public String gethint(Long quizId){
+    public String gethint(Long quizId, Long userId) {
         Quiz quiz = quizJpaRepo.findById(quizId)
                 .orElseThrow(() -> new CustomException(QuizError.QUIZ_NOT_FOUND));
+
+        User user = userJpaRepo.findByUserId(userId);
+
+        user.useCredit(300);
 
         return quiz.getHint();
     }
