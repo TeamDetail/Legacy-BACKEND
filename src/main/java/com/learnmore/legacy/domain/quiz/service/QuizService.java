@@ -21,10 +21,13 @@ import com.learnmore.legacy.domain.quiz.presentation.dto.request.QuizAnswerReq;
 import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizAnswerRes;
 import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizAnswerResult;
 import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizRes;
+import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizWebRes;
 import com.learnmore.legacy.domain.ruins.error.RuinsError;
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import com.learnmore.legacy.domain.ruins.model.repo.RuinsJpaRepo;
+import com.learnmore.legacy.domain.store.error.StoreError;
 import com.learnmore.legacy.domain.user.model.User;
+import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +53,37 @@ public class QuizService {
     private final CardHistoryJpaRepo cardHistoryJpaRepo;
     private final DeckJpaRepo deckJpaRepo;
     private final UserSessionHolder userSessionHolder;
+    private final UserJpaRepo userJpaRepo;
+
+    @Transactional
+    public List<QuizWebRes> getWebQuiz(Long ruinsId, Long userId) {
+        Ruins ruins = ruinsJpaRepo.findById(ruinsId)
+                .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
+
+        User user = userJpaRepo.findByUserId(userId);
+
+        if (user.getCredit()<1000) {
+            throw new CustomException(StoreError.CREDIT_ERROR);
+        }
+
+        user.removeCredit(1000);
+
+        List<Quiz> quizzes = quizJpaRepo.findAllByRuinsId(ruinsId);
+
+        Collections.shuffle(quizzes);
+
+        return quizzes.stream()
+                .limit(3)
+                .map(quiz -> {
+                    List<QuizOption> options = quizOptionJpaRepo.findByQuiz_QuizId(quiz.getQuizId());
+
+                    List<String> optionsContents = options.stream()
+                            .map(QuizOption::getOptionValue)
+                            .collect(Collectors.toList());
+
+                    return  QuizWebRes.from(quiz, ruins, optionsContents, user.getCredit());
+                }).toList();
+    }
 
     public List<QuizRes> getQuiz(Long ruinsId) {
         Ruins ruins = ruinsJpaRepo.findById(ruinsId)
