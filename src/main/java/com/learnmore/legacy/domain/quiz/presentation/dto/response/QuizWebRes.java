@@ -2,7 +2,6 @@ package com.learnmore.legacy.domain.quiz.presentation.dto.response;
 
 import com.learnmore.legacy.domain.quiz.model.Quiz;
 import com.learnmore.legacy.domain.ruins.model.Ruins;
-import com.learnmore.legacy.domain.user.model.User;
 
 import java.util.List;
 

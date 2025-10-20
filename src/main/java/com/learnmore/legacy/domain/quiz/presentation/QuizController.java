@@ -39,7 +39,8 @@ public class QuizController {
     @Operation(summary = "힌트 조회", description = "힌트를 조회합니다.")
     @GetMapping("/hint/{quizId}")
     public ResponseEntity<BaseResponse<String>> getHint(@PathVariable Long quizId) {
-        return BaseResponse.of(quizService.gethint(quizId));
+        Long userId = userSessionHolder.get().getUserId();
+        return BaseResponse.of(quizService.gethint(quizId, userId));
     }
 
     @Operation(summary = "퀴즈 정답 확인", description = "사용자의 퀴즈 정답을 확인합니다.")

@@ -35,6 +35,10 @@ public class User {
     @Column(nullable = false)
     private Integer credit;
 
+    @Setter
+    @Column(name = "web_explore_count")
+    private int webExploreCount = 0;
+
     @CreationTimestamp
     @Column(name = "create_at", nullable = false, updatable = false)
     private LocalDateTime createAt;
