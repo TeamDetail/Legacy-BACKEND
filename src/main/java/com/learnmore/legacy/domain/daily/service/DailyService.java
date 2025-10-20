@@ -44,6 +44,7 @@ public class DailyService {
     private final InventoryHistoryJpaRepo inventoryHistoryJpaRepo;
 
     public List<DailyRes> getDaily() {
+        User user = userSessionHolder.get();
         LocalDate today = LocalDate.now();
 
         List<DailyCheck> activeEvents = dailyCheckJpaRepo
@@ -54,7 +55,8 @@ public class DailyService {
         return activeEvents.stream()
                 .map(event -> {
                     List<List<AwardRes>> awards = getAwardsByEvent(event.getDailyCheckId());
-                    return DailyRes.from(event, awards);
+                    Integer checkCount = calculateDayNumber(user, event);
+                    return DailyRes.from(event, awards, checkCount);
                 })
                 .collect(Collectors.toList());
     }

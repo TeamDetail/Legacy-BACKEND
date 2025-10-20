@@ -19,15 +19,17 @@ public class DailyRes {
     private LocalDate startAt;
     private LocalDate endAt;
     private List<List<AwardRes>> awards;
+    private Integer checkCount;
 
 
-    public static DailyRes from(DailyCheck dailyCheck, List<List<AwardRes>> awards) {
+    public static DailyRes from(DailyCheck dailyCheck, List<List<AwardRes>> awards, Integer checkCount) {
         return DailyRes.builder()
                 .id(dailyCheck.getDailyCheckId())
                 .name(dailyCheck.getDailyName())
                 .startAt(dailyCheck.getStartAt())
                 .endAt(dailyCheck.getEndAt())
                 .awards(awards)
+                .checkCount(checkCount)
                 .build();
     }
 }
