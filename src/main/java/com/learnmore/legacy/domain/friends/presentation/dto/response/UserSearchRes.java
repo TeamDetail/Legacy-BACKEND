@@ -8,7 +8,7 @@ public record UserSearchRes(
         String nickname,
         String profileImage,
         Integer level,
-        Long styleId,
+        Integer styleId,
         String styleName,
         String friendCode,  // 이 코드를 사용해서 친구 요청
         boolean isAlreadyFriend  // 이미 친구인지 여부

@@ -14,13 +14,13 @@ public record FriendRequestRes(
         String senderNickname,
         String senderProfileImage,
         Integer senderLevel,
-        Long senderStyleId,
+        Integer senderStyleId,
         String senderStyleName,
 
         String receiverNickname,
         String receiverProfileImage,
         Integer receiverLevel,
-        Long receiverStyleId,
+        Integer receiverStyleId,
         String receiverStyleName,
 
         FriendRequestStatus status,

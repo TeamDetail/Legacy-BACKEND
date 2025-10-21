@@ -8,7 +8,7 @@ public record FriendRes(
         String nickname,
         String profileImage,
         Integer level,
-        Long styleId,
+        Integer styleId,
         String styleName,
         String friendCode,
         Boolean isKakaoFriend,
