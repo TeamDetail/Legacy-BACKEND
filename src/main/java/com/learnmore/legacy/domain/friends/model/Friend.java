@@ -30,6 +30,9 @@ public class Friend {
     @Column(name = "friend_level", nullable = false)
     private Integer friendLevel;
 
+    @Column(name = "friend_style_name")
+    private String friendStyleName;
+
     @Column(name = "is_kakao_friend", nullable = false)
     private Boolean isKakaoFriend = false;
 
@@ -38,10 +41,11 @@ public class Friend {
     private LocalDateTime createdAt;
 
     @Builder
-    public Friend(Long userId, Long friendId, Integer friendLevel, Boolean isKakaoFriend) {
+    public Friend(Long userId, Long friendId, Integer friendLevel, String friendStyleName, Boolean isKakaoFriend) {
         this.userId = userId;
         this.friendId = friendId;
         this.friendLevel = friendLevel;
+        this.friendStyleName = friendStyleName;
         this.isKakaoFriend = isKakaoFriend != null ? isKakaoFriend : false;
     }
 }

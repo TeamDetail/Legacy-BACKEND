@@ -10,8 +10,11 @@ import java.util.Optional;
 
 @Repository
 public interface DailyCheckHistoryJpaRepo extends JpaRepository<DailyCheckHistory, Long> {
-    boolean existsByUser_UserIdAndDailyCheckAndCheckDate(Long userId, DailyCheck event, LocalDate today);
-
+    boolean existsByUser_UserIdAndDailyCheck_DailyCheckIdAndCheckDate(
+            Long userId,
+            Long dailyCheckId,  // ← DailyCheck 객체가 아닌 Long!
+            LocalDate checkDate
+    );
     Optional<DailyCheckHistory> findFirstByUser_UserIdAndDailyCheck_DailyCheckIdOrderByCheckDateDesc(Long userId, Long dailyCheckId);
 
     Optional<DailyCheckHistory> findByUser_UserIdAndDailyCheck_DailyCheckIdAndCheckDate(Long userId, Long dailyCheckId, LocalDate today);

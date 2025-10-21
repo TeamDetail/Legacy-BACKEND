@@ -98,14 +98,21 @@ public class FriendService {
 
         return users.stream()
                 .filter(user -> !user.getUserId().equals(userId)) // 본인 제외
-                .map(user -> UserSearchRes.builder()
-                        .userId(user.getUserId())
-                        .nickname(user.getNickname())
-                        .profileImage(user.getImageUrl())
-                        .level(user.getLevel())
-                        .friendCode(FriendCodeUtil.encode(user.getUserId())) // 친구 코드 생성
-                        .isAlreadyFriend(friendIds.contains(user.getUserId()))
-                        .build())
+                .map(user -> {
+                    Style style = styleService.findEquipStyle(user);
+
+                    String styleName = style != null ? style.getStyle().getStyleName() : null;
+
+                    return UserSearchRes.builder()
+                            .userId(user.getUserId())
+                            .nickname(user.getNickname())
+                            .profileImage(user.getImageUrl())
+                            .level(user.getLevel())
+                            .friendCode(FriendCodeUtil.encode(user.getUserId()))
+                            .isAlreadyFriend(friendIds.contains(user.getUserId()))
+                            .styleName(styleName)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
@@ -122,7 +129,6 @@ public class FriendService {
             log.debug("Successfully decoded to receiverId: {}", receiverId);
 
         } catch (IllegalArgumentException e) {
-            // FriendCodeUtil의 구체적인 에러 메시지 로깅
             log.error("Invalid friend code '{}': {}", friendCode, e.getMessage());
             throw new CustomException(FriendsError.INVALID_FRIEND_CODE);
         } catch (Exception e) {
@@ -130,7 +136,7 @@ public class FriendService {
             throw new CustomException(FriendsError.INVALID_FRIEND_CODE);
         }
 
-        // 자기 자신에게 요청하는지 확인
+        // 1. 자기 자신에게 요청하는지 확인
         if (senderId.equals(receiverId)) {
             throw new CustomException(FriendsError.SELF_FRIEND_REQUEST);
         }
@@ -143,21 +149,22 @@ public class FriendService {
             throw new CustomException(FriendsError.USER_NOT_FOUND);
         }
 
-        // 이미 친구인지 확인
+        // 2. 이미 친구인지 확인
         if (friendJpaRepo.existsFriendship(senderId, receiverId)) {
             throw new CustomException(FriendsError.FRIEND_ALREADY_EXISTS);
         }
 
-        // 이미 보낸 요청이 있는지 확인
-        if (friendRequestJpaRepo.existsBySenderIdAndReceiverIdAndStatus(
-                senderId, receiverId, FriendRequestStatus.PENDING)) {
-            throw new CustomException(FriendsError.FRIEND_REQUEST_ALREADY_SENT);
-        }
+        // 3. 중복 요청/이력 확인 (Duplicate entry 에러 방지 핵심)
+        // DB의 unique_sender_receiver 제약 조건에 위배되는 레코드(PENDING이 아니더라도)가 있는지 확인합니다.
+        boolean requestExists =
+                friendRequestJpaRepo.existsBySenderIdAndReceiverId(senderId, receiverId) || // A -> B 요청 이력 확인
+                        friendRequestJpaRepo.existsBySenderIdAndReceiverId(receiverId, senderId);  // B -> A 요청 이력 확인
 
-        // 상대방이 나에게 이미 요청을 보냈는지 확인
-        if (friendRequestJpaRepo.existsBySenderIdAndReceiverIdAndStatus(
-                receiverId, senderId, FriendRequestStatus.PENDING)) {
+        if (requestExists) {
+            // PENDING 상태 여부와 관계없이 이미 요청 레코드가 존재하는 경우
             throw new CustomException(FriendsError.FRIEND_REQUEST_ALREADY_SENT);
+
+            // 참고: 만약 PENDING 상태만 막고 싶다면, 기존 로직 유지 후 DB 제약 조건을 'sender_id, receiver_id, status가 PENDING일 때'만 unique 하도록 수정해야 합니다.
         }
 
         // 친구 요청 저장 (레벨 정보 포함)
@@ -169,6 +176,7 @@ public class FriendService {
                 .status(FriendRequestStatus.PENDING)
                 .build();
 
+        // 4. 요청 저장
         friendRequestJpaRepo.save(friendRequest);
         log.info("친구 요청 전송: senderId={}, receiverId={}, senderLevel={}, receiverLevel={}",
                 senderId, receiverId, sender.getLevel(), receiver.getLevel());
@@ -199,9 +207,19 @@ public class FriendService {
         User sender = userService.findByUserId(request.getSenderId());
         User receiver = userService.findByUserId(request.getReceiverId());
 
+        Style senderStyle = styleService.findEquipStyle(sender);
+        Style receiverStyle = styleService.findEquipStyle(receiver);
+
+
+        String senderStyleName = senderStyle != null ? senderStyle.getStyle().getStyleName() : null;
+        String receiverStyleName = receiverStyle != null ? receiverStyle.getStyle().getStyleName() : null;
+
+
         if (sender != null && receiver != null) {
             addFriendshipWithLevel(request.getSenderId(), request.getReceiverId(),
-                    sender.getLevel(), receiver.getLevel(), false);
+                    sender.getLevel(), receiver.getLevel(),
+                    senderStyleName, receiverStyleName,
+                    false);
         }
     }
 
@@ -239,6 +257,8 @@ public class FriendService {
                         if (user != null) {
                             Style style = styleService.findEquipStyle(user);
 
+                            String styleName = style != null ? style.getStyle().getStyleName() : null;
+
                             return FriendRes.builder()
                                     .userId(friend.getFriendId())
                                     .nickname(user.getNickname())
@@ -247,9 +267,7 @@ public class FriendService {
                                     .friendCode(FriendCodeUtil.encode(friend.getFriendId()))
                                     .isKakaoFriend(friend.getIsKakaoFriend())
                                     .isMutualFriend(true)
-                                    .styleName(
-                                            style != null ? style.getStyle().getStyleName() : null
-                                    )
+                                    .styleName(styleName)
                                     .build();
                         }
                         return null;
@@ -270,19 +288,30 @@ public class FriendService {
         List<FriendRequest> requests = friendRequestJpaRepo
                 .findBySenderIdAndStatus(userId, FriendRequestStatus.PENDING);
 
+
         return requests.stream()
                 .map(request -> {
                     try {
+                        User sender = userService.findByUserId(request.getSenderId());
                         User receiver = userService.findByUserId(request.getReceiverId());
+
+                        Style senderStyle = styleService.findEquipStyle(sender);
+                        Style receiverStyle = styleService.findEquipStyle(receiver);
+
+                        String senderStyleName = senderStyle != null ? senderStyle.getStyle().getStyleName() : null;
+                        String receiverStyleName = receiverStyle != null ? receiverStyle.getStyle().getStyleName() : null;
+
                         if (receiver != null) {
                             return FriendRequestRes.builder()
                                     .requestId(request.getId())
                                     .senderId(request.getSenderId())
                                     .receiverId(request.getReceiverId())
                                     .senderLevel(request.getSenderLevel())  // 보낸 사람 레벨
+                                    .senderStyleName(senderStyleName)
                                     .receiverNickname(receiver.getNickname())
                                     .receiverProfileImage(receiver.getImageUrl())
                                     .receiverLevel(request.getReceiverLevel())  // 받는 사람 레벨
+                                    .receiverStyleName(receiverStyleName)
                                     .status(request.getStatus())
                                     .createdAt(request.getCreatedAt())
                                     .build();
@@ -334,6 +363,14 @@ public class FriendService {
                 .map(request -> {
                     try {
                         User sender = userService.findByUserId(request.getSenderId());
+                        User receiver = userService.findByUserId(request.getReceiverId());
+
+                        Style senderStyle = styleService.findEquipStyle(sender);
+                        Style receiverStyle = styleService.findEquipStyle(receiver);
+
+                        String senderStyleName = senderStyle != null ? senderStyle.getStyle().getStyleName() : null;
+                        String receiverStyleName = receiverStyle != null ? receiverStyle.getStyle().getStyleName() : null;
+
                         if (sender != null) {
                             return FriendRequestRes.builder()
                                     .requestId(request.getId())
@@ -342,7 +379,9 @@ public class FriendService {
                                     .senderNickname(sender.getNickname())
                                     .senderProfileImage(sender.getImageUrl())
                                     .senderLevel(request.getSenderLevel())  // 보낸 사람 레벨
+                                    .senderStyleName(senderStyleName)
                                     .receiverLevel(request.getReceiverLevel())  // 받는 사람 레벨
+                                    .receiverStyleName(receiverStyleName)
                                     .status(request.getStatus())
                                     .createdAt(request.getCreatedAt())
                                     .build();
@@ -360,8 +399,8 @@ public class FriendService {
     /**
      * 친구 삭제
      */
+    @Transactional // 트랜잭션 보장
     public void removeFriend(Long userId, Long friendId) {
-        // 양방향 친구 관계 모두 삭제
         List<Friend> friendships = friendJpaRepo.findAllFriendshipsBetween(userId, friendId);
 
         if (friendships.isEmpty()) {
@@ -369,7 +408,8 @@ public class FriendService {
         }
 
         friendJpaRepo.deleteAll(friendships);
-        //도전과제 친구 -1
+
+        friendRequestJpaRepo.deleteMutualRequests(userId, friendId);
     }
 
     /**
@@ -377,12 +417,14 @@ public class FriendService {
      */
     private void addFriendshipWithLevel(Long userId1, Long userId2,
                                         Integer user1Level, Integer user2Level,
+                                        String user1StyleName, String user2StyleName,
                                         boolean isKakaoFriend) {
         // A -> B 친구 관계 (B의 레벨 저장)
         Friend friendship1 = Friend.builder()
                 .userId(userId1)
                 .friendId(userId2)
                 .friendLevel(user2Level)  // 친구(B)의 레벨
+                .friendStyleName(user2StyleName)
                 .isKakaoFriend(isKakaoFriend)
                 .build();
 
@@ -391,6 +433,7 @@ public class FriendService {
                 .userId(userId2)
                 .friendId(userId1)
                 .friendLevel(user1Level)  // 친구(A)의 레벨
+                .friendStyleName(user1StyleName)
                 .isKakaoFriend(isKakaoFriend)
                 .build();
 
@@ -407,12 +450,20 @@ public class FriendService {
         User user1 = userService.findByUserId(userId1);
         User user2 = userService.findByUserId(userId2);
 
+        Style user1Style = styleService.findEquipStyle(user1);
+        Style user2Style = styleService.findEquipStyle(user2);
+
+        String user1StyleName = user1Style != null ? user1Style.getStyle().getStyleName() : null;
+        String user2StyleName = user2Style != null ? user2Style.getStyle().getStyleName() : null;
+
         if (user1 == null || user2 == null) {
             log.warn("친구 관계 생성 실패: 유저 정보를 찾을 수 없습니다. userId1={}, userId2={}", userId1, userId2);
             return;
         }
 
-        addFriendshipWithLevel(userId1, userId2, user1.getLevel(), user2.getLevel(), isKakaoFriend);
+        addFriendshipWithLevel(userId1, userId2, user1.getLevel(), user2.getLevel(),
+                user1StyleName, user2StyleName,
+                isKakaoFriend);
     }
 
     /**
