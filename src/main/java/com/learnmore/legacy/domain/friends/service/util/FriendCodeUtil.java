@@ -7,7 +7,7 @@ public class FriendCodeUtil {
 
     private static final char[] BASE62_CHARS =
             "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
-    private static final int CODE_LENGTH = 6;
+    private static final int CODE_LENGTH = 12; // 👈 6자리에서 12자리로 수정
 
     // 난독화(Obfuscation)를 위한 XOR 키.
     // 실제 userId와 encodedValue 간의 연관성을 끊어 유추를 어렵게 합니다.
@@ -23,9 +23,9 @@ public class FriendCodeUtil {
     }
 
     /**
-     * User ID를 난독화하여 6자리 고정 길이의 Base62 친구 코드로 인코딩합니다.
+     * User ID를 난독화하여 12자리 고정 길이의 Base62 친구 코드로 인코딩합니다.
      * @param userId 인코딩할 유저 ID
-     * @return 6자리 Base62 친구 코드
+     * @return 12자리 Base62 친구 코드
      */
     public static String encode(long userId) {
         // 1. 난독화: 유저 ID와 XOR 연산을 수행하여 원본 ID 유추를 어렵게 합니다.
@@ -45,7 +45,7 @@ public class FriendCodeUtil {
             } while (value > 0);
         }
 
-        // 3. 6자리 고정 길이를 위해 남은 부분을 '0'으로 패딩 (가장 앞쪽에 0이 채워짐)
+        // 3. 12자리 고정 길이를 위해 남은 부분을 '0'으로 패딩 (가장 앞쪽에 0이 채워짐)
         while (sb.length() < CODE_LENGTH) {
             sb.append('0');
         }
@@ -54,8 +54,8 @@ public class FriendCodeUtil {
     }
 
     /**
-     * 6자리 고정 길이 Base62 친구 코드를 디코딩하여 원본 User ID를 반환합니다.
-     * @param code 6자리 Base62 친구 코드
+     * 12자리 고정 길이 Base62 친구 코드를 디코딩하여 원본 User ID를 반환합니다.
+     * @param code 12자리 Base62 친구 코드
      * @return 원본 User ID
      */
     public static long decode(String code) {
@@ -75,7 +75,7 @@ public class FriendCodeUtil {
 
         // 1. Base62 디코딩
         long obfuscatedValue = 0;
-        long power = 1;
+        long power = 1; // 62^0, 62^1, 62^2, ...
 
         for (int i = code.length() - 1; i >= 0; i--) {
             char c = code.charAt(i);
