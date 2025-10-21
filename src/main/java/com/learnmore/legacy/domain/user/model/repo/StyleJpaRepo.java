@@ -19,7 +19,7 @@ public interface StyleJpaRepo extends JpaRepository<Style, Long> {
 
     Optional<Style> findByUserAndIsEquipTrue(User user);
 
-    Optional<Style> findByUserAndStyleId(User user, Long styleId);
+    Optional<Style> findByUserAndStyle_UserStyleId(User user, Long styleUserStyleId);
 
     @Query("SELECT new com.learnmore.legacy.domain.user.presentation.dto.response.UserStyleRes(s.style.styleName, s.style.styleContent, s.style.grade) " +
             "FROM Style s WHERE s.user = :user")
