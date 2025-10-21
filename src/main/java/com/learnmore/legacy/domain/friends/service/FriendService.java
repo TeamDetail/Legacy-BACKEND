@@ -233,16 +233,17 @@ public class FriendService {
         FriendRequest request = friendRequestJpaRepo.findById(requestId)
                 .orElseThrow(() -> new CustomException(FriendsError.FRIEND_REQUEST_NOT_FOUND));
 
+        // 요청 받은 사람이 맞는지 확인
         if (!request.getReceiverId().equals(userId)) {
             throw new CustomException(FriendsError.UNAUTHORIZED);
         }
 
+        // 이미 처리된 요청인지 확인
         if (request.getStatus() != FriendRequestStatus.PENDING) {
             throw new CustomException(FriendsError.FRIEND_REQUEST_ALREADY_PROCESSED);
         }
 
-        request.updateStatus(FriendRequestStatus.DECLINED);
-        friendRequestJpaRepo.save(request);
+        friendRequestJpaRepo.delete(request);
     }
 
     /**
@@ -356,9 +357,6 @@ public class FriendService {
 
         // 요청 삭제
         friendRequestJpaRepo.delete(request);
-
-        log.info("친구 요청 취소: requestId={}, senderId={}, receiverId={}",
-                requestId, userId, request.getReceiverId());
     }
 
     /**
