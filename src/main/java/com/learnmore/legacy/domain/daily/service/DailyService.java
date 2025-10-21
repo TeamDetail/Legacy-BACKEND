@@ -93,7 +93,7 @@ public class DailyService {
         int dayNumber = calculateDayNumber(user, event);
 
         Optional<DailyCheckHistory> history = dailyCheckHistoryJpaRepo
-                .findFirstByUser_UserIdAndDailyCheck_DailyCheckIdOrderByCheckDateDesc(
+                .findByUser_UserIdAndDailyCheck_DailyCheckId(
                         user.getUserId(),
                         dailyCheckId
                 );
@@ -207,7 +207,7 @@ public class DailyService {
     private int calculateDayNumber(User user, DailyCheck dailyCheck) {
         // 해당 이벤트에서 사용자의 마지막 출석 기록 조회 (dayNumber 기준)
         Optional<DailyCheckHistory> lastHistory = dailyCheckHistoryJpaRepo
-                .findFirstByUser_UserIdAndDailyCheck_DailyCheckIdOrderByCheckDateDesc(user.getUserId(), dailyCheck.getDailyCheckId());
+                .findByUser_UserIdAndDailyCheck_DailyCheckId(user.getUserId(), dailyCheck.getDailyCheckId());
 
         // 첫 출석이면 1 아니면 기존꺼에 + 1
         return lastHistory.map(dailyCheckHistory -> dailyCheckHistory.getDayNumber() + 1).orElse(1);
