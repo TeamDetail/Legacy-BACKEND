@@ -14,21 +14,24 @@ import com.learnmore.legacy.global.exception.CustomException;
 import com.learnmore.legacy.global.properties.GoogleProperties;
 import com.learnmore.legacy.global.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
@@ -38,11 +41,6 @@ public class GoogleService {
     private final GoogleTokenVerifier tokenVerifier;
     private final UserService userService;
     private final JwtProvider jwtProvider;
-
-    private final WebClient webClient = WebClient.builder()
-            .baseUrl("https://oauth2.googleapis.com")
-            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-            .build();
 
     @Transactional
     public TokenRes loginWithWeb(GoogleCodeReq request) {
@@ -87,26 +85,40 @@ public class GoogleService {
     }
 
     private GoogleTokenResponse exchangeCodeForToken(String code) {
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add("grant_type", "authorization_code");
-        formData.add("client_id", googleProperties.getClientId());
-        formData.add("client_secret", googleProperties.getClientSecret());
-        formData.add("code", code);
-        formData.add("redirect_uri", googleProperties.getRedirectUri());
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "https://oauth2.googleapis.com/token";
 
-        return webClient.post()
-                .uri("/token")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .bodyValue(formData)
-                .retrieve()
-                .onStatus(HttpStatusCode::isError, response ->
-                        response.bodyToMono(String.class)
-                                .flatMap(errorBody -> Mono.error(
-                                        new CustomException(GoogleAuthError.TOKEN_REQUEST_FAILED, errorBody)
-                                ))
-                )
-                .bodyToMono(GoogleTokenResponse.class)
-                .block(Duration.ofSeconds(5));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "authorization_code");
+        params.add("client_id", googleProperties.getClientId());
+        params.add("client_secret", googleProperties.getClientSecret());
+        params.add("code", code);
+        params.add("redirect_uri", googleProperties.getRedirectUri());
+
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
+
+        try {
+            ResponseEntity<GoogleTokenResponse> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    requestEntity,
+                    GoogleTokenResponse.class
+            );
+
+            if (response.getBody() == null) {
+                throw new CustomException(GoogleAuthError.TOKEN_REQUEST_FAILED, "Empty response");
+            }
+
+            return response.getBody();
+
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw new CustomException(GoogleAuthError.TOKEN_REQUEST_FAILED, e.getResponseBodyAsString());
+        } catch (Exception e) {
+            throw new CustomException(GoogleAuthError.TOKEN_REQUEST_FAILED, e.getMessage());
+        }
     }
 
     private Long processUser(GoogleUserInfo googleUser) {
