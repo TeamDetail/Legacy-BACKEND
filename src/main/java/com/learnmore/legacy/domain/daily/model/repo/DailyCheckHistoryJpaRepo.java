@@ -2,7 +2,6 @@ package com.learnmore.legacy.domain.daily.model.repo;
 
 import com.learnmore.legacy.domain.daily.model.DailyCheck;
 import com.learnmore.legacy.domain.daily.model.DailyCheckHistory;
-import com.learnmore.legacy.domain.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface DailyCheckHistoryJpaRepo extends JpaRepository<DailyCheckHistory, Long> {
-    boolean existsByUserAndDailyCheckAndCheckDate(User user, DailyCheck event, LocalDate today);
+    boolean existsByUser_UserIdAndDailyCheckAndCheckDate(Long userId, DailyCheck event, LocalDate today);
 
     Optional<DailyCheckHistory> findFirstByUser_UserIdAndDailyCheck_DailyCheckIdOrderByCheckDateDesc(Long userId, Long dailyCheckId);
 

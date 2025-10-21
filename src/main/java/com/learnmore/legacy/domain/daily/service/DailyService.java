@@ -58,7 +58,7 @@ public class DailyService {
                     Integer checkCount = calculateDayNumber(user, event) - 1;
 
                     boolean isCheck = dailyCheckHistoryJpaRepo
-                            .existsByUserAndDailyCheckAndCheckDate(user, event, today);
+                            .existsByUser_UserIdAndDailyCheckAndCheckDate(user.getUserId(), event, today);
 
                     return DailyRes.from(event, awards, checkCount, isCheck);
                 })
