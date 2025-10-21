@@ -20,6 +20,7 @@ import com.learnmore.legacy.domain.store.model.Store;
 import com.learnmore.legacy.domain.store.model.enums.StoreType;
 import com.learnmore.legacy.domain.store.model.repo.StoreJpaRepo;
 import com.learnmore.legacy.domain.user.model.User;
+import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -42,9 +43,11 @@ public class DailyService {
     private final UserSessionHolder userSessionHolder;
     private final InventoryJpaRepo inventoryJpaRepo;
     private final InventoryHistoryJpaRepo inventoryHistoryJpaRepo;
+    private final UserJpaRepo userJpaRepo;
 
-    public List<DailyRes> getDaily() {
-        User user = userSessionHolder.get();
+    public List<DailyRes> getDaily(Long userId) {
+//        User user = userSessionHolder.get();
+        User user = userJpaRepo.findByUserId(userId);
         LocalDate today = LocalDate.now();
 
         List<DailyCheck> activeEvents = dailyCheckJpaRepo
@@ -66,8 +69,8 @@ public class DailyService {
     }
 
     @Transactional
-    public List<AwardRes> addTodayAward(Long dailyCheckId) {
-        User user = userSessionHolder.get();
+    public List<AwardRes> addTodayAward(Long dailyCheckId, Long userId) {
+        User user = userJpaRepo.findByUserId(userId);
         LocalDate today = LocalDate.now();
 
         // dailyCheckId로 직접 조회
@@ -82,24 +85,37 @@ public class DailyService {
         }
 
         // 오늘 이미 출석했는지 확인
-        boolean alreadyChecked = dailyCheckHistoryJpaRepo
-                .existsByUserAndDailyCheckAndCheckDate(user, event, today);
+        Optional<DailyCheckHistory> existingHistory = dailyCheckHistoryJpaRepo
+                .findByUserAndDailyCheckAndCheckDate(user, event, today);
 
-        if (alreadyChecked) {
+        if (existingHistory.isPresent()) {
             throw new CustomException(DailyError.DAILY_ALREADY);
         }
 
         // 연속 출석 일수 계산
         int dayNumber = calculateDayNumber(user, event);
 
-        // 출석 기록 저장
-        DailyCheckHistory history = DailyCheckHistory.builder()
-                .user(user)
-                .dailyCheck(event)
-                .checkDate(today)
-                .dayNumber(dayNumber)
-                .build();
-        dailyCheckHistoryJpaRepo.save(history);
+        // 기존 레코드 찾기 (user + dailyCheck 기준)
+        Optional<DailyCheckHistory> history = dailyCheckHistoryJpaRepo
+                .findByUserAndDailyCheck(user, event);
+
+        DailyCheckHistory record;
+        if (history.isPresent()) {
+            // 기존 레코드 업데이트
+            record = history.get();
+            record.updateCheckDate(today);
+            record.updateDayNumber(dayNumber);
+        } else {
+            // 새로운 레코드 생성
+            record = DailyCheckHistory.builder()
+                    .user(user)
+                    .dailyCheck(event)
+                    .checkDate(today)
+                    .dayNumber(dayNumber)
+                    .build();
+        }
+
+        dailyCheckHistoryJpaRepo.save(record);
 
         // 해당 일차의 보상 조회
         List<DailyCheckItem> rewards = dailyCheckItemJpaRepo
@@ -113,7 +129,6 @@ public class DailyService {
             grantRewards(user, item);
         }
 
-        // 보상 정보를 AwardRes로 변환하여 반환
         return rewards.stream()
                 .map(this::convertToAwardRes)
                 .collect(Collectors.toList());

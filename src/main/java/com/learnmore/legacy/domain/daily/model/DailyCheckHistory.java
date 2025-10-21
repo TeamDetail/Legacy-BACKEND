@@ -41,4 +41,12 @@ public class DailyCheckHistory {
     @CreationTimestamp
     @Column(name = "create_at", nullable = false)
     private LocalDateTime createAt;
+
+    public void updateCheckDate(LocalDate today) {
+        this.checkDate = today;
+    }
+
+    public void updateDayNumber(Integer dayNumber) {
+        this.dayNumber = dayNumber;
+    }
 }

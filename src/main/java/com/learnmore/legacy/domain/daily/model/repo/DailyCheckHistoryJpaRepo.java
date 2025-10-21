@@ -16,4 +16,8 @@ public interface DailyCheckHistoryJpaRepo extends JpaRepository<DailyCheckHistor
     boolean existsByUserAndDailyCheckAndCheckDate(User user, DailyCheck event, LocalDate today);
 
     Optional<DailyCheckHistory> findFirstByUserAndDailyCheckOrderByDayNumberDesc(User user, DailyCheck dailyCheck);
+
+    Optional<DailyCheckHistory> findByUserAndDailyCheckAndCheckDate(User user, DailyCheck event, LocalDate today);
+
+    Optional<DailyCheckHistory> findByUserAndDailyCheck(User user, DailyCheck event);
 }
