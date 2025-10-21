@@ -20,6 +20,7 @@ public class AchievementRes {
     private String achievementContent;
     private String achievementType;
     private double achieveUserPercent;
+    private String achievementGradeText;
     private boolean isReceive;
     private int currentRate;
     private int goalRate;

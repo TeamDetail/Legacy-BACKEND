@@ -146,6 +146,7 @@ public class AchievementUseCase {
                             : 0.0;
 
                     return AchievementRes.builder()
+                            .achievementGradeText(achievement.getGoalText())
                             .achievementId(achievement.getId())
                             .achievementName(achievement.getName())
                             .achievementContent(achievement.getContent())
