@@ -20,7 +20,6 @@ import com.learnmore.legacy.domain.store.model.Store;
 import com.learnmore.legacy.domain.store.model.enums.StoreType;
 import com.learnmore.legacy.domain.store.model.repo.StoreJpaRepo;
 import com.learnmore.legacy.domain.user.model.User;
-import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +42,6 @@ public class DailyService {
     private final UserSessionHolder userSessionHolder;
     private final InventoryJpaRepo inventoryJpaRepo;
     private final InventoryHistoryJpaRepo inventoryHistoryJpaRepo;
-    private final UserJpaRepo userJpaRepo;
 
     public List<DailyRes> getDaily() {
         User user = userSessionHolder.get();
@@ -68,9 +66,8 @@ public class DailyService {
     }
 
     @Transactional
-    public List<AwardRes> addTodayAward(Long dailyCheckId, Long userId) {
-//        User user = userSessionHolder.get();
-        User user = userJpaRepo.findByUserId(userId);
+    public List<AwardRes> addTodayAward(Long dailyCheckId) {
+        User user = userSessionHolder.get();
         LocalDate today = LocalDate.now();
 
         DailyCheck event = dailyCheckJpaRepo.findById(dailyCheckId)

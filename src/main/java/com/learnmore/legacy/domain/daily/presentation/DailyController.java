@@ -26,9 +26,9 @@ public class DailyController {
     }
 
     @Operation(summary = "오늘 보상 받기", description = "0시 기준 접속 시 보상을 얻습니다.")
-    @PostMapping("/{dailyId}/{userId}")
-    public ResponseEntity<BaseResponse<List<AwardRes>>> getAwards(@PathVariable Long dailyId, @PathVariable Long userId) {
-        return BaseResponse.of(dailyService.addTodayAward(dailyId, userId));
+    @PostMapping("/{dailyId}")
+    public ResponseEntity<BaseResponse<List<AwardRes>>> getAwards(@PathVariable Long dailyId) {
+        return BaseResponse.of(dailyService.addTodayAward(dailyId));
     }
 
     @Operation(summary = "출석 체크 더미 생성", description = "출석 체크를 생성합니다.")
