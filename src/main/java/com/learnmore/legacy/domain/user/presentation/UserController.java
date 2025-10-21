@@ -61,8 +61,7 @@ public class UserController {
         return BaseResponse.of("ok");
     }
 
-    //todo 칭호 데이터 들고 있고 암호화 통신
-    @Operation(summary = "칭호 등록", description = "베타 버전입니다 로그인된 유저한테 칭호를 등록합니다")
+    @Operation(summary = "칭호 등록 태스트용", description = "베타 버전입니다 로그인된 유저한테 칭호를 등록합니다")
     @PostMapping("/title")
     public ResponseEntity<BaseResponse<String>> addTitle(@RequestBody UserStyleReq req){
         userUseCase.addStyle(req);
