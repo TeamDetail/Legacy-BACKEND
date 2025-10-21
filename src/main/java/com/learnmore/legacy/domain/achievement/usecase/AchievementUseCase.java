@@ -33,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -165,21 +166,20 @@ public class AchievementUseCase {
         User user = userSessionHolder.get();
 
         Object[] sums = achievementHistoryService.getAwardSums(user.getUserId());
+        System.out.println(Arrays.deepToString(sums));
+        System.out.println("aaa");
 
         int awardExp = 0;
         int awardCredit = 0;
 
-        if (sums != null) {
-            if (sums[0] instanceof Object[] arr0 && arr0.length > 0) {
-                awardExp = arr0[0] instanceof Number n ? n.intValue() : 0;
-            } else if (sums[0] instanceof Number n0) {
-                awardExp = n0.intValue();
-            }
-
-            if (sums[1] instanceof Object[] arr1 && arr1.length > 0) {
-                awardCredit = arr1[0] instanceof Number n ? n.intValue() : 0;
-            } else if (sums[1] instanceof Number n1) {
-                awardCredit = n1.intValue();
+        if (sums != null && sums.length > 0) {
+            Object first = sums[0];
+            if (first instanceof Object[] arr && arr.length >= 2) {
+                awardExp = arr[0] instanceof Number n0 ? n0.intValue() : 0;
+                awardCredit = arr[1] instanceof Number n1 ? n1.intValue() : 0;
+            } else if (sums.length >= 2) {
+                awardExp = sums[0] instanceof Number n0 ? n0.intValue() : 0;
+                awardCredit = sums[1] instanceof Number n1 ? n1.intValue() : 0;
             }
         }
 

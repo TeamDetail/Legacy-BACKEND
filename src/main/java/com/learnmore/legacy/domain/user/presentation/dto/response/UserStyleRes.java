@@ -5,18 +5,16 @@ import com.learnmore.legacy.domain.user.model.Style;
 public record UserStyleRes(
         String name,
         String content,
-        Integer grade,
-        Long styleId
+        Integer styleId
 ) {
     public static UserStyleRes from(Style style) {
         if (style == null) {
-            return new UserStyleRes( "", "",1, 0L);
+            return new UserStyleRes( "", "", 0);
         }
         return new UserStyleRes(
                 style.getStyle().getStyleName(),
                 style.getStyle().getStyleContent(),
-                style.getStyle().getGrade(),
-                style.getStyle().getUserStyleId()
+                style.getStyle().getGrade()
         );
     }
 }
