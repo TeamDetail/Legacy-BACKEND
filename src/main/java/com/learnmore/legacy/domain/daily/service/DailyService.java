@@ -70,16 +70,16 @@ public class DailyService {
         User user = userSessionHolder.get();
         LocalDate today = LocalDate.now();
 
-        List<DailyCheck> activeEvents = dailyCheckJpaRepo
-                .findByIsActivateTrueAndStartAtLessThanEqualAndEndAtGreaterThanEqual(
-                        Date.valueOf(today).toLocalDate(),
-                        Date.valueOf(today).toLocalDate());
+        // dailyCheckId로 직접 조회
+        DailyCheck event = dailyCheckJpaRepo.findById(dailyCheckId)
+                .orElseThrow(() -> new CustomException(DailyError.DAILY_ERROR));
 
-        if (activeEvents.isEmpty()) {
+        // 해당 이벤트가 활성화되어 있고 기간 내인지 확인
+        if (!event.getIsActivate() ||
+                event.getStartAt().isAfter(today) ||
+                event.getEndAt().isBefore(today)) {
             throw new CustomException(DailyError.DAILY_ERROR);
         }
-
-        DailyCheck event = activeEvents.get(Math.toIntExact(dailyCheckId-1));
 
         // 오늘 이미 출석했는지 확인
         boolean alreadyChecked = dailyCheckHistoryJpaRepo
@@ -96,7 +96,7 @@ public class DailyService {
         DailyCheckHistory history = DailyCheckHistory.builder()
                 .user(user)
                 .dailyCheck(event)
-                .checkDate(today)  // LocalDate 저장
+                .checkDate(today)
                 .dayNumber(dayNumber)
                 .build();
         dailyCheckHistoryJpaRepo.save(history);
@@ -194,17 +194,13 @@ public class DailyService {
      * 출석 일수 계산
      */
     private int calculateDayNumber(User user, DailyCheck dailyCheck) {
-        // 해당 이벤트에서 사용자의 마지막 출석 기록 조회
+        // 해당 이벤트에서 사용자의 마지막 출석 기록 조회 (dayNumber 기준)
         Optional<DailyCheckHistory> lastHistory = dailyCheckHistoryJpaRepo
-                .findTopByUserAndDailyCheckOrderByCheckDateDesc(user, dailyCheck);
+                .findFirstByUserAndDailyCheckOrderByDayNumberDesc(user, dailyCheck);
 
-        if (lastHistory.isEmpty()) {
-            return 1; // 첫 출석
-        }
+        // 첫 출석이면 1 아니면 기존꺼에 + 1
+        return lastHistory.map(dailyCheckHistory -> dailyCheckHistory.getDayNumber() + 1).orElse(1);
 
-        DailyCheckHistory last = lastHistory.get();
-
-        return last.getDayNumber() + 1;
     }
 
     private void grantRewards(User user, DailyCheckItem reward) {

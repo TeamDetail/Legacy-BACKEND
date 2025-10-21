@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Repository
 public interface DailyCheckHistoryJpaRepo extends JpaRepository<DailyCheckHistory, Long> {
-    Optional<DailyCheckHistory> findTopByUserAndDailyCheckOrderByCheckDateDesc(User user, DailyCheck dailyCheck);
-
     boolean existsByUserAndDailyCheckAndCheckDate(User user, DailyCheck event, LocalDate today);
+
+    Optional<DailyCheckHistory> findFirstByUserAndDailyCheckOrderByDayNumberDesc(User user, DailyCheck dailyCheck);
 }
