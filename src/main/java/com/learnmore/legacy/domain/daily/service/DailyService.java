@@ -43,11 +43,9 @@ public class DailyService {
     private final UserSessionHolder userSessionHolder;
     private final InventoryJpaRepo inventoryJpaRepo;
     private final InventoryHistoryJpaRepo inventoryHistoryJpaRepo;
-    private final UserJpaRepo userJpaRepo;
 
-    public List<DailyRes> getDaily(Long userId) {
-//        User user = userSessionHolder.get();
-        User user = userJpaRepo.findByUserId(userId);
+    public List<DailyRes> getDaily() {
+        User user = userSessionHolder.get();
         LocalDate today = LocalDate.now();
 
         List<DailyCheck> activeEvents = dailyCheckJpaRepo
@@ -69,8 +67,8 @@ public class DailyService {
     }
 
     @Transactional
-    public List<AwardRes> addTodayAward(Long dailyCheckId, Long userId) {
-        User user = userJpaRepo.findByUserId(userId);
+    public List<AwardRes> addTodayAward(Long dailyCheckId) {
+        User user = userSessionHolder.get();
         LocalDate today = LocalDate.now();
 
         // dailyCheckId로 직접 조회
