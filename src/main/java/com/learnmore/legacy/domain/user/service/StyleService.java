@@ -37,7 +37,7 @@ public class StyleService {
     }
 
     public Style findByUserAndStyleId(User user,Long styleId) {
-        return styleJpaRepo.findByUserAndStyleId(user,styleId)
+        return styleJpaRepo.findByUserAndStyle_UserStyleId(user,styleId)
                 .orElseThrow(() -> new CustomException(StyleError.STYLE_NOT_FOUND));
     }
 
