@@ -23,6 +23,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -41,6 +42,7 @@ public class GoogleService {
     private final GoogleTokenVerifier tokenVerifier;
     private final UserService userService;
     private final JwtProvider jwtProvider;
+    private final RestTemplate restTemplate;
 
     @Transactional
     public TokenRes loginWithWeb(GoogleCodeReq request) {
@@ -85,39 +87,44 @@ public class GoogleService {
     }
 
     private GoogleTokenResponse exchangeCodeForToken(String code) {
-        RestTemplate restTemplate = new RestTemplate();
         String url = "https://oauth2.googleapis.com/token";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
+        String decodedCode = code.trim();
+
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", googleProperties.getClientId());
         params.add("client_secret", googleProperties.getClientSecret());
-        params.add("code", code);
+        params.add("code", decodedCode);  // trim된 코드 사용
         params.add("redirect_uri", googleProperties.getRedirectUri());
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
 
         try {
-            ResponseEntity<GoogleTokenResponse> response = restTemplate.exchange(
+            ResponseEntity<GoogleTokenResponse> response = restTemplate.postForEntity(
                     url,
-                    HttpMethod.POST,
                     requestEntity,
                     GoogleTokenResponse.class
             );
 
-            if (response.getBody() == null) {
-                throw new CustomException(GoogleAuthError.TOKEN_REQUEST_FAILED, "Empty response");
+            GoogleTokenResponse body = response.getBody();
+            if (body == null) {
+                throw new CustomException(GoogleAuthError.TOKEN_REQUEST_FAILED, "Empty response from Google");
             }
 
-            return response.getBody();
+            return body;
 
         } catch (HttpClientErrorException | HttpServerErrorException e) {
-            throw new CustomException(GoogleAuthError.TOKEN_REQUEST_FAILED, e.getResponseBodyAsString());
+            String errorMessage = String.format("Google OAuth error - Status: %s, Body: %s",
+                    e.getStatusCode(), e.getResponseBodyAsString());
+            throw new CustomException(GoogleAuthError.TOKEN_REQUEST_FAILED, errorMessage);
+        } catch (ResourceAccessException e) {
+            throw new CustomException(GoogleAuthError.TOKEN_REQUEST_FAILED, "Network error: " + e.getMessage());
         } catch (Exception e) {
-            throw new CustomException(GoogleAuthError.TOKEN_REQUEST_FAILED, e.getMessage());
+            throw new CustomException(GoogleAuthError.TOKEN_REQUEST_FAILED, "Unexpected error: " + e.getMessage());
         }
     }
 
