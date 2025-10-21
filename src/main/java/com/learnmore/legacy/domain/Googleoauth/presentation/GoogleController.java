@@ -20,10 +20,9 @@ public class GoogleController {
     @PostMapping("/web")
     @Operation(summary = "웹 Google 로그인", description = "authorization code로 로그인")
     public ResponseEntity<BaseResponse<TokenRes>> webLogin(
-            @RequestParam String code
+            @RequestBody GoogleCodeReq code
     ) {
-        GoogleCodeReq request = new GoogleCodeReq(code);
-        return BaseResponse.of(googleService.loginWithWeb(request));
+        return BaseResponse.of(googleService.loginWithWeb(code));
     }
 
     @PostMapping("/android")
