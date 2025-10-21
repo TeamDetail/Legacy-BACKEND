@@ -18,7 +18,9 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -36,7 +38,11 @@ public class GoogleService {
     private final GoogleTokenVerifier tokenVerifier;
     private final UserService userService;
     private final JwtProvider jwtProvider;
-    private final WebClient webClient = WebClient.create("https://oauth2.googleapis.com");
+
+    private final WebClient webClient = WebClient.builder()
+            .baseUrl("https://oauth2.googleapis.com")
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+            .build();
 
     @Transactional
     public TokenRes loginWithWeb(GoogleCodeReq request) {
@@ -81,15 +87,17 @@ public class GoogleService {
     }
 
     private GoogleTokenResponse exchangeCodeForToken(String code) {
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("grant_type", "authorization_code");
+        formData.add("client_id", googleProperties.getClientId());
+        formData.add("client_secret", googleProperties.getClientSecret());
+        formData.add("code", code);
+        formData.add("redirect_uri", googleProperties.getRedirectUri());
+
         return webClient.post()
                 .uri("/token")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(BodyInserters
-                        .fromFormData("grant_type", "authorization_code")
-                        .with("client_id", googleProperties.getClientId())
-                        .with("client_secret", googleProperties.getClientSecret())
-                        .with("code", code)
-                        .with("redirect_uri", googleProperties.getRedirectUri()))
+                .bodyValue(formData)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, response ->
                         response.bodyToMono(String.class)
