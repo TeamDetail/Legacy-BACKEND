@@ -20,6 +20,7 @@ import com.learnmore.legacy.domain.store.model.Store;
 import com.learnmore.legacy.domain.store.model.enums.StoreType;
 import com.learnmore.legacy.domain.store.model.repo.StoreJpaRepo;
 import com.learnmore.legacy.domain.user.model.User;
+import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,7 @@ public class DailyService {
     private final UserSessionHolder userSessionHolder;
     private final InventoryJpaRepo inventoryJpaRepo;
     private final InventoryHistoryJpaRepo inventoryHistoryJpaRepo;
+    private final UserJpaRepo userJpaRepo;
 
     public List<DailyRes> getDaily() {
         User user = userSessionHolder.get();
@@ -66,8 +68,9 @@ public class DailyService {
     }
 
     @Transactional
-    public List<AwardRes> addTodayAward(Long dailyCheckId) {
-        User user = userSessionHolder.get();
+    public List<AwardRes> addTodayAward(Long dailyCheckId, Long userId) {
+//        User user = userSessionHolder.get();
+        User user = userJpaRepo.findByUserId(userId);
         LocalDate today = LocalDate.now();
 
         DailyCheck event = dailyCheckJpaRepo.findById(dailyCheckId)
@@ -90,7 +93,7 @@ public class DailyService {
             throw new CustomException(DailyError.DAILY_ALREADY);
         }
 
-        int dayNumber = calculateDayNumber(user, event);
+        Integer dayNumber = calculateDayNumber(user, event);
 
         Optional<DailyCheckHistory> history = dailyCheckHistoryJpaRepo
                 .findByUser_UserIdAndDailyCheck_DailyCheckId(
@@ -204,7 +207,7 @@ public class DailyService {
     /**
      * 출석 일수 계산
      */
-    private int calculateDayNumber(User user, DailyCheck dailyCheck) {
+    private Integer calculateDayNumber(User user, DailyCheck dailyCheck) {
         // 해당 이벤트에서 사용자의 마지막 출석 기록 조회 (dayNumber 기준)
         Optional<DailyCheckHistory> lastHistory = dailyCheckHistoryJpaRepo
                 .findByUser_UserIdAndDailyCheck_DailyCheckId(user.getUserId(), dailyCheck.getDailyCheckId());
