@@ -2,13 +2,11 @@ package com.learnmore.legacy.global.security.jwt;
 
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
-import com.learnmore.legacy.domain.Appleoauth.AppleJwtVerifier;
 import com.learnmore.legacy.global.exception.CustomException;
 import com.learnmore.legacy.global.security.auth.AuthDetails;
 import com.learnmore.legacy.global.security.jwt.config.JwtProperties;
 import com.learnmore.legacy.global.security.jwt.enums.JwtType;
 import com.learnmore.legacy.global.security.jwt.error.JwtError;
-import com.nimbusds.jwt.JWTClaimsSet;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -19,9 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 
 @Component
 @RequiredArgsConstructor

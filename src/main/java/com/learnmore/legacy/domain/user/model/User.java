@@ -37,7 +37,7 @@ public class User {
 
     @Setter
     @Column(name = "web_explore_count")
-    private int webExploreCount = 0;
+    private Integer webExploreCount = 0;
 
     @CreationTimestamp
     @Column(name = "create_at", nullable = false, updatable = false)
