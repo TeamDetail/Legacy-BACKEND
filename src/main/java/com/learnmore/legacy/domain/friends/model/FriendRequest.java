@@ -32,8 +32,14 @@ public class FriendRequest {
     @Column(name = "sender_level", nullable = false)
     private Integer senderLevel;
 
+    @Column(name = "sender_style_name")
+    private String senderStyleName;
+
     @Column(name = "receiver_level", nullable = false)
     private Integer receiverLevel;
+
+    @Column(name = "receiver_style_name")
+    private String receiverStyleName;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

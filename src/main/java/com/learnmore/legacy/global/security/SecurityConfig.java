@@ -72,6 +72,8 @@ public class SecurityConfig {
                         //quiz
                         .requestMatchers(HttpMethod.POST,"/quiz/check").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/quiz/**").hasAnyRole("USER", "ADMIN")
+                        //fried
+                        .requestMatchers("/friends/**").hasAnyRole("USER", "ADMIN")
                         //mail
                         .requestMatchers("/mail/**").hasAnyRole("USER", "ADMIN")
                         //kakao-auth

@@ -14,10 +14,12 @@ public record FriendRequestRes(
         String senderNickname,
         String senderProfileImage,
         Integer senderLevel,
+        String senderStyleName,
 
         String receiverNickname,
         String receiverProfileImage,
         Integer receiverLevel,
+        String receiverStyleName,
 
         FriendRequestStatus status,
         LocalDateTime createdAt
