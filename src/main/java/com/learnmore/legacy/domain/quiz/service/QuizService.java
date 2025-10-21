@@ -20,6 +20,7 @@ import com.learnmore.legacy.domain.quiz.model.repo.QuizOptionJpaRepo;
 import com.learnmore.legacy.domain.quiz.presentation.dto.request.QuizAnswerReq;
 import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizAnswerRes;
 import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizAnswerResult;
+import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizCreditCostRes;
 import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizRes;
 import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizWebRes;
 import com.learnmore.legacy.domain.ruins.error.RuinsError;
@@ -218,5 +219,11 @@ public class QuizService {
     public Integer getCorrectAnswerCount(Long userId) {
         return quizHistoryJpaRepo.countByUserId(userId);
     }
-    
+
+    @Transactional(readOnly = true)
+    public QuizCreditCostRes getQuizCreditCost(Long userId) {
+        User user = userJpaRepo.findByUserId(userId);
+        return QuizCreditCostRes.from(user.getWebExploreCount());
+    }
+
 }
