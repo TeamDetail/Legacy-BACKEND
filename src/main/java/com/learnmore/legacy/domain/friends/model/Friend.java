@@ -31,7 +31,7 @@ public class Friend {
     private Integer friendLevel;
 
     @Column(name = "friend_style_id")
-    private Long friendStyleId;
+    private Integer friendStyleId;
 
     @Column(name = "friend_style_name")
     private String friendStyleName;
@@ -44,7 +44,7 @@ public class Friend {
     private LocalDateTime createdAt;
 
     @Builder
-    public Friend(Long userId, Long friendId, Integer friendLevel, Long friendStyleId, String friendStyleName, Boolean isKakaoFriend) {
+    public Friend(Long userId, Long friendId, Integer friendLevel, Integer friendStyleId, String friendStyleName, Boolean isKakaoFriend) {
         this.userId = userId;
         this.friendId = friendId;
         this.friendLevel = friendLevel;

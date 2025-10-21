@@ -101,7 +101,7 @@ public class FriendService {
                 .map(user -> {
                     Style style = styleService.findEquipStyle(user);
 
-                    Long styleId = style != null ? style.getStyleId() : null;
+                    Integer styleId = style != null ? style.getStyle().getGrade() : null;
                     String styleName = style != null ? style.getStyle().getStyleName() : null;
 
                     return UserSearchRes.builder()
@@ -210,8 +210,8 @@ public class FriendService {
         Style senderStyle = styleService.findEquipStyle(sender);
         Style receiverStyle = styleService.findEquipStyle(receiver);
 
-        Long senderStyleId = senderStyle != null ? receiverStyle.getStyleId() : null;
-        Long receiverStyleId = receiverStyle != null ? receiverStyle.getStyleId() : null;
+        Integer senderStyleId = senderStyle != null ? receiverStyle.getStyle().getGrade() : null;
+        Integer receiverStyleId = receiverStyle != null ? receiverStyle.getStyle().getGrade() : null;
 
         String senderStyleName = senderStyle != null ? senderStyle.getStyle().getStyleName() : null;
         String receiverStyleName = receiverStyle != null ? receiverStyle.getStyle().getStyleName() : null;
@@ -261,7 +261,7 @@ public class FriendService {
                         if (user != null) {
                             Style style = styleService.findEquipStyle(user);
 
-                            Long styleId = style != null ? style.getStyleId() : null;
+                            Integer styleId = style != null ? style.getStyle().getGrade() : null;
                             String styleName = style != null ? style.getStyle().getStyleName() : null;
 
                             return FriendRes.builder()
@@ -304,8 +304,8 @@ public class FriendService {
                         Style senderStyle = styleService.findEquipStyle(sender);
                         Style receiverStyle = styleService.findEquipStyle(receiver);
 
-                        Long senderStyleId = senderStyle != null ? senderStyle.getStyle().getUserStyleId() : null;
-                        Long receiverStyleId = receiverStyle != null ? receiverStyle.getStyle().getUserStyleId() : null;
+                        Integer senderStyleId = senderStyle != null ? senderStyle.getStyle().getGrade() : null;
+                        Integer receiverStyleId = receiverStyle != null ? receiverStyle.getStyle().getGrade() : null;
 
                         String senderStyleName = senderStyle != null ? senderStyle.getStyle().getStyleName() : null;
                         String receiverStyleName = receiverStyle != null ? receiverStyle.getStyle().getStyleName() : null;
@@ -376,8 +376,8 @@ public class FriendService {
                         Style senderStyle = styleService.findEquipStyle(sender);
                         Style receiverStyle = styleService.findEquipStyle(receiver);
 
-                        Long senderStyleId = senderStyle != null ? senderStyle.getStyle().getUserStyleId() : null;
-                        Long receiverStyleId = receiverStyle != null ? receiverStyle.getStyle().getUserStyleId() : null;
+                        Integer senderStyleId = senderStyle != null ? senderStyle.getStyle().getGrade() : null;
+                        Integer receiverStyleId = receiverStyle != null ? receiverStyle.getStyle().getGrade() : null;
 
                         String senderStyleName = senderStyle != null ? senderStyle.getStyle().getStyleName() : null;
                         String receiverStyleName = receiverStyle != null ? receiverStyle.getStyle().getStyleName() : null;
@@ -430,7 +430,7 @@ public class FriendService {
      */
     private void addFriendshipWithLevel(Long userId1, Long userId2,
                                         Integer user1Level, Integer user2Level,
-                                        Long user1StyleId, Long user2StyleId,
+                                        Integer user1StyleId, Integer user2StyleId,
                                         String user1StyleName, String user2StyleName,
                                         boolean isKakaoFriend) {
         // A -> B 친구 관계 (B의 레벨 저장)
@@ -469,8 +469,8 @@ public class FriendService {
         Style user1Style = styleService.findEquipStyle(user1);
         Style user2Style = styleService.findEquipStyle(user2);
 
-        Long user1StyleId = userId1 != null ? user1Style.getStyle().getUserStyleId() : null;
-        Long user2StyleId = userId2 != null ? user2Style.getStyle().getUserStyleId() : null;
+        Integer user1StyleId = userId1 != null ? user1Style.getStyle().getGrade() : null;
+        Integer user2StyleId = userId2 != null ? user2Style.getStyle().getGrade() : null;
 
         String user1StyleName = user1Style != null ? user1Style.getStyle().getStyleName() : null;
         String user2StyleName = user2Style != null ? user2Style.getStyle().getStyleName() : null;
