@@ -20,7 +20,6 @@ import com.learnmore.legacy.domain.store.model.Store;
 import com.learnmore.legacy.domain.store.model.enums.StoreType;
 import com.learnmore.legacy.domain.store.model.repo.StoreJpaRepo;
 import com.learnmore.legacy.domain.user.model.User;
-import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -71,40 +70,40 @@ public class DailyService {
         User user = userSessionHolder.get();
         LocalDate today = LocalDate.now();
 
-        // dailyCheckId로 직접 조회
         DailyCheck event = dailyCheckJpaRepo.findById(dailyCheckId)
                 .orElseThrow(() -> new CustomException(DailyError.DAILY_ERROR));
 
-        // 해당 이벤트가 활성화되어 있고 기간 내인지 확인
         if (!event.getIsActivate() ||
                 event.getStartAt().isAfter(today) ||
                 event.getEndAt().isBefore(today)) {
             throw new CustomException(DailyError.DAILY_ERROR);
         }
 
-        // 오늘 이미 출석했는지 확인
         Optional<DailyCheckHistory> existingHistory = dailyCheckHistoryJpaRepo
-                .findByUserAndDailyCheckAndCheckDate(user, event, today);
+                .findByUser_UserIdAndDailyCheck_DailyCheckIdAndCheckDate(
+                        user.getUserId(),
+                        dailyCheckId,
+                        today
+                );
 
         if (existingHistory.isPresent()) {
             throw new CustomException(DailyError.DAILY_ALREADY);
         }
 
-        // 연속 출석 일수 계산
         int dayNumber = calculateDayNumber(user, event);
 
-        // 기존 레코드 찾기 (user + dailyCheck 기준)
         Optional<DailyCheckHistory> history = dailyCheckHistoryJpaRepo
-                .findByUserAndDailyCheck(user, event);
+                .findFirstByUser_UserIdAndDailyCheck_DailyCheckIdOrderByCheckDateDesc(
+                        user.getUserId(),
+                        dailyCheckId
+                );
 
         DailyCheckHistory record;
         if (history.isPresent()) {
-            // 기존 레코드 업데이트
             record = history.get();
             record.updateCheckDate(today);
             record.updateDayNumber(dayNumber);
         } else {
-            // 새로운 레코드 생성
             record = DailyCheckHistory.builder()
                     .user(user)
                     .dailyCheck(event)
@@ -115,7 +114,6 @@ public class DailyService {
 
         dailyCheckHistoryJpaRepo.save(record);
 
-        // 해당 일차의 보상 조회
         List<DailyCheckItem> rewards = dailyCheckItemJpaRepo
                 .findByDailyCheckAndDayNumber(event, dayNumber);
 
@@ -209,7 +207,7 @@ public class DailyService {
     private int calculateDayNumber(User user, DailyCheck dailyCheck) {
         // 해당 이벤트에서 사용자의 마지막 출석 기록 조회 (dayNumber 기준)
         Optional<DailyCheckHistory> lastHistory = dailyCheckHistoryJpaRepo
-                .findFirstByUserAndDailyCheckOrderByDayNumberDesc(user, dailyCheck);
+                .findByUserAndDailyCheck(user, dailyCheck);
 
         // 첫 출석이면 1 아니면 기존꺼에 + 1
         return lastHistory.map(dailyCheckHistory -> dailyCheckHistory.getDayNumber() + 1).orElse(1);
