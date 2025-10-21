@@ -12,8 +12,10 @@ import com.learnmore.legacy.domain.friends.presentation.dto.response.FriendReque
 import com.learnmore.legacy.domain.friends.presentation.dto.response.FriendRes;
 import com.learnmore.legacy.domain.friends.presentation.dto.response.UserSearchRes;
 import com.learnmore.legacy.domain.friends.service.util.FriendCodeUtil;
+import com.learnmore.legacy.domain.user.model.Style;
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
+import com.learnmore.legacy.domain.user.service.StyleService;
 import com.learnmore.legacy.domain.user.service.UserService;
 import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,7 @@ public class FriendService {
     private final UserService userService;
     private final AchievementProgressService  achievementProgressService;
     private final UserJpaRepo userJpaRepo;
+    private final StyleService styleService;
 
     /**
      * 카카오톡 친구 자동 추가
@@ -232,15 +235,21 @@ public class FriendService {
                 .map(friend -> {
                     try {
                         User user = userService.findByUserId(friend.getFriendId());
+
                         if (user != null) {
+                            Style style = styleService.findEquipStyle(user);
+
                             return FriendRes.builder()
                                     .userId(friend.getFriendId())
                                     .nickname(user.getNickname())
                                     .profileImage(user.getImageUrl())
-                                    .level(friend.getFriendLevel())  // 저장된 레벨 정보 사용
+                                    .level(friend.getFriendLevel())
                                     .friendCode(FriendCodeUtil.encode(friend.getFriendId()))
                                     .isKakaoFriend(friend.getIsKakaoFriend())
-                                    .isMutualFriend(true) // 항상 양방향이므로 true
+                                    .isMutualFriend(true)
+                                    .styleName(
+                                            style != null ? style.getStyle().getStyleName() : null
+                                    )
                                     .build();
                         }
                         return null;
