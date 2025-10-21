@@ -50,7 +50,7 @@ public class StyleService {
     }
 
     public void existsStyleByUserAndStyle(User user, UserStyle style) {
-        if (!styleJpaRepo.existsByUserAndStyle(user,style))
+        if (styleJpaRepo.existsByUserAndStyle(user,style))
             throw new CustomException(StyleError.STYLE_DUPLICATED);
     }
 
