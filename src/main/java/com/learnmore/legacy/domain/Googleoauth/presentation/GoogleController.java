@@ -8,10 +8,7 @@ import com.learnmore.legacy.global.common.dto.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/google")
@@ -23,10 +20,10 @@ public class GoogleController {
     @PostMapping("/web")
     @Operation(summary = "웹 Google 로그인", description = "authorization code로 로그인")
     public ResponseEntity<BaseResponse<TokenRes>> webLogin(
-            @RequestBody GoogleCodeReq request
+            @RequestParam String code
     ) {
-        TokenRes token = googleService.loginWithWeb(request);
-        return BaseResponse.of(token);
+        GoogleCodeReq request = new GoogleCodeReq(code);
+        return BaseResponse.of(googleService.loginWithWeb(request));
     }
 
     @PostMapping("/android")
