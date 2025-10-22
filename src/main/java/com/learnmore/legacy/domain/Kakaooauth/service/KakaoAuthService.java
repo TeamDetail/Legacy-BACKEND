@@ -114,6 +114,7 @@ public class KakaoAuthService {
         User user = User.builder()
                 .userId(kakaoUser.getId())
                 .nickname(kakaoUser.getNickname())
+                .description("")
                 .level(1)
                 .exp(0)
                 .credit(0)
