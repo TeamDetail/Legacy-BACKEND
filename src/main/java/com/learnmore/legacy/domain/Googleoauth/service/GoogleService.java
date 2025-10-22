@@ -143,7 +143,7 @@ public class GoogleService {
     private void createNewUser(Long userId, GoogleUserInfo googleUser) {
         String nickname = googleUser.getName() != null
                 ? googleUser.getName()
-                : "Google 사용자";
+                : "";
 
         String imageUrl = googleUser.getPicture() != null
                 ? googleUser.getPicture()
@@ -166,6 +166,7 @@ public class GoogleService {
                 .maxFloor(0)
                 .maxScore(0)
                 .imageUrl(imageUrl)
+                .webExploreCount(0)
                 .build();
 
         userService.saveUser(user);
