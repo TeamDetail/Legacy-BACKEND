@@ -412,7 +412,7 @@ public class FriendService {
     /**
      * 친구 삭제
      */
-    @Transactional // 트랜잭션 보장
+    @Transactional
     public void removeFriend(Long userId, Long friendId) {
         List<Friend> friendships = friendJpaRepo.findAllFriendshipsBetween(userId, friendId);
 

@@ -7,7 +7,7 @@ public class FriendCodeUtil {
 
     private static final char[] BASE62_CHARS =
             "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
-    private static final int CODE_LENGTH = 12; // 👈 6자리에서 12자리로 수정
+    private static final int CODE_LENGTH = 12;
 
     // 난독화(Obfuscation)를 위한 XOR 키.
     // 실제 userId와 encodedValue 간의 연관성을 끊어 유추를 어렵게 합니다.
