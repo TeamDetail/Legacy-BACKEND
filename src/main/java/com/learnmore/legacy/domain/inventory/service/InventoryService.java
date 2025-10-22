@@ -2,6 +2,7 @@ package com.learnmore.legacy.domain.inventory.service;
 
 import com.learnmore.legacy.domain.achievement.model.enums.AchievementType;
 import com.learnmore.legacy.domain.achievement.service.AchievementProgressService;
+import com.learnmore.legacy.domain.card.error.CardError;
 import com.learnmore.legacy.domain.card.model.Card;
 import com.learnmore.legacy.domain.card.model.CardHistory;
 import com.learnmore.legacy.domain.card.model.Deck;
@@ -105,7 +106,7 @@ public class InventoryService {
             for (Card card : selectedCards) {
                 boolean alreadyOwned = cardHistoryJpaRepo.existsByUser_UserIdAndCard_CardId(userId, card.getCardId());
 
-                if (!alreadyOwned) { // 유저가 아직 안 가진 카드만 추가
+                if (!alreadyOwned) { // 새로운 카드인 경우
                     CardHistory history = CardHistory.builder()
                             .card(card)
                             .deck(deck)
@@ -119,8 +120,12 @@ public class InventoryService {
                     }
 
                     cardHistoryJpaRepo.save(history);
-
                     result.add(CardRes.from(card, history));
+                } else { // 중복 카드인 경우
+                    CardHistory existingHistory = cardHistoryJpaRepo
+                            .findByUser_UserIdAndCard_CardId(userId, card.getCardId())
+                            .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
+                    result.add(CardRes.from(card, existingHistory));
                 }
             }
         }

@@ -31,4 +31,6 @@ public interface CardHistoryJpaRepo extends JpaRepository<CardHistory, Long> {
     """)
     List<Card> findCardsByUserIdAndRegion(@Param("userId") Long userId,
                                           @Param("region") String region);
+
+    Optional<CardHistory> findByUser_UserIdAndCard_CardId(Long userId, Long cardId);
 }
