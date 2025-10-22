@@ -110,7 +110,7 @@ public class User {
     }
 
     public void updateCredit(Integer credit) {
-        this.credit = credit;
+        this.credit += credit;
     }
 
 }
