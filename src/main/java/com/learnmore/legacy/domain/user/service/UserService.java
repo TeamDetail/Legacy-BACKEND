@@ -1,8 +1,8 @@
 package com.learnmore.legacy.domain.user.service;
 
+import com.learnmore.legacy.domain.user.error.UserError;
 import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
-import com.learnmore.legacy.domain.user.error.UserError;
 import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

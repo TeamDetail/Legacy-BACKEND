@@ -106,7 +106,7 @@ public class AppleService {
                 .description("")
                 .level(1)
                 .exp(0)
-                .credit(0)
+                .credit(50000)
                 .snowflakeCapacity(5)
                 .storeRestock(1)
                 .creditCollect(3)
