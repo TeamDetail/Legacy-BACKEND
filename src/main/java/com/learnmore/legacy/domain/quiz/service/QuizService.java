@@ -113,6 +113,7 @@ public class QuizService {
                 }).toList();
     }
 
+    @Transactional
     public String gethint(Long quizId, Long userId) {
         Quiz quiz = quizJpaRepo.findById(quizId)
                 .orElseThrow(() -> new CustomException(QuizError.QUIZ_NOT_FOUND));
