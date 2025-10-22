@@ -128,6 +128,7 @@ public class KakaoAuthService {
                 .maxFloor(0)
                 .maxScore(0)
                 .imageUrl(kakaoUser.getProfileImage())
+                .webExploreCount(0)
                 .build();
         userService.saveUser(user);
 
