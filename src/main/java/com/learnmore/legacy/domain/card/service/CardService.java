@@ -3,9 +3,6 @@ package com.learnmore.legacy.domain.card.service;
 import com.learnmore.legacy.domain.card.model.*;
 import com.learnmore.legacy.domain.card.model.enums.CardType;
 import com.learnmore.legacy.domain.card.model.repo.*;
-import com.learnmore.legacy.domain.card.presentation.dto.request.LineAttributeReq;
-import com.learnmore.legacy.domain.card.presentation.dto.request.NationAttributeReq;
-import com.learnmore.legacy.domain.card.presentation.dto.request.RegionAttributeReq;
 import com.learnmore.legacy.domain.card.presentation.dto.response.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +18,6 @@ import java.util.stream.Collectors;
 public class CardService {
     private final CardJpaRepo cardJpaRepo;
     private final CardHistoryJpaRepo cardHistoryJpaRepo;
-    private final NationAttributeJpaRepo nationAttributeJpaRepo;
-    private final LineAttributeJpaRepo lineAttributeJpaRepo;
     private final RegionAttributeJpaRepo regionAttributeJpaRepo;
 
     public List<CardRes> getCardByCardId(Long userId) {

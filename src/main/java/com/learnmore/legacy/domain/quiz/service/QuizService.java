@@ -27,7 +27,6 @@ import com.learnmore.legacy.domain.ruins.error.RuinsError;
 import com.learnmore.legacy.domain.ruins.model.Ruins;
 import com.learnmore.legacy.domain.ruins.model.repo.RuinsJpaRepo;
 import com.learnmore.legacy.domain.user.model.User;
-import com.learnmore.legacy.domain.user.model.repo.UserJpaRepo;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -53,14 +52,14 @@ public class QuizService {
     private final CardHistoryJpaRepo cardHistoryJpaRepo;
     private final DeckJpaRepo deckJpaRepo;
     private final UserSessionHolder userSessionHolder;
-    private final UserJpaRepo userJpaRepo;
 
     @Transactional
-    public List<QuizWebRes> getWebQuiz(Long ruinsId, Long userId) {
+    public List<QuizWebRes> getWebQuiz(Long ruinsId) {
+        User user = userSessionHolder.get();
+
         Ruins ruins = ruinsJpaRepo.findById(ruinsId)
                 .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
-        User user = userJpaRepo.findByUserId(userId);
 
         int exploreCount = user.getWebExploreCount();
 
@@ -114,11 +113,11 @@ public class QuizService {
     }
 
     @Transactional
-    public String gethint(Long quizId, Long userId) {
+    public String gethint(Long quizId) {
         Quiz quiz = quizJpaRepo.findById(quizId)
                 .orElseThrow(() -> new CustomException(QuizError.QUIZ_NOT_FOUND));
 
-        User user = userJpaRepo.findByUserId(userId);
+        User user = userSessionHolder.get();
 
         user.useCredit(300);
 
@@ -146,7 +145,7 @@ public class QuizService {
             boolean isCorrect = quiz.getAnswerOption().equalsIgnoreCase(request.answerOption());
             results.add(new QuizAnswerResult(quiz.getQuizId(), isCorrect));
 
-            Card card = cardJpaRepo.findByRuins_RuinsId(quiz.getRuinsId())
+            cardJpaRepo.findByRuins_RuinsId(quiz.getRuinsId())
                     .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
             if (isCorrect) {
@@ -221,8 +220,9 @@ public class QuizService {
     }
 
     @Transactional(readOnly = true)
-    public QuizCreditCostRes getQuizCreditCost(Long userId) {
-        User user = userJpaRepo.findByUserId(userId);
+    public QuizCreditCostRes getQuizCreditCost() {
+        User user = userSessionHolder.get();
+
         return QuizCreditCostRes.from(user.getWebExploreCount());
     }
 
