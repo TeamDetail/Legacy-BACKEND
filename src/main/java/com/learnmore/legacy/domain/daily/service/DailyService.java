@@ -73,9 +73,7 @@ public class DailyService {
         DailyCheck event = dailyCheckJpaRepo.findById(dailyCheckId)
                 .orElseThrow(() -> new CustomException(DailyError.DAILY_ERROR));
 
-        if (!event.getIsActivate() ||
-                event.getStartAt().isAfter(today) ||
-                event.getEndAt().isBefore(today)) {
+        if (!event.getIsActivate() || event.getStartAt().isAfter(today) || event.getEndAt().isBefore(today)) {
             throw new CustomException(DailyError.DAILY_ERROR);
         }
 

@@ -135,6 +135,7 @@ public class QuizService {
         }
 
         List<QuizAnswerResult> results = new ArrayList<>();
+        List<Long> correctQuizIds = new ArrayList<>();
         int correctCount = 0;
         Long ruinsId = null;
 
@@ -142,23 +143,14 @@ public class QuizService {
             Quiz quiz = quizJpaRepo.findById(request.quizId())
                     .orElseThrow(() -> new CustomException(QuizError.QUIZ_NOT_FOUND));
 
-            if (quizHistoryJpaRepo.existsByUserIdAndQuizId(userId, quiz.getQuizId())) {
-                throw new CustomException(QuizError.QUIZ_ALREADY_SOLVED);
-            }
-
             boolean isCorrect = quiz.getAnswerOption().equalsIgnoreCase(request.answerOption());
             results.add(new QuizAnswerResult(quiz.getQuizId(), isCorrect));
-
 
             Card card = cardJpaRepo.findByRuins_RuinsId(quiz.getRuinsId())
                     .orElseThrow(() -> new CustomException(RuinsError.RUINS_NOT_FOUND));
 
             if (isCorrect) {
-                quizHistoryJpaRepo.save(QuizHistory.builder()
-                        .card(card)
-                        .userId(userId)
-                        .quizId(quiz.getQuizId())
-                        .build());
+                correctQuizIds.add(quiz.getQuizId());
                 correctCount++;
             }
 
@@ -201,11 +193,18 @@ public class QuizService {
                     .build());
             achievementProgressService.increaseProgress(userId, AchievementType.SHINING_ALL_CARD, 1);
 
+            // 성공 시에만 QuizHistory 저장
+            for (Long quizId : correctQuizIds) {
+                if (!quizHistoryJpaRepo.existsByUserIdAndQuizId(userId, quizId)) {
+                    quizHistoryJpaRepo.save(QuizHistory.builder()
+                            .card(card)
+                            .userId(userId)
+                            .quizId(quizId)
+                            .build());
+                }
+            }
+
             blockGiven = true;
-        }else {
-            requests.forEach(request ->
-                    quizHistoryJpaRepo.deleteByUserIdAndQuizId(userId, request.quizId())
-            );
         }
         if (blockGiven) {
             achievementProgressService.increaseProgress(userId, AchievementType.SOLVE_QUIZ, 1);
