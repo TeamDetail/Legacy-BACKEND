@@ -81,5 +81,4 @@ public class MailService {
 
         return results;
     }
-
 }

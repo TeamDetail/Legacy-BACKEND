@@ -27,5 +27,4 @@ public class MailController {
     public ResponseEntity<BaseResponse<List<MailRes>>> getAllMails() {
         return BaseResponse.of(mailService.getAllMails());
     }
-
 }

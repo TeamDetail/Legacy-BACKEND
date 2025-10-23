@@ -128,44 +128,6 @@ public class DailyService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    public void createDaily(DailyReq dailyReq) {
-        // 출석 체크 이벤트 생성
-        DailyCheck dailyCheck = DailyCheck.builder()
-                .dailyName(dailyReq.getName())
-                .startAt(dailyReq.getStartAt())
-                .endAt(dailyReq.getEndAt())
-                .isActivate(true)
-                .build();
-
-        DailyCheck savedEvent = dailyCheckJpaRepo.save(dailyCheck);
-
-        // 보상 정보 저장
-        List<List<AwardReq>> awards = dailyReq.getAwards();
-
-        for (int dayIndex = 0; dayIndex < awards.size(); dayIndex++) {
-            int dayNumber = dayIndex + 1; // 1일차부터 시작
-            List<AwardReq> dayAwards = awards.get(dayIndex);
-
-            for (AwardReq award : dayAwards) {
-                Store store = storeJpaRepo.findById(award.getItemId())
-                        .orElseThrow(() -> new CustomException(StoreError.STORE_ERROR));
-                Long itemId = store.getStoreId();
-
-                DailyCheckItem item = DailyCheckItem.builder()
-                        .dailyCheck(savedEvent)
-                        .dayNumber(dayNumber)
-                        .itemType(award.getItemType())
-                        .itemId(itemId)
-                        .itemCount(award.getItemCount())
-                        .build();
-
-                dailyCheckItemJpaRepo.save(item);
-            }
-        }
-    }
-
-
     private List<List<AwardRes>> getAwardsByEvent(Long eventId) {
         DailyCheck dailyCheck = dailyCheckJpaRepo.findById(eventId)
                 .orElseThrow(() -> new CustomException(DailyError.DAILY_ERROR));

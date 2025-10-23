@@ -1,6 +1,5 @@
 package com.learnmore.legacy.domain.daily.presentation;
 
-import com.learnmore.legacy.domain.daily.presentation.dto.request.DailyReq;
 import com.learnmore.legacy.domain.daily.presentation.dto.response.AwardRes;
 import com.learnmore.legacy.domain.daily.presentation.dto.response.DailyRes;
 import com.learnmore.legacy.domain.daily.service.DailyService;
@@ -29,12 +28,5 @@ public class DailyController {
     @PostMapping("/{dailyId}")
     public ResponseEntity<BaseResponse<List<AwardRes>>> getAwards(@PathVariable Long dailyId) {
         return BaseResponse.of(dailyService.addTodayAward(dailyId));
-    }
-
-    @Operation(summary = "출석 체크 더미 생성", description = "출석 체크를 생성합니다.")
-    @PostMapping("/create")
-    public ResponseEntity<BaseResponse<String>> createDaily(@RequestBody DailyReq dailyReq) {
-        dailyService.createDaily(dailyReq);
-        return BaseResponse.of("ok");
     }
 }

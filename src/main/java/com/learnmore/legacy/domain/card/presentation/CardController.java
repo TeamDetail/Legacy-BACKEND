@@ -1,8 +1,5 @@
 package com.learnmore.legacy.domain.card.presentation;
 
-import com.learnmore.legacy.domain.card.presentation.dto.request.LineAttributeReq;
-import com.learnmore.legacy.domain.card.presentation.dto.request.NationAttributeReq;
-import com.learnmore.legacy.domain.card.presentation.dto.request.RegionAttributeReq;
 import com.learnmore.legacy.domain.card.presentation.dto.response.*;
 import com.learnmore.legacy.domain.card.service.CardService;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
@@ -34,23 +31,4 @@ public class CardController {
         Long userId = userSessionHolder.get().getUserId();
         return BaseResponse.of(cardService.getCardsByRegion(region, userId));
     }
-
-    @Operation(summary = "국가 속성 더미 추가", description = "국가 속성 더미를 추가합니다.")
-    @PostMapping("/nation")
-    public ResponseEntity<BaseResponse<NationAttributeRes>> createNation(@RequestBody NationAttributeReq nationAttributeReq) {
-        return BaseResponse.of(cardService.addNation(nationAttributeReq));
-    }
-
-    @Operation(summary = "개열 속성 더미 추가", description = "개열 속성 더미를 추가합니다.")
-    @PostMapping("/line")
-    public ResponseEntity<BaseResponse<LineAttributeRes>> createLine(@RequestBody LineAttributeReq lineAttributeReq) {
-        return BaseResponse.of(cardService.addLine(lineAttributeReq));
-    }
-
-    @Operation(summary = "지역 속성 더미 추가", description = "지역 속성 더미를 추가합니다.")
-    @PostMapping("/region")
-    public ResponseEntity<BaseResponse<RegionAttributeRes>> createRegion(@RequestBody RegionAttributeReq regionAttributeReq) {
-        return BaseResponse.of(cardService.addRegion(regionAttributeReq));
-    }
-
 }

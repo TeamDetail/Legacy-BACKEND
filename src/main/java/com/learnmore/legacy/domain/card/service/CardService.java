@@ -63,28 +63,4 @@ public class CardService {
                 .cards(cardResList)
                 .build();
     }
-
-    public NationAttributeRes addNation(NationAttributeReq nationAttributeReq) {
-        NationAttribute nation = NationAttribute.builder()
-                .attributeName(nationAttributeReq.getAttributeName())
-                .build();
-        nationAttributeJpaRepo.save(nation);
-        return NationAttributeRes.from(nation);
-    }
-
-    public LineAttributeRes addLine(LineAttributeReq lineAttributeReq) {
-        LineAttribute line = LineAttribute.builder()
-                .attributeName(lineAttributeReq.getAttributeName())
-                .build();
-        lineAttributeJpaRepo.save(line);
-        return LineAttributeRes.from(line);
-    }
-
-    public RegionAttributeRes addRegion(RegionAttributeReq regionAttributeReq) {
-        RegionAttribute region = RegionAttribute.builder()
-                .attributeName(regionAttributeReq.getAttributeName())
-                .build();
-        regionAttributeJpaRepo.save(region);
-        return RegionAttributeRes.from(region);
-    }
 }
