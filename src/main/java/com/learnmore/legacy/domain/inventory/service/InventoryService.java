@@ -28,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -94,41 +95,60 @@ public class InventoryService {
 
         List<CardRes> result = new ArrayList<>();
 
+        // 모든 선택된 카드 수집
+        List<Card> allSelectedCards = new ArrayList<>();
         for (int i = 0; i < packCount; i++) {
             List<Card> cards = getCardPoolByPackId(cardpackId);
             if (cards.isEmpty()) {
                 throw new CustomException(StoreError.STORE_ERROR);
             }
-
             Collections.shuffle(cards);
             List<Card> selectedCards = cards.stream().limit(3).toList();
+            allSelectedCards.addAll(selectedCards);
+        }
 
-            for (Card card : selectedCards) {
-                boolean alreadyOwned = cardHistoryJpaRepo.existsByUser_UserIdAndCard_CardId(userId, card.getCardId());
+        // 선택된 카드들의 ID 추출
+        List<Long> selectedCardIds = allSelectedCards.stream()
+                .map(Card::getCardId)
+                .distinct()
+                .toList();
 
-                if (!alreadyOwned) { // 새로운 카드인 경우
-                    CardHistory history = CardHistory.builder()
-                            .card(card)
-                            .deck(deck)
-                            .cardType(CardType.BASIC_CARD)
-                            .user(user)
-                            .build();
-                    achievementProgressService.increaseProgress(userId, AchievementType.ALL_CARD, 1);
+        // 한 번에 기존 CardHistory 조회
+        List<CardHistory> existingHistories = cardHistoryJpaRepo
+                .findByUser_UserIdAndCard_CardIdIn(userId, selectedCardIds);
 
-                    if (card.getCardId()==152056){
-                        achievementProgressService.increaseProgress(userId, AchievementType.CARD_GYEONGBOKGUNG, 1);
-                    }
+        // CardId -> CardHistory 매핑
+        Map<Long, CardHistory> historyMap = existingHistories.stream()
+                .collect(Collectors.toMap(
+                        h -> h.getCard().getCardId(),
+                        h -> h
+                ));
 
-                    cardHistoryJpaRepo.save(history);
-                    result.add(CardRes.from(card, history));
-                } else { // 중복 카드인 경우
-                    CardHistory existingHistory = cardHistoryJpaRepo
-                            .findByUser_UserIdAndCard_CardId(userId, card.getCardId())
-                            .orElseThrow(() -> new CustomException(CardError.CARD_HISTORY_ERROR));
-                    result.add(CardRes.from(card, existingHistory));
+        // 카드 처리
+        for (Card card : allSelectedCards) {
+            CardHistory existingHistory = historyMap.get(card.getCardId());
+
+            if (existingHistory == null) { // 새로운 카드
+                CardHistory history = CardHistory.builder()
+                        .card(card)
+                        .deck(deck)
+                        .cardType(CardType.BASIC_CARD)
+                        .user(user)
+                        .build();
+                achievementProgressService.increaseProgress(userId, AchievementType.ALL_CARD, 1);
+
+                if (card.getCardId() == 152056) {
+                    achievementProgressService.increaseProgress(userId, AchievementType.CARD_GYEONGBOKGUNG, 1);
                 }
+
+                CardHistory savedHistory = cardHistoryJpaRepo.save(history);
+                historyMap.put(card.getCardId(), savedHistory); // 다음 중복을 위해 저장
+                result.add(CardRes.from(card, savedHistory));
+            } else { // 중복 카드
+                result.add(CardRes.from(card, existingHistory));
             }
         }
+
         return result;
     }
 

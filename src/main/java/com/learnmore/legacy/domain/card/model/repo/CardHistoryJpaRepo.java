@@ -19,8 +19,6 @@ public interface CardHistoryJpaRepo extends JpaRepository<CardHistory, Long> {
 
     long countByUser_UserIdAndCardType(Long userId, CardType cardType);
 
-    boolean existsByUser_UserIdAndCard_CardId(Long userId, Long cardId);
-
     @Query("""
         SELECT ch.card
         FROM CardHistory ch
@@ -32,5 +30,5 @@ public interface CardHistoryJpaRepo extends JpaRepository<CardHistory, Long> {
     List<Card> findCardsByUserIdAndRegion(@Param("userId") Long userId,
                                           @Param("region") String region);
 
-    Optional<CardHistory> findByUser_UserIdAndCard_CardId(Long userId, Long cardId);
+    List<CardHistory> findByUser_UserIdAndCard_CardIdIn(Long userId, List<Long> selectedCardIds);
 }
