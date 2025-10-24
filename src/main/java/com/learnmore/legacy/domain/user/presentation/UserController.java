@@ -74,4 +74,10 @@ public class UserController {
         userUseCase.setDescription(req);
         return BaseResponse.of("ok");
     }
+
+    @Operation(summary = "로그인된 유저 삭제", description = "유저 정보 삭제")
+    @DeleteMapping()
+    public ResponseEntity<BaseResponse<Long>> deleteUser(){
+        return BaseResponse.of(userUseCase.deleteUser().getUserId());
+    }
 }

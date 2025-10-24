@@ -57,6 +57,13 @@ public class UserUseCase {
     }
 
     @Transactional
+    public User deleteUser(){
+        User user = userSessionHolder.get();
+        userJpaRepo.delete(user);
+        return user;
+    }
+
+    @Transactional
     public UserRes updateProfileImage(ProfileImageReq req) {
         User sessionUser = userSessionHolder.get();
         User userEntity = userService.findByUserId(sessionUser.getUserId());
@@ -80,6 +87,7 @@ public class UserUseCase {
         }
 
         // 칭호 장착
+        System.out.println(req.styleId());
         Style styleToEquip = styleService.findByUserAndStyleId(user, req.styleId());
         styleToEquip.updateEquip(true);
     }
