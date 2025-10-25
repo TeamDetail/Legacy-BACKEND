@@ -153,7 +153,7 @@ public class GoogleService {
                 .description("")
                 .level(1)
                 .exp(0)
-                .credit(50000)
+                .credit(10000000)
                 .snowflakeCapacity(5)
                 .storeRestock(1)
                 .creditCollect(3)
