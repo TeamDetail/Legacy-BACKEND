@@ -116,7 +116,6 @@ public class InventoryService {
         // 한 번에 기존 CardHistory 조회
         List<CardHistory> existingHistories = cardHistoryJpaRepo
                 .findByUser_UserIdAndCard_CardIdIn(userId, selectedCardIds);
-
         // CardId -> CardHistory 매핑
         Map<Long, CardHistory> historyMap = existingHistories.stream()
                 .collect(Collectors.toMap(
