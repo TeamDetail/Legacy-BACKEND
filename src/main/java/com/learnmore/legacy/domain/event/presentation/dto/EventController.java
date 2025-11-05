@@ -29,8 +29,8 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<BaseResponse<String>> createEvent(@RequestBody EventReq eventReq, List<EventReq.EventLinkReq> linksReq) {
-        eventService.createEvent(eventReq, linksReq);
+    public ResponseEntity<BaseResponse<String>> createEvent(@RequestBody EventReq eventReq) {
+        eventService.createEvent(eventReq);
         return BaseResponse.of("이벤트가 추가 되었습니다.");
     }
 

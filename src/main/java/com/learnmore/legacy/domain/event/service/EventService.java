@@ -19,8 +19,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventService {
 
-    private EventJpaRepo eventJpaRepo;
-    private EventLinkJpaRepo eventLinkJpaRepo;
+    private final EventJpaRepo eventJpaRepo;
+    private final EventLinkJpaRepo eventLinkJpaRepo;
 
     public List<EventRes> getAllEvents(){
          List<Event> evnets = eventJpaRepo.findAll();
@@ -52,7 +52,7 @@ public class EventService {
     }
 
     @Transactional
-    public void createEvent(EventReq eventReq, List<EventReq.EventLinkReq> linksReq) {
+    public void createEvent(EventReq eventReq) {
         Event event = Event.builder()
                 .title(eventReq.title())
                 .shortDescription(eventReq.shortDescription())
@@ -64,11 +64,11 @@ public class EventService {
 
         Event savedEvent = eventJpaRepo.save(event);
 
-        List<EventLink> eventLinks = linksReq.stream()
+        List<EventLink> eventLinks = eventReq.links().stream()
                 .map(linkReq -> EventLink.builder()
                         .name(linkReq.name())
                         .link(linkReq.link())
-                        .event(savedEvent)  // 저장된 Event 연결
+                        .event(savedEvent)
                         .build())
                 .toList();
 
@@ -78,8 +78,10 @@ public class EventService {
     @Transactional
     public void deleteEvent(Long eventId) {
         Event event = eventJpaRepo.findById(eventId)
-                        .orElseThrow(()-> new CustomException(EventError.EVENT_ERROR));
-        eventJpaRepo.deleteById(eventId);
+                .orElseThrow(() -> new CustomException(EventError.EVENT_ERROR));
+
         eventLinkJpaRepo.deleteAll(eventLinkJpaRepo.findByEvent(event));
+
+        eventJpaRepo.deleteById(eventId);
     }
 }

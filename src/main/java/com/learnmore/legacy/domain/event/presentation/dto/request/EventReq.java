@@ -14,7 +14,7 @@ public record EventReq(
         LocalDate startAt,
         LocalDate endAt,
         String eventImage,
-        List<EventLink> links
+        List<EventLinkReq> links
 ) {
     @Builder
     public record EventLinkReq(
