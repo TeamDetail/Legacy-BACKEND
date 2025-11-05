@@ -1,5 +1,6 @@
 package com.learnmore.legacy.domain.event.presentation.dto;
 
+import com.learnmore.legacy.domain.event.presentation.dto.request.EventReq;
 import com.learnmore.legacy.domain.event.presentation.dto.response.EventDetailRes;
 import com.learnmore.legacy.domain.event.presentation.dto.response.EventRes;
 import com.learnmore.legacy.domain.event.service.EventService;
@@ -28,7 +29,7 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<BaseResponse<EventDetailRes>> createEvent(
-
-    )
+    public ResponseEntity<BaseResponse<EventDetailRes>> createEvent(@RequestBody EventReq eventReq) {
+        return BaseResponse.of(eventService.createEvent());
+    }
 }
