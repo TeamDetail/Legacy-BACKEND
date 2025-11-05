@@ -17,7 +17,7 @@ public record EventDetailRes(
         String eventImage,
         List<EventLinkRes> links
 ) {
-    public static EventDetailRes from(Event event) {
+    public static EventDetailRes from(Event event, List<EventLinkRes> links) {
         return EventDetailRes.builder()
                 .title(event.getTitle())
                 .shortDescription(event.getShortDescription())
@@ -25,6 +25,7 @@ public record EventDetailRes(
                 .startAt(event.getStartAt())
                 .endAt(event.getEndAt())
                 .eventImage(event.getEventImage())
+                .links(links)
                 .build();
     }
 

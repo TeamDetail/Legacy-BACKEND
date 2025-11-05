@@ -20,16 +20,23 @@ public class EventController {
 
     @GetMapping
     public ResponseEntity<BaseResponse<List<EventRes>>> getAllEvents() {
-        return BaseResponse.of(eventService.getAllEvent());
+        return BaseResponse.of(eventService.getAllEvents());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BaseResponse<EventDetailRes>> getEvent(@PathVariable String id) {
-        return BaseResponse.of(eventService.getEvent());
+    public ResponseEntity<BaseResponse<EventDetailRes>> getEvent(@PathVariable Long id) {
+        return BaseResponse.of(eventService.getEvent(id));
     }
 
     @PostMapping
-    public ResponseEntity<BaseResponse<EventDetailRes>> createEvent(@RequestBody EventReq eventReq) {
-        return BaseResponse.of(eventService.createEvent());
+    public ResponseEntity<BaseResponse<String>> createEvent(@RequestBody EventReq eventReq, List<EventReq.EventLinkReq> linksReq) {
+        eventService.createEvent(eventReq, linksReq);
+        return BaseResponse.of("이벤트가 추가 되었습니다.");
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<BaseResponse<String>> deleteEvent(@PathVariable Long id) {
+        eventService.deleteEvent(id);
+        return BaseResponse.of("이벤트가 삭제 되었습니다.");
     }
 }
