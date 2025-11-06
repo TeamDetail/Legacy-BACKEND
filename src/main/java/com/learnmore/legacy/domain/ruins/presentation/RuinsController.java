@@ -7,6 +7,7 @@ import com.learnmore.legacy.domain.ruins.presentation.dto.response.RuinsMapPoint
 import com.learnmore.legacy.domain.ruins.service.RuinsService;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.List;
 
+@Tag(name = "유적지", description = "유적지 API")
 @RestController
 @RequestMapping("/ruins")
 @RequiredArgsConstructor
