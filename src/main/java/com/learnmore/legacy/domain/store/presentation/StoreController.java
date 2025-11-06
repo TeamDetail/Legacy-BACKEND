@@ -4,10 +4,12 @@ import com.learnmore.legacy.domain.store.presentation.dto.response.CardPackRes;
 import com.learnmore.legacy.domain.store.service.StoreService;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "상점", description = "상점 API")
 @RestController
 @RequestMapping("/store")
 @RequiredArgsConstructor
