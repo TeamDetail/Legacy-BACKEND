@@ -5,12 +5,14 @@ import com.learnmore.legacy.domain.daily.presentation.dto.response.DailyRes;
 import com.learnmore.legacy.domain.daily.service.DailyService;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "출석 체크", description = "출석 체크 API")
 @RestController
 @RequestMapping("/daily")
 @RequiredArgsConstructor
