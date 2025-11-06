@@ -7,12 +7,14 @@ import com.learnmore.legacy.domain.course.presentation.dto.response.CourseRuinsR
 import com.learnmore.legacy.domain.course.service.CourseService;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "코스", description = "코스 API")
 @RestController
 @RequestMapping("/course")
 @RequiredArgsConstructor

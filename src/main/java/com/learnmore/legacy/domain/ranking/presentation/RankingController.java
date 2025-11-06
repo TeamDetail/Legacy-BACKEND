@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Tag(name = "ranking")
+@Tag(name = "랭킹", description = "랭킹 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/ranklist")

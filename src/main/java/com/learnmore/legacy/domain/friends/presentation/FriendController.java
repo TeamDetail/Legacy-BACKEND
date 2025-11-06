@@ -8,14 +8,15 @@ import com.learnmore.legacy.domain.friends.service.util.FriendCodeUtil;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
 
+@Tag(name = "친구", description = "친구 API")
 @RestController
 @RequestMapping("/friends")
 @RequiredArgsConstructor

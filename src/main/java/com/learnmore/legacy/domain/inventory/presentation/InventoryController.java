@@ -9,12 +9,14 @@ import com.learnmore.legacy.domain.inventory.service.InventoryService;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
 import com.learnmore.legacy.global.common.repo.UserSessionHolder;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "인벤토리", description = "인벤토리 API")
 @RestController
 @RequestMapping("/inventory")
 @RequiredArgsConstructor

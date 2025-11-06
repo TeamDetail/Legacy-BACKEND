@@ -8,13 +8,14 @@ import com.learnmore.legacy.domain.quiz.presentation.dto.response.QuizWebRes;
 import com.learnmore.legacy.domain.quiz.service.QuizService;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
+@Tag(name = "퀴즈", description = "퀴즈 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/quiz")

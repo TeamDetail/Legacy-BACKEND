@@ -1,10 +1,10 @@
 package com.learnmore.legacy.domain.auth.presentation;
 
-import com.learnmore.legacy.domain.kakaooauth.presentation.dto.request.KakaoUserReq;
 import com.learnmore.legacy.domain.auth.presentation.dto.request.RefreshReq;
 import com.learnmore.legacy.domain.auth.presentation.dto.request.SingInReq;
 import com.learnmore.legacy.domain.auth.presentation.dto.response.TokenRes;
 import com.learnmore.legacy.domain.auth.usecase.AuthUseCase;
+import com.learnmore.legacy.domain.kakaooauth.presentation.dto.request.KakaoUserReq;
 import com.learnmore.legacy.global.common.dto.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "auth")
+@Tag(name = "AUTH", description = "AUTH API")
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
