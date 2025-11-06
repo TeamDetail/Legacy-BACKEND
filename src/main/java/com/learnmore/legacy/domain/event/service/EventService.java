@@ -23,9 +23,9 @@ public class EventService {
     private final EventLinkJpaRepo eventLinkJpaRepo;
 
     public List<EventRes> getAllEvents(){
-         List<Event> evnets = eventJpaRepo.findAll();
+         List<Event> events = eventJpaRepo.findAll();
 
-         return evnets.stream()
+         return events.stream()
                  .map(EventRes::from)
                  .toList();
     }
