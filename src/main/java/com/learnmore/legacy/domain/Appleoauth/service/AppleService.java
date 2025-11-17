@@ -97,11 +97,10 @@ public class AppleService {
 
     private void saveUser(AppleInfo appleUser) {
         Long userId = convertSubToLong(appleUser.getSub());
-        String nickname = "";
 
         User user = User.builder()
                 .userId(userId)
-                .nickname(nickname)
+                .nickname("")
                 .description("")
                 .level(1)
                 .exp(0)

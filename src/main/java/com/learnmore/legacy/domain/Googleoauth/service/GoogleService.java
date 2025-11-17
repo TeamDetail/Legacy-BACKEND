@@ -139,17 +139,13 @@ public class GoogleService {
     }
 
     private void createNewUser(Long userId, GoogleUserInfo googleUser) {
-        String nickname = googleUser.getName() != null
-                ? googleUser.getName()
-                : "";
-
         String imageUrl = googleUser.getPicture() != null
                 ? googleUser.getPicture()
                 : "http://img1.kakaocdn.net/thumb/R640x640.q70/?fname=http://t1.kakaocdn.net/account_images/default_profile.jpeg";
 
         User user = User.builder()
                 .userId(userId)
-                .nickname(nickname)
+                .nickname("")
                 .description("")
                 .level(1)
                 .exp(0)
