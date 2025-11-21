@@ -78,6 +78,9 @@ public class User {
     @Column(name = "image_url", length = 2048, nullable = false)
     private String imageUrl;
 
+    @Column(name = "tutorial_completed")
+    private Boolean tutorialCompleted;
+
     public void updateImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }

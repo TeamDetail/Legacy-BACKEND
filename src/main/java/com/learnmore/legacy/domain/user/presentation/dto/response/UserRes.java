@@ -10,6 +10,7 @@ public record UserRes(
         String description,
         Integer credit,
         Integer level,
+        Boolean tutorialCompleted,
         UserStyleRes title,
         UserRecordRes record
 ) {
@@ -38,6 +39,7 @@ public record UserRes(
                 user.getDescription(),
                 user.getCredit(),
                 user.getLevel(),
+                user.getTutorialCompleted(),
                 UserStyleRes.from(style),
                 UserRecordRes.from(
                         user,
