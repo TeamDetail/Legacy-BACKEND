@@ -78,6 +78,10 @@ public class User {
     @Column(name = "image_url", length = 2048, nullable = false)
     private String imageUrl;
 
+    @Builder.Default
+    @Column(name = "tutorial_completed")
+    private Boolean tutorialCompleted = Boolean.FALSE;
+
     public void updateImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
@@ -107,6 +111,14 @@ public class User {
 
     public void updateExp(Integer exp) {
         this.exp = exp;
+    }
+
+    public void updateAllBlocks(Integer allBlocks) {
+        this.allBlocks += allBlocks;
+    }
+
+    public void updateTutorialCompleted(Boolean tutorialCompleted) {
+        this.tutorialCompleted = tutorialCompleted;
     }
 
     public void updateCredit(Integer credit) {
