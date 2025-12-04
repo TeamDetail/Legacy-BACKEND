@@ -10,6 +10,7 @@ import com.learnmore.legacy.domain.block.model.repo.BlockHistoryJpaRepo;
 import com.learnmore.legacy.domain.block.model.repo.BlockJpaRepo;
 import com.learnmore.legacy.domain.block.presentation.dto.request.BlockAddReq;
 import com.learnmore.legacy.domain.block.presentation.dto.response.BlockRes;
+import com.learnmore.legacy.domain.user.model.User;
 import com.learnmore.legacy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class BlockService {
     private final BlockHistoryJpaRepo blockHistoryJpaRepo;
     private final AchievementProgressService  achievementProgressService;
 
-    public BlockRes addBlock(BlockAddReq request, Long userId) {
+    public BlockRes addBlock(BlockAddReq request, User user) {
         List<Block> existingBlocks = blockJpaRepo.findAllByLatitudeAndLongitude(
                 request.getLatitude(), request.getLongitude()
         );
@@ -45,12 +46,13 @@ public class BlockService {
         Block savedBlock = blockJpaRepo.save(block);
 
         BlockHistory blockHistory = BlockHistory.builder()
-                .userId(userId)
+                .userId(user.getUserId())
                 .block(savedBlock)
                 .build();
 
+        user.updateAllBlocks(1);
         blockHistoryJpaRepo.save(blockHistory);
-        achievementProgressService.increaseProgress(userId, AchievementType.BLOCKS, 1);
+        achievementProgressService.increaseProgress(user.getUserId(), AchievementType.BLOCKS, 1);
         return BlockRes.from(savedBlock);
     }
 
@@ -70,7 +72,7 @@ public class BlockService {
     }
 
     @Transactional
-    public void createBlockWithHistory(Long ruinsId, Long userId, BigDecimal latitude, BigDecimal longitude) {
+    public void createBlockWithHistory(Long ruinsId, User user, BigDecimal latitude, BigDecimal longitude) {
         Block block = Block.builder()
                 .ruinsId(ruinsId)
                 .blockType(BlockType.RUINS)
@@ -79,13 +81,14 @@ public class BlockService {
                 .build();
 
         BlockHistory history = BlockHistory.builder()
-                .userId(userId)
+                .userId(user.getUserId())
                 .block(block)
                 .build();
 
+        user.updateAllBlocks(1);
         blockJpaRepo.save(block);
         blockHistoryJpaRepo.save(history);
-        achievementProgressService.increaseProgress(userId, AchievementType.RUINS, 1);
+        achievementProgressService.increaseProgress(user.getUserId(), AchievementType.RUINS, 1);
     }
 
 }

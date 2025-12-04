@@ -166,7 +166,7 @@ public class QuizService {
 
             blockService.createBlockWithHistory(
                     ruinsId,
-                    userId,
+                    user,
                     ruins.getLatitude(),
                     ruins.getLongitude()
             );
